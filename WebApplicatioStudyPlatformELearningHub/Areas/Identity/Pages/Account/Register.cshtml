@@ -1,0 +1,93 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="card-title">
+                            <i class="fas fa-user-plus"></i> Register
+                        </h3>
+                    </div>
+
+                    <div class="card-body">
+                        <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" enctype="multipart/form-data">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="form-group">
+                                <label for="Input_FirstName"><i class="fas fa-user"></i> First Name</label>
+                                <input asp-for="Input.FirstName" class="form-control" id="Input_FirstName" autocomplete="off" required />
+                                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="Input_LastName"><i class="fas fa-user"></i> Last Name</label>
+                                <input asp-for="Input.LastName" class="form-control" id="Input_LastName" autocomplete="off" required />
+                                <span asp-validation-for="Input.LastName" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="Input_Email"><i class="fas fa-envelope"></i> Email</label>
+                                <input asp-for="Input.Email" class="form-control" id="Input_Email" autocomplete="off" required />
+                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="Input_Password"><i class="fas fa-lock"></i> Password</label>
+                                <input asp-for="Input.Password" class="form-control" id="Input_Password" autocomplete="new-password" required />
+                                <span asp-validation-for="Input.Password" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="Input_ConfirmPassword"><i class="fas fa-lock"></i> Confirm Password</label>
+                                <input asp-for="Input.ConfirmPassword" class="form-control" id="Input_ConfirmPassword" autocomplete="new-password" required />
+                                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label for="Input_Role"><i class="fas fa-users"></i> Select Role</label>
+                                <select asp-for="Input.Role" asp-items="@Model.Input.RoleList" class="form-control" id="Input_Role" required>
+                                    <option disabled selected>Select Role</option>
+                                </select>
+                                <span asp-validation-for="Input.Role" class="text-danger"></span>
+                            </div>
+                            <button id="registerSubmit" type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-user-plus"></i> Register
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function convertToBase64() {
+            var file = document.getElementById('Input_ProfileImage').files[0];
+            var reader = new FileReader();
+            reader.onloadend = function () {
+                document.getElementById('imageBase64').value = reader.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    </script>
+}   
+    

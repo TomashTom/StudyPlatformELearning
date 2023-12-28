@@ -1,0 +1,39 @@
+﻿@model IEnumerable<StudyPlatformELearningHub.Models.Course>
+@using System.Security.Claims;
+@{
+    ViewData["Title"] = "Courses";
+}
+
+<h2>@ViewData["Title"]</h2>
+<a href="@Url.Action("Create")" class="btn btn-primary">Add New Course</a>
+
+<table class="table table-bordered table-hover mt-3">
+    <thead class="thead-dark">
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Creator Full Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var course in Model)
+        {
+            <tr>
+                <td class="capitalize-first-letter">@course.Name</td>
+                <td class="capitalize-first-letter">@course.Description</td>
+                <td>@course.CreatorFullName</td>
+                <td>
+                    <a href="@Url.Action("Edit", new { id = course.CourseId })" class="btn btn-success">Edit</a>
+                    <a href="@Url.Action("Delete", new { id = course.CourseId })" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<style>
+    .capitalize-first-letter {
+        text-transform: capitalize;
+    }
+</style>

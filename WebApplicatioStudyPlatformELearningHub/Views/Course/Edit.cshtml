@@ -1,0 +1,31 @@
+﻿@model StudyPlatformELearningHub.Models.Course
+
+@{
+    ViewData["Title"] = "Edit Course";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Edit" method="post">
+    <div class="form-group">
+        <label asp-for="Name" class="control-label">Course Name</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description" class="control-label">Description</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CreatorFullName" class="control-label">Creator Full Name</label>
+        <input asp-for="CreatorFullName" class="form-control" />
+        <span asp-validation-for="CreatorFullName" class="text-danger"></span>
+    </div>
+
+    <input type="hidden" asp-for="CourseId" />
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>

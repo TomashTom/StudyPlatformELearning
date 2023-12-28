@@ -1,0 +1,48 @@
+﻿<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom box-shadow mb-3" style="padding: 0.5rem 1rem;">
+    <div class="container-fluid">
+        <a class="navbar-brand" asp-area="User" asp-controller="Video" asp-action="Index">
+            <i class="fas fa-home"></i> Home
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContents" aria-controls="navbarSupportedContents" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContents">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                    <a asp-area="User" asp-controller="UserContactUs" asp-action="Index" class="nav-link">Contact Us</a>
+                </li>
+                <li class="nav-item">
+                    <a asp-area="User" asp-controller="UserProfiles" asp-action="Index" class="nav-link">User Profile</a>
+                </li>
+                @if (User.Identity.IsAuthenticated && (User.IsInRole("admin") || User.IsInRole("teacher")))
+                {
+                    <li class="nav-item">
+                        <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link">Admin & Teacher Panel</a>
+                    </li>
+                }
+            </ul>
+            <partial name="_LoginPartial" /> 
+        </div>
+        
+    </div>
+</nav>
+@section styles {
+    <style>
+        .navbar {
+            font-size: 0.9rem; /* Smaller font size */
+        }
+
+            .navbar .btn {
+                padding: 0.25rem 0.5rem; /* Reduced padding */
+            }
+
+            .navbar .navbar-brand {
+                padding: 0; /* Remove padding if you want even smaller navbar items */
+            }
+
+        .navbar-toggler {
+            padding: 0.25rem 0.5rem; /* Reduced padding */
+            font-size: 0.75rem; /* Smaller font size for toggler text, if any */
+        }
+    </style>
+}

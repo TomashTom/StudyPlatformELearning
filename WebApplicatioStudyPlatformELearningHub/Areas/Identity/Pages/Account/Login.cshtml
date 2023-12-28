@@ -1,0 +1,127 @@
+﻿@page
+@model LoginModel
+@{
+    ViewData["Title"] = "Log in";
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
+<style>
+    /* Add custom CSS styles for improved design */
+    body {
+        background-color: #f8f9fa;
+    }
+
+    .container {
+        max-width: 400px;
+        margin-top: 5%;
+        padding: 15px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-floating {
+        position: relative;
+    }
+
+        .form-floating input {
+            padding: 12px;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .form-floating label {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            padding: 12px;
+            opacity: 0.6;
+            transition: all 0.2s ease;
+        }
+
+        .form-floating input:focus ~ label,
+        .form-floating input:not(:placeholder-shown) ~ label {
+            transform: translateY(-25px) scale(0.8);
+            opacity: 1;
+            color: #007bff;
+        }
+
+    .checkbox label::before {
+        content: "\f046";
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        font-size: 16px;
+        color: #007bff;
+        padding-right: 5px;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+    .alert {
+        border-radius: 5px;
+    }
+</style>
+<h1 class="text-center">@ViewData["Title"]</h1>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-circle"></i> <strong>Error:</strong> @Model.ErrorMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <form id="account" method="post">
+                <h2 class="mb-3 text-center">Log in to your account</h2>
+                <hr />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="Email" />
+                    <label asp-for="Input.Email">Email</label>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Password" />
+                    <label asp-for="Input.Password">Password</label>
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                <div class="mb-3 form-check">
+                    <input asp-for="Input.RememberMe" class="form-check-input" />
+                    <label class="form-check-label" asp-for="Input.RememberMe">Remember me</label>
+                </div>
+                <div class="mb-3">
+                    <button id="login-submit" type="submit" class="w-100 btn btn-primary">Log in</button>
+                </div>
+                <div class="mb-3 text-center">
+                    <p>
+                        <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
+                    </p>
+                    <p>
+                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
+                    </p>
+                    <p>
+                        <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+   
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+}
+<partial name="_ValidationScriptsPartial" />

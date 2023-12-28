@@ -1,0 +1,370 @@
+﻿@* @page "/User/UserProfiles/Index" *@
+ @model StudyPlatformELearningHub.Models.UserProfileViewModel
+
+@{
+    ViewData["Title"] = "User Profile";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <!-- Toastr CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .btn, .nav-link, .list-group-item {
+            transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+        }
+
+            .btn:hover, .nav-link:hover, .list-group-item:hover {
+                color: #0056b3;
+                background-color: #e7f5ff;
+            }
+
+        .profile-section {
+            display: none; /* Hide all sections by default */
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+            .profile-section.active {
+                display: block; /* Show the active section */
+                opacity: 1;
+            }
+
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            /* Define more colors as needed */
+        }
+
+        .nav-link.active {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+    </style>
+    <title>User Profile</title>
+</head>
+<body>
+
+        <header>
+            @Html.Partial("_NavigationBar")
+        </header>
+
+    <div class="container mt-5">
+        <!-- Navigation Menu -->
+        <div class="row">
+            <div class="col-md-3">
+                <!-- Card for Navigation -->
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h2>User Profile</h2>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-pills flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#profile-info" data-toggle="tab">Profile Info</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#update-profile" data-toggle="tab">Update Profile</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#your-playlists" data-toggle="tab">Your Playlists</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Content -->
+            <div class="col-md-9">
+                <div class="tab-content">
+                         <section id="profile-info" class="tab-pane fade profile-section">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Profile Information</h3>
+                            </div>
+                            <div class="card-body">
+                                <!-- Display user information here -->
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>First Name</th>
+                                            <th>Last Name</th>
+                                            <th>Email</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>@Model.FirstName</td>
+                                            <td>@Model.LastName</td>
+                                            <td>@Model.Email</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                    <section id="update-profile" class="tab-pane fade profile-section">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Profile Information</h3>
+                            </div>
+                            <div class="card-body">
+                                <form asp-action="UpdateFirstName" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" asp-for="Id" />
+                                    <div class="form-group">
+                                        <label asp-for="FirstName" class="control-label">FirstName</label>
+                                        <input asp-for="FirstName" class="form-control" />
+                                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                                        <input type="submit" value="Update Last Name" class="btn btn-primary" />
+                                    </div>
+                                </form>
+                                <form asp-action="UpdateLastName" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" asp-for="Id" />
+                                    <div class="form-group">
+                                        <label asp-for="LastName" class="control-label">Last Name</label>
+                                        <input asp-for="LastName" class="form-control" />
+                                        <span asp-validation-for="LastName" class="text-danger"></span>
+                                        <input type="submit" value="Update Last Name" class="btn btn-primary" />
+                                    </div>
+                                </form>
+
+                                <!-- Form for updating Email -->
+                                <form asp-action="UpdateEmail" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" asp-for="Id" />
+
+                                    <div class="form-group">
+                                        <label asp-for="Email" class="control-label">New Email</label>
+                                        <input asp-for="Email" class="form-control" />
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="currentPassword">Current Password</label>
+                                        <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+                                        <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input type="submit" value="Update Email" class="btn btn-primary" />
+                                    </div>
+                                </form>
+
+                                <!-- Form for updating Password -->
+                                <form asp-action="UpdatePassword" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" asp-for="Id" />
+                                    <div>
+                                        <label asp-for="CurrentPassword">Current Password</label>
+                                        <input asp-for="CurrentPassword" type="password" class="form-control" autocomplete="off" />
+                                        <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+                                    </div>
+                                    <div>
+                                        <label asp-for="NewPassword">New Password</label>
+                                        <input asp-for="NewPassword" type="password" class="form-control" autocomplete="off" />
+                                        <span asp-validation-for="NewPassword" class="text-danger"></span>
+                                    </div>
+                                    <div>
+                                        <label asp-for="ConfirmNewPassword">Confirm New Password</label>
+                                        <input asp-for="ConfirmNewPassword" type="password" class="form-control" autocomplete="off" />
+                                        <span asp-validation-for="ConfirmNewPassword" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="submit" value="Update Password" class="btn btn-primary" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </section>
+                     <section id="your-playlists" class="profile-section">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Your Playlists</h3>
+                            </div>
+                            <div class="card-body">
+                                @if (Model.Playlists.Any())
+                                {
+                                    int currentPage = ViewData["CurrentPage"] as int? ?? 1;
+                                    int pageSize = 2; // Display 2 playlists per page
+
+                                    // Calculate the total number of pages
+                                    int totalPlaylists = Model.Playlists.Count();
+                                    int totalPages = (int)Math.Ceiling((double)totalPlaylists / pageSize);
+
+                                    var playlistsToDisplay = Model.Playlists
+                                    .Skip((currentPage - 1) * pageSize)
+                                    .Take(pageSize);
+                                    @foreach (var playlist in Model.Playlists)
+                                    {
+                                        <div class="playlist-card mb-3">
+                                            <div class="card">
+                                                <div class="card-header d-flex justify-content-between align-items-center">
+                                                    <h5>Playlist Name: @playlist.Name</h5>
+                                                    <form asp-action="DeletePlaylist" asp-controller="SeeLater" method="post">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="playlistId" value="@playlist.PlaylistId" />
+                                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                                    </form>
+                                                </div>
+                                                <div class="card-body">
+                                                    <ul class="list-group">
+                                                        @if (playlist.Videos.Any())
+                                                        {
+                                                            @foreach (var video in playlist.Videos)
+                                                            {
+                                                                <li class="list-group-item">
+                                                                    <div class="video-item">
+                                                                        @if (video.Video != null)
+                                                                        {
+                                                                            <span>@video.Video.Name</span>
+                                                                            @if (!string.IsNullOrEmpty(video.Note))
+                                                                            {
+                                                                                <p>Note: @video.Note</p>
+                                                                            }
+                                                                            <a href="@Url.Action("Play", "Video", new { id = video.Video.VideoId })" class="btn btn-primary"
+                                                                            >Play</a>
+                                                                            <form asp-action="RemoveFromSeeLater" asp-controller="SeeLater" asp-route-videoId="@video.Video.VideoId" method="post">
+                                                                                @Html.AntiForgeryToken()
+                                                                                <button type="submit" class="btn btn-danger">Remove</button>
+                                                                            </form>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <span>Video not available</span>
+                                                                        }
+                                                                    </div>
+                                                                </li>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <li class="list-group-item">No videos in this playlist.</li>
+                                                        }
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                   @*  <nav aria-label="Playlist Pagination">
+                                        <ul class="pagination justify-content-center">
+                                            @for (var pageIndex = 1; pageIndex <= totalPages; pageIndex++)
+                                            {
+                                                <li class="page-item @(pageIndex == currentPage ? "active" : "")">
+                                                    <a class="page-link" href="?page=@pageIndex">@pageIndex</a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </nav> *@
+
+
+                                }
+                                else
+                                {
+                                    <p>You have no playlists.</p>
+                                }
+                            </div>
+                        </div>
+                    </section> 
+
+
+                       
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap and jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <!-- Custom Script -->
+@*     <script>
+        $(document).ready(function () {
+            // Activate the profile-section based on the navigation click
+            $('.nav-link').on('click', function (e) {
+                e.preventDefault();
+                var currentAttrValue = $(this).attr('href');
+
+                // Show/Hide Tabs
+                 $('.profile-section' + currentAttrValue).show().siblings().hide();
+
+               
+               
+            });
+
+
+            // Optionally show a toast notification for demonstration
+            toastr.success('Welcome to your profile!');
+        });
+    </script>
+    *@
+    <script>
+        $(document).ready(function () {
+            // Function to activate a tab based on the URL hash
+            function activateTabFromHash() {
+                var hash = window.location.hash;
+                if (hash) {
+                    // If a hash is present, activate the corresponding tab
+                    $('.nav-link[href="' + hash + '"]').tab('show');
+                    $(hash).addClass('active').show().siblings('.profile-section').hide();
+                    $('a[href="' + hash + '"]').closest('li.nav-item').addClass('active').siblings().removeClass('active');
+                } else {
+                    // If no hash, activate the first tab
+                    $('#profile-info').addClass('active').show();
+                    $('a[href="#profile-info"]').closest('li.nav-item').addClass('active');
+                }
+            }
+
+            // On nav-link click, update the hash in the URL
+            $('.nav-link').on('click', function (e) {
+                e.preventDefault();
+                var currentAttrValue = $(this).attr('href');
+                window.location.hash = currentAttrValue; // Set the hash to the clicked tab's href
+                activateTabFromHash(); // Call the function to activate the tab
+            });
+
+            // Call activateTabFromHash on page load to show the correct tab
+            activateTabFromHash();
+
+            // If any form inside a tab is submitted, ensure the hash is included in the action URL
+            $('.profile-section form').on('submit', function () {
+                var action = $(this).attr('action');
+                var hash = window.location.hash;
+                $(this).attr('action', action + hash); // Append the hash to the form's action
+            });
+        });
+    </script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,652 @@
+﻿@using StudyPlatformELearningHub.Models;
+@model IEnumerable<StudyPlatformELearningHub.Models.VideoViewModel>
+@using System.Linq
+
+@{
+    ViewData["Title"] = "Video List";
+    Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+
+}
+@{
+    int totalPages = (int)Math.Ceiling((double)ViewBag.TotalVideos / ViewBag.PageSize);
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>StudyLab - Free Bootstrap 4 Template by Colorlib</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/animate.css">
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="css/magnific-popup.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker.css">
+    <link rel="stylesheet" href="css/jquery.timepicker.css">
+    <link rel="stylesheet" href="css/flaticon.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+
+   
+   
+    
+    <style>
+        /* Custom styles for course folder */
+        .card-folder {
+            position: relative;
+            text-align: center;
+            padding: 10px;
+            background-color: #f0f0f0; /* Background color for the folder area */
+            border-radius: 10px; /* Rounded corners for the folder area */
+        }
+
+        .folder-icon {
+            max-width: 50px; /* Set the maximum width of the folder icon */
+            margin: 0 auto; /* Center the icon horizontally */
+        }
+
+        .course-link {
+            display: block;
+            margin-top: 10px; /* Adjust the top margin to separate the icon and button */
+        }
+
+       
+        .hero-wrap {
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+            position: relative;
+            text-align: center;
+            color: #fff;
+            padding: 100px 0;
+        }
+
+        .breadcrumbs {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+            .breadcrumbs a {
+                color: #fff;
+                text-decoration: none;
+            }
+
+                .breadcrumbs a:hover {
+                    text-decoration: underline;
+                }
+
+        .bread {
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        .card {
+            border: none;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            }
+
+            .card img {
+                width: 100%;
+                height: auto;
+                max-height: 180px;
+                object-fit: cover;
+            }
+
+        .card-title {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .card-text {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 0.5em;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .selected-checkbox {
+            background-color: #007bff; 
+            color: white;
+        }
+   
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="index.html"><span>Study</span>Lab</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="oi oi-menu"></span> Menu
+            </button>
+            <div class="collapse navbar-collapse" id="ftco-nav">
+                <ul class="navbar-nav ml-auto">
+                  
+                    <li class="nav-item">
+                        <a asp-area="User" asp-controller="UserContactUs" asp-action="Index" class="nav-link">Contact Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a asp-area="User" asp-controller="UserProfiles" asp-action="Index" class="nav-link">User Profile</a>
+                    </li>
+                    @if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("Teacher")))
+                    {
+                        <li class="nav-item">
+                            <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link">Admin & Teacher Panel</a>
+                        </li>
+                    }
+                    <li class="nav-item">
+                        <partial name="_LoginPartial" class="nav-link" />
+                    </li>
+                </ul>
+                
+            </div>
+        </div>
+    </nav>
+   
+ 
+    <header class="hero-wrap hero-wrap-2" style="background-image: url('images/bg_2.jpg');">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row no-gutters slider-text align-items-end justify-content-center">
+                <div class="col-md-9 ftco-animate pb-5 text-center">
+                    <p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home <i class="fa fa-chevron-right"></i></a></span> <span>Course Lists <i class="fa fa-chevron-right"></i></span></p>
+                    <h1 class="mb-0 bread">Course Lists</h1>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Filter and search form -->
+    <section class="ftco-section bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <form method="get" action="@Url.Action("Index", "Video", new { area = "User" })" class="mb-4">
+                        <div class="form-group">
+                            <label for="category">Category:</label>
+                            <div id="categoryOptions">
+                                @foreach (var category in ViewBag.Categories)
+                                {
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input category-checkbox" id="category_@category.CategoryId" name="categories" value="@category.CategoryId" data-category-name="@category.Name">
+                                        <label class="form-check-label" for="category_@category.CategoryId">@category.Name</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div id="nameFilter" style="display: none;">
+                            <label>Name:</label>
+                            <div id="nameOptions">
+                                <!-- Names will be populated here based on the selected category -->
+                            </div>
+                        </div>
+                        <div id="noVideosMessage" style="display: none;">
+                            <p>Sorry, there are no videos for the selected category.</p>
+                        </div>
+                        <div class="form-group">
+                            <label for="creator">Filter by Creator:</label>
+                            <div id="creatorOptions">
+                                @if (ViewBag.CreatorFullNames != null)
+                                {
+                                    @foreach (var creatorFullName in ViewBag.CreatorFullNames)
+                                    {
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input creator-checkbox" id="creator_@creatorFullName" name="creators" value="@creatorFullName" data-creator-name="@creatorFullName">
+                                            <label class="form-check-label" for="creator_@creatorFullName">@creatorFullName</label>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                        <!-- Date Range filter -->
+                        <div class="form-group">
+                            <label>Date Range:</label>
+                            <div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="last7DaysCheckbox" name="dateRange" value="7">
+                                    <label class="form-check-label" for="last7DaysCheckbox">Last 7 days</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="last30DaysCheckbox" name="dateRange" value="30">
+                                    <label class="form-check-label" for="last30DaysCheckbox">Last 30 days</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="last60DaysCheckbox" name="dateRange" value="60">
+                                    <label class="form-check-label" for="last60DaysCheckbox">Last 2 months</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Difficulty Level:</label>
+                            @foreach (var level in Enum.GetValues(typeof(StudyPlatformELearningHub.Models.VideoDifficulty)))
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="difficulty_@level" name="difficultyLevels" value="@level">
+                                    <label class="form-check-label" for="difficulty_@level">@level</label>
+                                </div>
+                            }
+                        </div>
+                        <div class="form-group">
+                            <label>Filter by Stars:</label>
+                            <div>
+                                <!-- Use the name "ratingFilter" for all radio buttons to group them -->
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input star-rating-checkbox" id="filterStars@iCheckbox" name="filterStars" value="@i">
+                                        <label class="form-check-label" for="filterStars@iCheckbox">
+                                            @for (int j = 1; j <= i; j++)
+                                            {
+                                                <i class="fas fa-star" style="color: yellow;"></i>
+                                            }
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <form method="get" action="@Url.Action("Index", "Video", new { area = "User" })">
+                          
+                            <button type="submit" class="btn btn-primary">Apply Filters</button>
+                        </form>
+                     
+                    </form>
+                    
+                </div>
+                <div class="col-md-8">
+                    <!-- Display selected filters -->
+ 
+                    @if (TempData["SelectedCategoryIds"] != null || TempData["SelectedCreatorNames"] != null || TempData["SelectedDifficultyLevels"] != null || TempData["SelectedDateRange"] != null || TempData["SelectedRatingFilter"] != null)
+                    {
+                        <div class="selected-filters">
+                            <h3>Selected Filters:</h3>
+                            @if (TempData["SelectedCategoryIds"] != null)
+                            {
+                                <p>
+                                    <strong>Categories:</strong>
+                                    @foreach (var categoryId in TempData["SelectedCategoryIds"] as IEnumerable<int>)
+                                    {
+                                        <span>@categoryId</span>
+                                    }
+                                </p>
+                            }
+
+                            @if (TempData["SelectedCreatorNames"] != null)
+                            {
+                                <p>
+                                    <strong>Creators:</strong>
+                                    @foreach (var creatorName in TempData["SelectedCreatorNames"] as IEnumerable<string>)
+                                    {
+                                        <span>@creatorName</span>
+                                    }
+                                </p>
+                            }
+
+                            @if (TempData["SelectedDifficultyLevels"] != null)
+                            {
+                                <p>
+                                    <strong>Difficulty Levels:</strong>
+                                    @foreach (var difficultyLevel in TempData["SelectedDifficultyLevels"] as IEnumerable<VideoDifficulty>)
+                                    {
+                                        <span>@difficultyLevel</span>
+                                    }
+                                </p>
+                            }
+
+                            @if (TempData["SelectedDateRange"] != null)
+                            {
+                                <p>
+                                    <strong>Date Range:</strong>
+                                    <span>@TempData["SelectedDateRange"]</span>
+                                </p>
+                            }
+
+                            @if (TempData["SelectedRatingFilter"] != null)
+                            {
+                                <p>
+                                    <strong>Rating Filter:</strong>
+                                    <span>@TempData["SelectedRatingFilter"]</span>
+                                </p>
+                            }
+                        </div>
+                    }
+
+
+
+                    <!-- Display filtered videos -->
+                    <div class="row">
+                        @foreach (var videoVM in Model)
+                        {
+                            if (videoVM.Video.Status == VideoStatus.Active)
+                            {
+                                <div class="col-md-6 mb-4">
+                                    <div class="card">
+                                        @if (!string.IsNullOrEmpty(videoVM.Video.ThumbnailPath))
+                                        {
+                                            <img src="@Url.Content($"~/{videoVM.Video.ThumbnailPath}")" alt="Thumbnail" class="card-img-top">
+
+                                        }
+                                        <div class="card-body">
+                                            <h5 class="card-title">Video Title: @videoVM.Video.Name</h5>
+                                            <p class="card-text">Description: @videoVM.Video.Description</p>
+                                            <p class="card-text">Creator Name @videoVM.Video.CreatorFullName</p>
+                                            <p class="card-text">Difficulty: @videoVM.Video.Difficulty</p>
+                                            <p class="card-text">Upload Date Time: @videoVM.Video.UploadDateTime</p>
+                                            <p>
+                                                Average Rating:
+                                                @for (int i = 0; i < videoVM.AverageRating; i++)
+                                                {
+                                                    <i class="fa fa-star" style="color: yellow;"></i>
+                                                }
+                                            </p>
+
+                                            <p class="card-text"><i class="fa fa-eye"></i> Views: @videoVM.ViewCount</p>
+
+
+
+
+
+
+                                            <!-- Display as a single video -->
+                                            <a href="@Url.Action("Play", "Video", new { area = "User", id = videoVM.Video.VideoId })" class="btn btn-primary stretched-link">Play</a>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                       
+                    </div>
+                  
+
+                    <nav aria-label="Video navigation" class="my-4">
+                        <ul class="pagination">
+                            <!-- Previous page link -->
+                            @if (ViewBag.PageIndex > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Index", "Video", new {
+                                        area = "User",
+                                        categoryId = ViewBag.categoryId,
+                                        timeRange = ViewBag.timeRange,
+                                        search = ViewBag.search,
+                                        names = ViewBag.names,
+                                        creators = ViewBag.creators,
+                                        difficultyLevels = ViewBag.difficultyLevels,
+                                        ratingFilter = ViewBag.ratingFilter,
+                                        pageIndex = ViewBag.PageIndex - 1
+                                    })">Previous</a>
+                                </li>
+                            }
+
+                            <!-- Page number links -->
+                            @for (int i = 1; i <= totalPages; i++)
+                            {
+                                <li class="page-item @(i == ViewBag.PageIndex ? "active" : "")">
+                                    <a class="page-link" href="@Url.Action("Index", "Video", new {
+                                        area = "User",
+                                        categoryId = ViewBag.categoryId,
+                                        timeRange = ViewBag.timeRange,
+                                        search = ViewBag.search,
+                                        names = ViewBag.names,
+                                        creators = ViewBag.creators,
+                                        difficultyLevels = ViewBag.difficultyLevels,
+                                        ratingFilter = ViewBag.ratingFilter,
+                                        pageIndex = i
+                                     })">@i</a>
+                                </li>
+                            }
+
+                            <!-- Next page link -->
+                            @if (ViewBag.PageIndex < totalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Index", "Video", new {
+                                        area = "User",
+                                        categoryId = ViewBag.categoryId,
+                                        timeRange = ViewBag.timeRange,
+                                        search = ViewBag.search,
+                                        names = ViewBag.names,
+                                        creators = ViewBag.creators,
+                                        difficultyLevels = ViewBag.difficultyLevels,
+                                        ratingFilter = ViewBag.ratingFilter,
+                                        pageIndex = ViewBag.PageIndex + 1
+                                    })">Next</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+
+
+
+                </div>
+
+              
+               
+            </div>
+        </div>
+    </section>
+
+    <!-- Loader -->
+    <div id="ftco-loader" class="show fullscreen">
+        <svg class="circular" width="48px" height="48px">
+            <circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee" />
+            <circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00" />
+        </svg>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/jquery-migrate-3.0.1.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.easing.1.3.js"></script>
+    <script src="js/jquery.waypoints.min.js"></script>
+    <script src="js/jquery.stellar.min.js"></script>
+    <script src="js/owl.carousel.min.js"></script>
+    <script src="js/jquery.magnific-popup.min.js"></script>
+    <script src="js/jquery.animateNumber.min.js"></script>
+    <script src="js/bootstrap-datepicker.js"></script>
+    <script src="js/scrollax.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&sensor=false"></script>
+    <script src="js/google-map.js"></script>
+    <script src="js/main.js"></script>
+
+    
+
+    
+    <script>
+        $(document).ready(function () {
+            // Function to update selected checkboxes and apply the selected style
+            function updateSelectedCheckboxes() {
+                // Remove the selected style from all checkboxes
+                $('.category-checkbox, .creator-checkbox, input[name="dateRange"], input[name="difficultyLevels"], input[name^="filterStars"]').removeClass('selected-checkbox');
+
+                // Add the selected style to checked checkboxes
+                $('.category-checkbox:checked, .creator-checkbox:checked, input[name="dateRange"]:checked, input[name="difficultyLevels"]:checked, input[name^="filterStars"]:checked').addClass('selected-checkbox');
+            }
+
+
+            // Function to save selected filters in localStorage
+            function saveSelectedFilters() {
+                var selectedFilters = {
+                    categories: $('.category-checkbox:checked').map(function () { return this.value; }).get(),
+                    creators: $('.creator-checkbox:checked').map(function () { return this.value; }).get(),
+                    dateRange: $('input[name="dateRange"]:checked').map(function () { return this.value; }).get(),
+                    difficultyLevels: $('input[name="difficultyLevels"]:checked').map(function () { return this.value; }).get(),
+                    filterStars: $('input[name="filterStars"]:checked').map(function () { return this.value; }).get(),
+                };
+
+                localStorage.setItem('selectedFilters', JSON.stringify(selectedFilters));
+            }
+
+            // Function to update video names filter based on selected categories
+            function updateVideoNamesFilter() {
+                var selectedCategoryIds = [];
+
+                // Get the selected category IDs
+                $('.category-checkbox:checked').each(function () {
+                    selectedCategoryIds.push($(this).val());
+                });
+
+                var nameOptions = $('#nameOptions');
+                var noVideosMessage = $('#noVideosMessage');
+
+                if (selectedCategoryIds.length > 0) {
+                    // Show the "Name" filter section
+                    $('#nameFilter').show();
+                    // Remove previous name options
+                    nameOptions.empty();
+
+                    // Fetch filtered video names via AJAX
+                    $.ajax({
+                        url: '@Url.Action("FilterVideos", "Video", new { area = "User" })',
+                        method: 'POST',
+                        data: { categoryIds: selectedCategoryIds },
+                        success: function (filteredNames) {
+                            if (filteredNames.data.length > 0) {
+                                // Generate video name checkboxes
+                                $.each(filteredNames.data, function (index, name) {
+                                    var checkboxId = 'name_' + name.replace(/\s+/g, '_');
+                                    nameOptions.append('<div class="form-check"><input type="checkbox" class="form-check-input" id="' + checkboxId + '" name="names" value="' + name + '"><label class="form-check-label" for="' + checkboxId + '">' + name + '</label></div>');
+                                });
+                                // Hide the "No Videos" message
+                                noVideosMessage.hide();
+                            } else {
+                                // Show the "No Videos" message
+                                noVideosMessage.show();
+                            }
+                        },
+                        error: function () {
+                            console.error('Error fetching filtered video names.');
+                        }
+                    });
+                } else {
+                    // Hide the "Name" filter section and clear name checkboxes
+                    $('#nameFilter').hide();
+                    nameOptions.empty();
+                    // Hide the "No Videos" message
+                    noVideosMessage.hide();
+                }
+            }
+
+            // Initial update of selected checkboxes on page load
+            updateSelectedCheckboxes();
+
+            // Restore selected filters from localStorage on page load
+            var storedFilters = localStorage.getItem('selectedFilters');
+            if (storedFilters) {
+                var filters = JSON.parse(storedFilters);
+                filters.categories.forEach(function (categoryId) {
+                    $('#category_' + categoryId).prop('checked', true);
+                });
+                filters.creators.forEach(function (creatorName) {
+                    $('#creator_' + creatorName).prop('checked', true);
+                });
+                filters.dateRange.forEach(function (rangeValue) {
+                    $('input[name="dateRange"][value="' + rangeValue + '"]').prop('checked', true);
+                });
+                filters.difficultyLevels.forEach(function (difficulty) {
+                    $('input[name="difficultyLevels"][value="' + difficulty + '"]').prop('checked', true);
+                });
+                filters.filterStars.forEach(function (filterStars) {
+                    $('input[name="filterStars"][value="' + filterStars + '"]').prop('checked', true);
+                });
+
+
+                updateSelectedCheckboxes();
+            }
+            
+            // Update the checkboxes when they are changed
+            $('.category-checkbox, .creator-checkbox, input[name="dateRange"], input[name="difficultyLevels"], input[name="filterStars"]').change(function () {
+                updateSelectedCheckboxes();
+                saveSelectedFilters();
+                updateVideoNamesFilter(); // Update video names filter when categories change
+                // ... rest of your code for handling filter changes
+            });
+
+            // Clear Filters button click event
+                   // Clear Filters button click event
+        $('#clearFiltersBtn').click(function () {
+            // Uncheck all checkboxes and remove the selected style for all filters
+                $('.category-checkbox, .creator-checkbox, input[name="dateRange"], input[name="difficultyLevels"], input[name="names"], input[name="filterStars"]').prop('checked', false);
+                $('.category-checkbox, .creator-checkbox, input[name="dateRange"], input[name="difficultyLevels"], input[name="names"], input[name="filterStars"]').removeClass('selected-checkbox');
+
+            // Hide the "Name" filter section and clear name checkboxes
+            $('#nameFilter').hide();
+            $('#nameOptions').empty();
+
+            // Hide the "No Videos" message
+            $('#noVideosMessage').hide();
+
+
+            // Clear stored filters
+            localStorage.removeItem('selectedFilters');
+
+            // Fetch all videos (you can replace this with your code to fetch all videos)
+            $.ajax({
+                url: '@Url.Action("Index", "Video", new { area = "User" })',
+                method: 'GET',
+                success: function (data) {
+                    // Handle the retrieved videos data, for example, update the video list
+                    // You can replace this part with your logic to display videos
+                    $('#videoList').html(data);
+                },
+                error: function () {
+                    console.error('Error fetching all videos.');
+                }
+            });
+        });
+
+     });
+        $(document).ready(function () {
+            // When any star-rating checkbox is clicked
+            $('.star-rating-checkbox').on('change', function () {
+                // Uncheck all other star-rating checkboxes
+                $('.star-rating-checkbox').not(this).prop('checked', false);
+            });
+        });
+    </script>
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

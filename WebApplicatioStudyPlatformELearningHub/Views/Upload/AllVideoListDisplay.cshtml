@@ -1,0 +1,253 @@
+﻿@model List<StudyPlatformELearningHub.Models.VideoFile>
+@using StudyPlatformELearningHub.Models;
+
+@{
+    ViewData["Title"] = "My Uploaded Videos";
+}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">@ViewData["Title"]</h2>
+    <input type="text" id="searchBox" placeholder="Search videos..." class="form-control mb-4" onkeyup="searchVideos()" />
+
+    <div id="videosContainer" class="row">
+        @foreach (var video in Model)
+        {
+            <div class="col-md-4 mb-4 video-item">
+                <div class="card video-card shadow-sm">
+@*                     <div class="card-img-top">
+                        <video width="100%" height="auto" controls>
+                            <source src="@Url.Content($"~/videoFiles/{video.VideoName}")" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                    <!-- Thumbnail display -->
+                    @if (!string.IsNullOrEmpty(video.ThumbnailPath))
+                    {
+                        <div class="text-center p-2">
+                            <img src="@Url.Content($"~/{video.ThumbnailPath}")" alt="Thumbnail" class="img-thumbnail">
+                        </div>
+                    } *@
+                    <div class="card-video">
+                        <video width="100%" height="auto" controls poster="@Url.Content($"~/{video.ThumbnailPath}")">
+                            <source src="@Url.Content($"~/videoFiles/{video.VideoName}")" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+
+                   
+                    <div class="card-body">
+                        <h5 class="card-title">Title: @video.Name</h5>
+                        <p class="card-text"><strong>Category:</strong> @(video.Category?.Name ?? "No Category")</p>
+                        <p class="card-text"><strong>Description:</strong> @video.Description</p>
+                        <p class="card-text"><strong>Course:</strong> @(video.Course?.Name ?? "No Course")</p>
+                        <p class="card-text"><small class="text-muted">Uploaded On: @video.UploadDateTime.ToString("yyyy-MM-dd")</small></p>
+                        <p class="card-text"><strong>Status:</strong> @video.Status</p>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <a href="@Url.Action("Edit", new { id = video.VideoId })" class="btn btn-outline-primary btn-sm">Edit</a>
+                        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" data-video-id="@video.VideoId">Delete</button>
+                        @if (video.Status == VideoStatus.Active)
+                        {
+                            <form method="post" asp-action="ChangeVideoStatus" class="d-inline-block">
+                                <input type="hidden" name="id" value="@video.VideoId" />
+                                <input type="hidden" name="status" value="Inactive" />
+                                <button type="submit" class="btn btn-warning btn-sm">Deactivate</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form method="post" asp-action="ChangeVideoStatus" class="d-inline-block">
+                                <input type="hidden" name="id" value="@video.VideoId" />
+                                <input type="hidden" name="status" value="Active" />
+                                <button type="submit" class="btn btn-success btn-sm">Activate</button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+   
+</div>
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+        @for (var i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                <a class="page-link" href="@Url.Action("AllVideoListDisplay", new { page = i })">@i</a>
+            </li>
+        }
+    </ul>
+</nav>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this video?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteForm" method="post">
+                    <input type="hidden" id="deleteVideoId" name="id" value="" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        
+        .video-thumbnail {
+            position: relative;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            overflow: hidden;
+        }
+
+            .video-thumbnail video {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+            }
+
+        .video-item:hover {
+            -webkit-box-shadow: 0px 0px 15px -5px rgba(0,0,0,0.75);
+            -moz-box-shadow: 0px 0px 15px -5px rgba(0,0,0,0.75);
+            box-shadow: 0px 0px 15px -5px rgba(0,0,0,0.75);
+            cursor: pointer;
+        }
+
+        /* Style for search box */
+        #searchBox {
+            margin-bottom: 20px;
+        }
+
+        .video-thumbnail video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .video-card {
+            transition: transform .3s ease-in-out;
+        }
+
+            .video-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            }
+
+            .video-card .card-footer {
+                background: inherit;
+                border-top: 0;
+            }
+
+        .btn-outline-primary {
+            border-color: #007bff;
+            color: #007bff;
+        }
+
+            .btn-outline-primary:hover {
+                background: #007bff;
+                color: #fff;
+            }
+
+        .btn-outline-danger {
+            border-color: #dc3545;
+            color: #dc3545;
+        }
+
+            .btn-outline-danger:hover {
+                background: #dc3545;
+                color: #fff;
+            }
+
+        .btn-outline-secondary {
+            border-color: #6c757d;
+            color: #6c757d;
+        }
+
+            .btn-outline-secondary:hover {
+                background: #6c757d;
+                color: #fff;
+            }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        function searchVideos() {
+            var input, filter, videosContainer, videos, title, i, txtValue;
+            input = document.getElementById('searchBox');
+            filter = input.value.toUpperCase();
+            videosContainer = document.getElementById('videosContainer');
+            videos = videosContainer.getElementsByClassName('video-item');
+            for (i = 0; i < videos.length; i++) {
+                title = videos[i].getAttribute('data-title');
+                if (title.toUpperCase().indexOf(filter) > -1) {
+                    videos[i].style.display = "";
+                } else {
+                    videos[i].style.display = "none";
+                }
+            }
+        }
+        $(document).ready(function () {
+            $("#searchBox").on("keyup", function () {
+                var searchTerm = $(this).val().toLowerCase();
+
+                $("#videosContainer .video-item").each(function () {
+                    var title = $(this).data("title").toString().toLowerCase();
+                    var date = $(this).data("uploaddate").toString().toLowerCase();
+                    var category = $(this).data("category").toString().toLowerCase();
+                    var course = $(this).data("course").toString().toLowerCase();
+
+                    if (title.includes(searchTerm) || date.includes(searchTerm) ||
+                        category.includes(searchTerm) || course.includes(searchTerm)) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+            });
+            $('.delete-btn').on('click', function () {
+                var videoId = $(this).data('video-id'); // Get the video ID
+                var deleteUrl = '@Url.Action("DeleteVideo", "Upload")' + '?id=' + videoId; // Construct the URL
+                $('#deleteForm').attr('action', deleteUrl); // Set the form's action
+                $('#deleteVideoId').val(videoId); // Optional: Set the hidden input with the video ID if used
+            });
+            $('.btn-change-status').on('click', function () {
+                var videoId = $(this).data('video-id');
+                var newStatus = $(this).data('new-status');
+
+                $.ajax({
+                    url: '@Url.Action("ChangeVideoStatus", "Upload")',
+                    method: 'POST',
+                    data: { id: videoId, status: newStatus },
+                    success: function () {
+                        // Update the status on the page
+                        var statusElement = $(`[data-status='${newStatus}'][data-video-id='${videoId}']`);
+                        statusElement.text('Status: ' + newStatus);
+                    },
+                    error: function () {
+                        // Handle error if needed
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+
+
+

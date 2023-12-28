@@ -1,0 +1,14 @@
+﻿@page
+@model AccessDeniedModel
+@{
+    ViewData["Title"] = "Access denied";
+}
+
+<header>
+    <h1 class="text-danger">@ViewData["Title"]</h1>
+    <p class="text-danger">You do not have access to this resource yet. <br /> Please contact with admin to get faster confirm</p>
+   
+</header>
+<li class="nav-item">
+    <a asp-area="User" asp-controller="UserContactUs" asp-action="Index" class="nav-link">Contact Us</a>
+</li>

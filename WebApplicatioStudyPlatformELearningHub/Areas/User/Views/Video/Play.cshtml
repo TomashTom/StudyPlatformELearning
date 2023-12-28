@@ -1,0 +1,819 @@
+﻿@model StudyPlatformELearningHub.Models.VideoPlayViewModel
+@using System.Security.Claims
+@Html.AntiForgeryToken()
+
+@{
+    Layout = "~/Areas/User/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Play Video";
+
+
+
+}@{
+    var context = ViewBag.Context as VideoPlayViewModel;
+}
+
+<body>
+    <header>
+        @Html.Partial("_NavigationBar")
+    </header>
+</body>
+<style>
+    .btn-like, .btn-heart {
+        display: inline-block;
+        padding: 0.375rem 0.75rem; /* Standard padding, adjust as needed */
+        font-size: 1rem; /* Standard font size, adjust as needed */
+        line-height: 1.5; /* Standard line height, adjust as needed */
+        border: 1px solid transparent; /* Hide border by default */
+        box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    }
+
+        /* Style for when a button is active/selected */
+        .btn-like.active, .btn-heart.active {
+            font-weight: normal; /* Prevent font bolding from increasing size */
+            transform: none; /* Remove any scaling */
+            border: 1px solid transparent; /* Maintain border size */
+            padding: 0.375rem 0.75rem; /* Keep padding consistent */
+            box-shadow: none; /* Remove any box-shadow if it's causing size increase */
+        }
+
+    .btn-outline-primary, .btn-outline-danger {
+        color: #333; /* Text color */
+        background-color: transparent; /* No background for outline */
+        border: 1px solid; /* Solid border */
+    }
+
+    .btn-outline-primary {
+        border-color: #007bff; /* Blue border for primary outline */
+    }
+
+    .btn-outline-danger {
+        border-color: #dc3545; /* Red border for danger outline */
+    }
+
+    .btn-primary, .btn-danger {
+        color: #fff; /* White text for filled buttons */
+        border: 1px solid transparent; /* Transparent border to maintain the same size as outline */
+    }
+
+    .btn-primary {
+        background-color: #007bff; /* Blue background for primary button */
+    }
+
+    .btn-danger {
+        background-color: #dc3545; /* Red background for danger button */
+    }
+
+    /* Ensure consistent sizing for buttons */
+    .btn-sm {
+        display: inline-block;
+        padding: 0.25rem 0.5rem; /* Small padding for small buttons, adjust as needed */
+        font-size: 0.875rem; /* Small font size for small buttons, adjust as needed */
+        line-height: 1.5;
+        border-radius: 0.2rem; /* Slightly rounded corners for aesthetic */
+        transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out; /* Smooth transition for hover effects */
+    }
+
+        /* Adjust icon size within buttons if necessary */
+        .btn-sm i {
+            font-size: 1rem; /* Icon size within button, adjust as needed */
+        }
+
+    body {
+        font-family: 'Roboto', sans-serif;
+    }
+
+    .comments-container {
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+    }
+
+    .comment-card {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        margin-bottom: 15px;
+        padding: 15px;
+        transition: box-shadow 0.3s ease;
+    }
+
+        .comment-card:hover {
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+    .edit-btn, .delete-btn, .save-btn, .cancel-btn {
+        border: none;
+        border-radius: 5px;
+        padding: 6px 12px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .edit-btn:hover, .save-btn:hover, .cancel-btn:hover {
+            background-color: #e2e6ea;
+        }
+
+    .delete-btn {
+        background-color: #dc3545;
+        color: white;
+    }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+
+    .edit-form {
+        display: none;
+        margin-top: 15px;
+    }
+
+    .edit-textarea {
+        width: 100%;
+        border-radius: 5px;
+        border: 1px solid #ced4da;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .comment-form-container {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0,0,0,.1);
+    }
+
+    .reply-form {
+        margin-left: 20px; /* Indent replies for visual hierarchy */
+        margin-top: 10px;
+    }
+
+    .form-label {
+        font-weight: bold;
+    }
+
+    .btn-primary {
+        width: 100%; /* Makes the button stretch the full container width */
+        padding: 10px; /* Makes the button taller */
+    }
+
+    .comments-section .list-group-item {
+        border-radius: 10px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,.1);
+        transition: transform .2s;
+    }
+
+        .comments-section .list-group-item:hover {
+            transform: scale(1.02);
+        }
+
+    .selected-star {
+        color: yellow;
+    }
+
+    .back-button {
+        display: inline-block;
+        margin-bottom: 20px; /* Spacing before the button */
+        padding: 10px 15px; /* Size of the button */
+        color: #fff; /* Text color */
+        background-color: #6c757d; /* Background color */
+        border-color: #6c757d; /* Border color */
+        text-decoration: none; /* Remove underline from link */
+        border-radius: 4px; /* Rounded corners */
+        cursor: pointer; /* Pointer cursor on hover */
+    }
+
+        .back-button:hover {
+            background-color: #5a6268; /* Darker background on hover */
+            border-color: #545b62; /* Darker border on hover */
+        }
+
+
+    .recommended-videos {
+        margin: 20px;
+        overflow: hidden;
+    }
+
+    .recommended-title {
+        margin-bottom: 20px;
+        font-size: 24px;
+    }
+
+    .video-cards-container::-webkit-scrollbar {
+        height: 10px; /* Height of horizontal scrollbar */
+        background-color: #F5F5F5; /* Scrollbar track color */
+    }
+
+    .video-cards-container::-webkit-scrollbar-thumb {
+        background-color: #CCCCCC; /* Scrollbar handle color */
+        border-radius: 5px;
+        border: 2px solid #F5F5F5; /* Same as track color to create a 'border' effect */
+    }
+
+    /* For Firefox */
+    .video-cards-container {
+        scrollbar-width: thin; /* 'auto' or 'thin' */
+        scrollbar-color: #CCCCCC #F5F5F5; /* thumb and track color */
+    }
+
+    /* General styles */
+    .video-cards-container {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 20px;
+        overflow-x: auto;
+        /* Optional: if you want to always show the scrollbar */
+        overflow-x: scroll;
+        /* Additional styles to ensure consistency across different browsers */
+        -ms-overflow-style: -ms-autohiding-scrollbar; /* For Edge */
+    }
+
+    .video-card {
+        flex: 0 0 300px; /* flex-grow is 0, flex-shrink is 0, and flex-basis is 300px */
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        background: #fff;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* This will distribute space evenly */
+    }
+
+    .video-thumbnail img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+    }
+
+    .video-info {
+        padding: 15px;
+        line-height: 1.5;
+    }
+
+    .video-title, .video-creator, .video-date, .video-rank {
+        font-size: 14px;
+        color: #666;
+        margin: 5px 0;
+    }
+
+    .correct-answer {
+        color: green;
+    }
+
+    .incorrect-answer {
+        color: red;
+    }
+
+
+    .video-play-link {
+        display: block;
+        text-align: center;
+        background-color: #007bff;
+        color: white;
+        padding: 10px 0;
+        text-decoration: none;
+        border-radius: 4px;
+        margin-top: 10px;
+    }
+
+        .video-play-link:hover {
+            background-color: #0056b3;
+        }
+
+    .comments-scrollable {
+        max-height: 600px; /* Set a maximum height for the comments section */
+        overflow-y: auto;
+    }
+
+    .btn-modern-save {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        font-size: 16px;
+        color: #fff;
+        background-color: #17a2b8; /* A modern blue shade */
+        border: none;
+        border-radius: 2rem; /* Rounded borders for a pill shape */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        transition: all 0.2s ease-in-out;
+        text-transform: uppercase; /* Uppercase text for a modern look */
+        font-weight: bold;
+        letter-spacing: 0.05rem; /* Spacing between letters */
+        outline: none; /* Remove outline */
+        cursor: pointer;
+    }
+
+        .btn-modern-save i {
+            margin-right: 0.5rem; /* Space between icon and text */
+        }
+
+        .btn-modern-save:hover, .btn-modern-save:focus {
+            background-color: #138496; /* A darker shade of blue for hover/focus */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* Larger shadow for hover/focus */
+            transform: translateY(-2px); /* Slight raise effect on hover/focus */
+        }
+
+    .btn-submit-rating {
+        background-color: #FF85B3; /* Pink color similar to the "Submit Rating" button in the reference */
+        color: #FFFFFF; /* White text */
+        padding: 0.5rem 1rem; /* Padding for the button */
+        font-size: 1em; /* Font size */
+        border: none; /* No border for a flat design */
+        border-radius: 20px; /* Rounded corners for a modern look */
+        margin-right: 1rem; /* Right margin for spacing between buttons */
+        cursor: pointer; /* Cursor pointer on hover */
+        transition: background-color 0.2s ease; /* Transition for a hover effect */
+        display: inline-block; 
+    }
+
+        .btn-submit-rating:hover {
+            background-color: #E86393; 
+        }
+
+    .btn-custom-icon-save {
+        background-color: #00B4D8; 
+        color: #FFFFFF; 
+        padding: 0.5rem 1rem; 
+        font-size: 1em; 
+        border: none; 
+        border-radius: 20px; 
+        cursor: pointer; 
+        transition: background-color 0.2s ease; 
+        display: inline-block; 
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
+    }
+
+        .btn-custom-icon-save i {
+            margin-right: 0.5rem; 
+        }
+
+        .btn-custom-icon-save:hover {
+            background-color: #0096C7; 
+        }
+
+
+    .mr-3 {
+        margin-right: 2rem; 
+    }
+</style>
+
+
+<button type="button" class="btn btn-secondary back-button" onclick="window.history.back();">Back</button>
+
+
+
+<h2>@Model.Video.Name</h2>
+<div class="card-video">
+    <video width="100%" height="auto" controls poster="@Url.Content($"~/{Model.Video.ThumbnailPath}")">
+        <source src="@Url.Content($"~/videoFiles/{Model.Video.VideoName}")" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</div>
+
+@if (User.Identity.IsAuthenticated)
+{
+    @if (Model.UserRating == null)
+    {
+        <div class="rating-form">
+            <form asp-action="RateVideo" asp-route-videoId="@Model.Video.VideoId" method="post">
+                <label>Select your rating:</label>
+                <div class="rating-stars">
+                    <i class="fa fa-star" data-rating="1"></i>
+                    <i class="fa fa-star" data-rating="2"></i>
+                    <i class="fa fa-star" data-rating="3"></i>
+                    <i class="fa fa-star" data-rating="4"></i>
+                    <i class="fa fa-star" data-rating="5"></i>
+                </div>
+                <input type="hidden" name="rating" id="rating" value="" />
+                <button type="submit" class="btn btn-submit-rating mr-3">Submit Rating</button>
+            </form>
+        </div>
+    }
+    else
+    {
+        <div class="user-rating">
+            <p>Your rating: @Model.UserRating.Value.ToString("0.0")</p>
+        </div>
+    }
+    @if (!Model.IsVideoSaved)
+    {
+        <button type="button" class="btn btn-custom-icon-save" data-toggle="modal" data-target="#saveToSeeLaterModal">
+            <i class="fas fa-plus"></i> Save
+        </button>
+    }
+    else
+    {
+        <div class="alert alert-info">This video is already saved.</div>
+    }
+    <div class="modal fade" id="saveToSeeLaterModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Save to See Later</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form asp-action="AddToSeeLater" asp-controller="SeeLater" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-body">
+                        <input type="hidden" name="videoId" value="@Model.Video.VideoId" />
+                        <div class="form-group">
+                            <label for="note">Add a note (optional):</label>
+                            <textarea class="form-control" id="note" name="note"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="playlist">Add to playlist:</label>
+                            <select class="form-control" id="playlist" name="playlistId">
+                                <option value="">Select a playlist</option>
+                                @foreach (var playlist in Model.Playlists)
+                                {
+                                    <option value="@playlist.PlaylistId">@playlist.Name</option>
+                                }
+                            </select>
+                            or
+                            <input type="text" class="form-control" placeholder="Create new playlist" name="newPlaylistName" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Video
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="comments-section my-4">
+    <h3>Comments</h3>
+    <div class="list-group comments-scrollable">
+        @foreach (var comment in Model.Comments.Where(c => c.ParentCommentId == null))
+        {
+            <!-- Display the main comment -->
+            <div class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">Nickname: @comment.Nickname</h5>
+                    <small class="text-muted"> @comment.CreatedAt.ToString("g")</small>
+                </div>
+                <p class="mb-1">Comment: @comment.Content</p>
+                <div class="btn-group mt-2">
+                    <!-- Edit and Delete options for comment authors or admins -->
+                    @if (User.Identity.IsAuthenticated && (User.IsInRole("Admin") || User.FindFirst(ClaimTypes.NameIdentifier).Value == comment.UserId))
+                    {
+                        <div class="d-inline-block">
+                            <button onclick="toggleEditComment('@comment.CommentId');" class="btn btn-outline-secondary btn-sm">Edit</button>
+                        </div>
+                        <form asp-action="DeleteComment" asp-controller="Video" method="post" class="d-inline-block">
+                            <input type="hidden" name="id" value="@comment.CommentId" />
+                            <input type="hidden" name="videoId" value="@Model.Video.VideoId" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                        </form>
+                    }
+
+                    <!-- Like and Heart buttons for other authenticated users (not the authors of the comment) -->
+                    @if (User.Identity.IsAuthenticated && User.FindFirst(ClaimTypes.NameIdentifier).Value != comment.UserId)
+                    {
+                        <!-- Display like or heart button based on the user's action -->
+                        @if (!comment.UserLiked && !comment.UserHearted)
+                        {
+                            <form asp-action="LikeComment" asp-controller="Video" method="post">
+                                <input type="hidden" name="commentId" value="@comment.CommentId" />
+                                <input type="hidden" name="videoId" value="@Model.Video.VideoId" />
+                                <button type="submit" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-hand-thumbs-up"></i> Like (@comment.LikeCount)
+                                </button>
+                            </form>
+                            <form asp-action="HeartComment" asp-controller="Video" method="post">
+                                <input type="hidden" name="commentId" value="@comment.CommentId" />
+                                <input type="hidden" name="videoId" value="@Model.Video.VideoId" />
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-heart"></i> Heart (@comment.HeartCount)
+                                </button>
+                            </form>
+                        }
+                        else if (comment.UserLiked)
+                        {
+                            <!-- User has already liked the comment, show the unlike button -->
+                            <form asp-action="UnlikeComment" asp-controller="Video" method="post">
+                                <input type="hidden" name="commentId" value="@comment.CommentId" />
+                                <input type="hidden" name="videoId" value="@Model.Video.VideoId" />
+                                <button type="submit" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-hand-thumbs-down"></i> Unlike (@comment.LikeCount)
+                                </button>
+                            </form>
+                        }
+                        else if (comment.UserHearted)
+                        {
+                            <!-- User has already hearted the comment, show the unheart button -->
+                            <form asp-action="UnheartComment" asp-controller="Video" method="post">
+                                <input type="hidden" name="commentId" value="@comment.CommentId" />
+                                <input type="hidden" name="videoId" value="@Model.Video.VideoId" />
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-heart"></i> Unheart (@comment.HeartCount)
+                                </button>
+                            </form>
+                        }
+                    }
+                    else
+                    {
+                        <!-- Display like and heart count for unauthenticated users or authors -->
+                        <div>
+                            <span><i class="bi bi-hand-thumbs-up"></i> @comment.LikeCount</span>
+                            <span><i class="bi bi-heart"></i> @comment.HeartCount</span>
+                        </div>
+                    }
+
+
+
+
+
+
+                    <!-- Reply button always shown -->
+                    <button class="btn btn-link" data-toggle="collapse" data-target="#replyForm-@comment.CommentId">Reply</button>
+                </div>
+
+                <div id="replyForm-@comment.CommentId" class="collapse reply-form">
+                    <form asp-action="AddCommentReply" method="post">
+                        <input type="hidden" name="ParentCommentId" value="@comment.CommentId" /> <!-- Add parent comment ID -->
+                        <input type="hidden" name="VideoId" value="@Model.Video.VideoId" />
+
+                        <!-- Fields for adding a reply (e.g., content) -->
+                        <div class="form-group">
+                            <label for="Nickname">Nickname:</label>
+                            <input type="text" class="form-control" name="Nickname" placeholder="Enter your nickname" value="@ViewData["Nickname"]" readonly />
+
+                        </div>
+                        <div class="form-group">
+                            <label for="Content">Reply:</label>
+                            <textarea class="form-control" name="Content" rows="3" placeholder="Type your reply..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm">Post Reply</button>
+                    </form>
+                </div>
+
+
+
+                @if (comment.Replies != null && comment.Replies.Any())
+                {
+                    <div class="mt-3">
+                        @foreach (var reply in comment.Replies)
+                        {
+                            <div class="comment-card card mb-3 shadow-sm">
+                                <div class="card-body">
+                                    <div class="media align-items-center">
+                                        <div class="media-body">
+                                            <h6 class="mt-0">Nickname: @reply.Nickname</h6>
+                                            <p class="card-text">Comment: @reply.Content</p>
+                                            <small class="text-muted">@reply.CreatedAt.ToString("g")</small>
+                                        </div>
+
+
+
+
+                                        @if (User.Identity.IsAuthenticated && reply.UserId == User.FindFirst(ClaimTypes.NameIdentifier).Value)
+                                        {
+                                            <div class="ml-auto">
+                                                <button onclick="toggleEditReply('@reply.CommentId');" class="btn btn-sm btn-outline-secondary">Edit</button>
+                                                <form asp-action="DeleteComment" asp-controller="Video" method="post" class="d-inline">
+                                                    <input type="hidden" name="id" value="@reply.CommentId" />
+                                                    <input type="hidden" name="videoId" value="@Model.Video.VideoId" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                                </form>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                                <div id="edit-comment-@reply.CommentId" class="card-footer bg-white" style="display:none;">
+                                    @* Edit form for the reply *@
+                                    <form asp-action="EditComment" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="commentId" value="@reply.CommentId" />
+                                        <textarea class="form-control form-control-sm" name="content" rows="2">@reply.Content</textarea>
+                                        <div class="d-flex justify-content-end mt-2">
+                                            <button type="submit" class="btn btn-sm btn-success">Save</button>
+                                            <button type="button" onclick="toggleEditReply('@reply.CommentId');" class="btn btn-sm btn-outline-secondary ml-2">Cancel</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+
+
+
+
+
+
+            </div>
+        }
+    </div>
+</div>
+
+
+
+<!-- Comment form -->
+<div class="comment-form-container mt-4">
+    <h4>Add a Comment</h4>
+    <form asp-action="AddComment" method="post">
+        <input type="hidden" name="VideoId" value="@Model.Video.VideoId" />
+        <div class="form-group">
+            <label for="Nickname">Nickname:</label>
+            <input type="text" class="form-control" name="Nickname" placeholder="Enter your nickname" value="@ViewData["Nickname"]" readonly />
+
+
+        </div>
+        <div class="form-group">
+            <label for="Content">Comment:</label>
+            <textarea class="form-control" name="Content" rows="4" placeholder="Add a comment..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Post Comment</button>
+    </form>
+</div>
+
+
+
+
+
+
+
+
+
+    @if (Model.courseViewModels.Any())
+    {
+        <div class="recommended-videos">
+            <h2 class="recommended-title">Courses</h2>
+            <div class="video-cards-container">
+                @foreach (var course in Model.courseViewModels)
+                {
+                    @if (course.Videos.Any())
+                    {
+                        @foreach (var courseVideo in Model.courseViewModels.SelectMany(c => c.Videos))
+                        @* @foreach (var courseVideo in course.Videos) *@
+                        {
+                            <div class="video-card">
+                               @*  <div class="video-thumbnail">
+                                    <img src="@Url.Content($"~/{courseVideo.ThumbnailPath}")" alt="@courseVideo.Name Thumbnail">
+                                </div> *@
+                                <div class="card-video">
+                                    <video width="100%" height="auto" controls poster="@Url.Content($"~/{courseVideo.ThumbnailPath}")">
+                                        <source src="@Url.Content($"~/videoFiles/{courseVideo.VideoName}")" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                </div>
+
+                                <div class="video-info">
+                                    <h3 class="video-title"><i class="fa fa-user"></i>Course: @courseVideo.Name</h3>
+                                    <p class="video-creator"><i class="fa fa-user"></i>Creator name: @courseVideo.CreatorFullName</p>
+                                    <p class="video-date"><i class="fa fa-calendar"></i>Data time:  @courseVideo.UploadDateTime.ToString("dd/MM/yyyy")</p>
+                                    <p class="video-rank">
+                                        <i class="fa fa-star"></i> Rating:
+                                        @(courseVideo.Ratings != null && courseVideo.Ratings.Any() ? courseVideo.Ratings.Average(r => r.Rating).ToString("0.0") : "Not Rated")
+                                    </p>
+                                    <p><i class="fa fa-eye"></i> Views: @Model.Video.ViewCount</p>
+                                    <a class="video-play-link" href="@Url.Action("Play", "Video", new { id = courseVideo.VideoId })">Watch (Go to Video)</a>
+                                </div>
+
+                            </div>
+                        }
+                    }
+                }
+               
+            </div>
+        </div>
+    }
+
+    @if (Model.RecommendedVideos.Any())
+    {
+        <div class="recommended-videos">
+            <h2 class="recommended-title">Recommended Videos</h2>
+            <div class="video-cards-container">
+                @foreach (var video in Model.RecommendedVideos)
+                {
+                    <div class="video-card">
+                       @*  <div class="video-thumbnail">
+                            <img src="@Url.Content($"~/{video.ThumbnailPath}")" alt="@video.Name Thumbnail">
+                        </div> *@
+                        <div class="card-video">
+                            <video width="100%" height="auto" controls poster="@Url.Content($"~/{video.ThumbnailPath}")">
+                                <source src="@Url.Content($"~/videoFiles/{video.VideoName}")" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        <div class="video-info">
+                            <h3 class="video-title"><i class="fa fa-user"></i>Video Title: @video.Name</h3>
+                            <p class="video-creator"><i class="fa fa-user"></i>Creator: @video.CreatorFullName</p>
+                            <p class="video-date"><i class="fa fa-calendar"></i>Data: @video.UploadDateTime.ToString("dd/MM/yyyy")</p>
+                            <p class="video-rank">
+                                <i class="fa fa-star"></i> Rating:
+                                @(video.Ratings != null && video.Ratings.Any() ? video.Ratings.Average(r => r.Rating).ToString("0.0") : "Not Rated")
+                            </p>   
+                            <p><i class="fa fa-eye"></i> Views: @Model.Video.ViewCount</p>
+
+
+                            <a class="video-play-link" href="@Url.Action("Play", "Video", new { id = video.VideoId })">Watch (Go to Video)</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+
+}
+@if (TempData["AnswerResult"] != null)
+{
+    <div>
+        Answer is: @TempData["AnswerResult"]
+    </div>
+}
+
+@foreach (var question in Model.Questions)
+{
+    <form method="post" asp-action="CheckAnswer" asp-controller="Video" class="mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title">@question.Text</h3>
+                @foreach (var answer in question.Answers)
+                {
+                    bool isChecked = TempData["CheckedAnswers"] != null && ((int[])TempData["CheckedAnswers"]).Contains(answer.Id);
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="answerIds" value="@answer.Id" id="answer-@answer.Id" @(isChecked ? "checked" : "")>
+                        <label class="form-check-label" for="answer-@answer.Id">
+                            @answer.Text
+                        </label>
+                    </div>
+                }
+                <input type="hidden" name="questionId" value="@question.Id" />
+                <input type="hidden" name="videoId" value="@Model.Video.VideoId" />
+                <button type="submit" class="btn btn-primary mt-2">Check Answer</button>
+            </div>
+        </div>
+        @if (TempData["LastCheckedQuestionId"] != null && (int)TempData["LastCheckedQuestionId"] == question.Id)
+        {
+            if ((bool)TempData["IsCorrect"])
+            {
+                <div class="alert alert-success mt-2" role="alert">
+                    Correct!
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-danger mt-2" role="alert">
+                    Incorrect.
+                    <span>@TempData["IncorrectAnswerMessage"].ToString()</span>
+                </div>
+            }
+        }
+    </form>
+}
+
+
+
+
+
+
+
+
+<!-- Modal -->
+
+
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+@section scripts {
+    <script>
+     
+        // JavaScript to handle star rating selection
+        $('.rating-stars i').click(function () {
+            var rating = $(this).data('rating');
+            $('#rating').val(rating); // Set the hidden input value
+            // Remove highlighting from previous stars
+            $('.rating-stars i').removeClass('selected-star');
+            // Highlight the selected stars and set their color to yellow
+            $(this).addClass('selected-star');
+            $(this).prevAll().addClass('selected-star');
+        });
+        function toggleEditReply(commentId) {
+            var editDiv = document.getElementById('edit-comment-' + commentId);
+            editDiv.style.display = editDiv.style.display === 'none' ? 'block' : 'none';
+        }
+                // document.querySelectorAll('.btn-like, .btn-heart').forEach(button => {
+                //     button.addEventListener('click', function () {
+                //         this.classList.toggle('active');
+                //     });
+                // });
+
+
+
+
+
+
+
+
+    </script>
+}

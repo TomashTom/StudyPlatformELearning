@@ -1,0 +1,204 @@
+﻿@model StudyPlatformELearningHub.Models.VideoFile
+
+@{
+    ViewData["Title"] = "Upload Video";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
+
+
+<div class="container my-5">
+    <h2 class="text-center mb-5">Upload Video</h2>
+    <form method="post" enctype="multipart/form-data" id="uploadForm" class="rounded bg-white shadow p-5">
+
+        <div class="input-group mb-4">
+            <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
+            <select id="CourseId" name="CourseId" class="form-select">
+                <option value="">Select Course (If needed)</option>
+                @foreach (var course in ViewBag.Courses as IEnumerable<StudyPlatformELearningHub.Models.Course>)
+                {
+                    <option value="@course.CourseId">@course.Name</option>
+                }
+            </select>
+        </div>
+        <!-- Interactive Category Selector -->
+        <div class="input-group mb-4">
+            <span class="input-group-text"><i class="fas fa-tags"></i></span>
+            <select id="CategoryId" name="CategoryId" class="form-select select2-ajax" required>
+                <option value="">Search for categories...</option>
+                <!-- Categories loaded via AJAX -->
+            </select>
+        </div>
+
+        <!-- Difficulty Level Dropdown with Icon -->
+        <div class="input-group mb-4">
+            <span class="input-group-text"><i class="fas fa-tachometer-alt"></i></span>
+            <select id="Difficulty" name="Difficulty" class="form-select custom-select" required>
+                <option value="">Select Difficulty</option>
+                @foreach (var difficulty in Enum.GetValues(typeof(StudyPlatformELearningHub.Models.VideoDifficulty)))
+                {
+                    <option value="@difficulty">@difficulty</option>
+                }
+            </select>
+        </div>
+
+        <!-- Modern Input Fields with Icons -->
+        <div class="input-group mb-4">
+            <span class="input-group-text"><i class="fas fa-user"></i></span>
+            <input type="text" id="CreatorFullName" name="CreatorFullName" class="form-control" placeholder="Creator's Full Name" value="@ViewBag.CreatorFullName" required readonly >
+        </div>
+        <div class="input-group mb-4">
+            <span class="input-group-text"><i class="fas fa-video"></i></span>
+            <input type="text" id="Name" name="Name" class="form-control" placeholder="Video Title" required>
+        </div>
+
+        <!-- Expanding Description Textarea -->
+        <div class="mb-4 input-group">
+            <span class="input-group-text"><i class="fas fa-align-left"></i></span>
+            <textarea id="Description" name="Description" class="form-control" placeholder="Enter a brief description" rows="3" required style="text-transform: capitalize;"></textarea>
+        </div>
+
+
+        <!-- File Upload Fields with Enhanced UI -->
+        <div class="mb-4 file-upload-wrapper">
+            <label for="fileUpload" class="form-label"><i class="fas fa-film"></i> Upload Video</label>
+            <div class="file-upload-box">
+                <input type="file" id="fileUpload" name="fileUpload" accept="video/*" placeholder="Select a video file" required  />
+               
+            </div>
+        </div>
+        <div class="mb-4 file-upload-wrapper">
+            <label for="thumbnailImage" class="form-label"><i class="fas fa-image"></i> Thumbnail Image</label>
+            <div class="file-upload-box">
+                <input type="file" id="thumbnailImage" name="thumbnailImage" accept="image/*" placeholder="Select a thumbnail image" required />
+               
+            </div>
+        </div>
+        <div class="input-group mb-4">
+            <span class="input-group-text"><i class="fas fa-check-circle"></i></span>
+            <select id="Status" name="Status" class="form-select" required>
+                <option value="">Select Video Status</option>
+                @foreach (var status in Enum.GetValues(typeof(StudyPlatformELearningHub.Models.VideoStatus)))
+                {
+                    <option value="@status">@status</option>
+                }
+            </select>
+        </div>
+
+        <!-- Interactive Questions Section -->
+        <div id="questions-container" class="mb-5">
+            <!-- Dynamic question inputs will be here -->
+        </div>
+        <button type="button" class="btn btn-info mb-4" onclick="addQuestion()">+ Add Question</button>
+
+        <!-- Large Submit Button with Hover Effect -->
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary btn-lg hover-effect">Submit All</button>
+        </div>
+    </form>
+</div>
+
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger" role="alert">
+        @Html.ValidationSummary(true)
+    </div>
+}
+
+
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+    <script>
+        // ES6 Syntax and better organization
+        $(() => {
+            const formatCategory = category => {
+                if (!category.id) return category.text;
+                return $('<span>').append($('<i>').addClass('fa fa-info-circle').attr('title', category.description)).append(' ').append(category.text);
+            };
+
+            // Initialize Select2 with AJAX source
+            $('.select2-ajax').select2({
+                placeholder: "Type to search categories",
+                minimumInputLength: 2,
+                templateResult: formatCategory,
+                ajax: {
+                    url: '@Url.Action("SearchCategories", "Upload")',
+                    dataType: 'json',
+                    delay: 250,
+                    data: params => ({ term: params.term }),
+                    processResults: data => ({ results: data.map(item => ({ id: item.id, text: item.text, description: item.description })) }),
+                    cache: true
+                }
+            }).on('select2:select', e => {
+                $(e.target).next('.select2').find('.select2-selection__rendered').attr('title', e.params.data.description || 'No description available');
+            });
+        });
+
+        // Question and Answer handling logic
+        let questionIndex = 0;
+
+        const addQuestion = () => {
+            const container = $('#questions-container');
+            const questionHtml = `
+                        <div class="question-group" id="question-group-${questionIndex}">
+                            <div class="form-group">
+                                <label>Question</label>
+                                <input type="text" name="questions[${questionIndex}].Text" class="form-control" />
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removeQuestion(${questionIndex})">Remove Question</button>
+                            </div>
+                            <div class="answers-container" id="answers-container-${questionIndex}">
+                                <!-- Answers will be added here -->
+                            </div>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="addAnswer(${questionIndex})">Add Answer</button>
+                        </div>`;
+            container.append(questionHtml);
+            questionIndex++;
+        };
+
+        const addAnswer = questionIdx => {
+            const answersContainer = $(`#answers-container-${questionIdx}`);
+            const answerIndex = answersContainer.find('.form-check').length;
+            const answerHtml = `
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="questions[${questionIdx}].Answers[${answerIndex}].IsCorrect" value="true" />
+                            <input type="text" name="questions[${questionIdx}].Answers[${answerIndex}].Text" class="form-control" placeholder="Answer Text" />
+                            <input type="text" name="questions[${questionIdx}].Answers[${answerIndex}].IncorrectMessage" class="form-control" placeholder="Message for incorrect answer" />
+                            <button type="button" class="btn btn-danger btn-sm" onclick="removeAnswer(this)">Remove Answer</button>
+                        </div>`;
+            answersContainer.append(answerHtml);
+        };
+
+        const removeQuestion = questionIdx => {
+            $(`#question-group-${questionIdx}`).remove();
+            questionIndex--;
+            // Update indexes of remaining questions
+            $('.question-group').each((index, element) => {
+                $(element).attr('id', `question-group-${index}`).find('.answers-container').attr('id', `answers-container-${index}`);
+                $(element).find('input').each((_, input) => {
+                    const name = $(input).attr('name');
+                    $(input).attr('name', name.replace(/\[\d+\]/, `[${index}]`));
+                });
+            });
+        };
+
+        const removeAnswer = answerDiv => {
+            $(answerDiv).closest('.form-check').remove();
+            // Update indexes of remaining answers
+            $('.answers-container').each((_, container) => {
+                const questionIdx = $(container).attr('id').split('-').pop();
+                $(container).find('.form-check').each((index, answer) => {
+                    $(answer).find('input').each((_, input) => {
+                        const name = $(input).attr('name');
+                        $(input).attr('name', name.replace(/\[\d+\]\.Answers\[\d+\]/, `[${questionIdx}].Answers[${index}]`));
+                    });
+                });
+            });
+        };
+    </script>
+}

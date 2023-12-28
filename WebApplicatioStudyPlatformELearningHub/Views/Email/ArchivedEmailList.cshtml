@@ -1,0 +1,68 @@
+﻿@model IEnumerable<StudyPlatformELearningHub.Models.EmailMessage>
+
+@{
+    ViewData["Title"] = "Archived Email Messages";
+}
+
+<style>
+    .message-cell {
+        max-width: 200px; /* Adjust the max-width to your preference */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+        .message-cell:hover {
+            white-space: normal;
+            overflow: visible;
+        }
+</style>
+
+<div class="container mt-4">
+    <h2 class="display-4">@ViewData["Title"]</h2>
+
+    <div class="mb-3">
+        <a asp-action="EmailList" asp-route-showArchived="false" class="btn btn-primary">Back to Messages</a>
+        <form asp-action="RestoreAll" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-info">Restore All</button>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Subject</th>
+                    <th>Message</th>
+                    <th>Sent Time</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var message in Model)
+                {
+                    <tr>
+                        <td>@message.Name</td>
+                        <td>@message.Email</td>
+                        <td>@message.PhoneNumber</td>
+                        <td>@message.Subject</td>
+                        <td class="message-cell">@message.Message</td>
+                        <td>@message.SentTime.ToString("g")</td>
+                        <td>
+                            <!-- Restore individual message -->
+                            <form asp-action="Restore" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="Id" value="@message.Id" />
+                                <button type="submit" class="btn btn-info btn-sm">Restore</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

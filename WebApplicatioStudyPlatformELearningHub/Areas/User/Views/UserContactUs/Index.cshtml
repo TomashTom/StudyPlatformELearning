@@ -1,0 +1,154 @@
+﻿@model StudyPlatformELearningHub.Models.EmailSend
+@{
+    ViewData["Title"] = "Contact Us";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .contact-form {
+            background-color: #ffffff;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+            .form-control:focus {
+                border-color: #007BFF;
+                box-shadow: none;
+            }
+
+        .custom-file-input::-webkit-file-upload-button {
+            visibility: hidden;
+        }
+
+        .custom-file-input::before {
+            content: 'Select File';
+            display: inline-block;
+            background: linear-gradient(top, #f9f9f9, #e3e3e3);
+            border: 1px solid #999;
+            border-radius: 3px;
+            padding: 5px 8px;
+            outline: none;
+            white-space: nowrap;
+            -webkit-user-select: none;
+            cursor: pointer;
+        }
+
+        .custom-file-input:hover::before {
+            border-color: black;
+        }
+        .custom-file-input:active::before {
+            background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+        }
+        .custom-file-input:focus::-webkit-file-upload-button {
+            visibility: visible;
+        }
+        .btn-submit {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+            .btn-submit:hover {
+                background-color: #0056b3;
+            }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <h2 class="mb-4">@ViewData["Title"]</h2>
+                @if (ViewBag.Message != null)
+                {
+                    <div class="alert alert-success">@ViewBag.Message</div>
+                }
+                <a class="btn btn-secondary mb-4" href="javascript:history.go(-1)"><i class="fas fa-arrow-left"></i> Back</a>
+                <form asp-area="User" asp-controller="UserContactUs" asp-action="Index" method="post" enctype="multipart/form-data" class="contact-form">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label for="Name"><i class="fas fa-user"></i> Name</label>
+                        <input asp-for="Name" class="form-control" id="Name" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="Email"><i class="fas fa-envelope"></i> Email</label>
+                        <input asp-for="Email" class="form-control" id="Email" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="PhoneNumber"><i class="fas fa-phone"></i> Phone Number</label>
+                        <input asp-for="PhoneNumber" class="form-control" id="PhoneNumber" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="Attachment"><i class="fas fa-file"></i> Attachment</label>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="Attachment" name="Attachment" onchange="updateLabel()">
+                            <label class="custom-file-label" for="Attachment" id="file-chosen">Choose file</label>
+                        </div>
+                        <span asp-validation-for="Attachment" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="Subject"><i class="fas fa-list"></i> Subject</label>
+                        <select asp-for="Subject" class="form-control" id="Subject">
+                            <option value="GeneralInquiry">General Inquiry</option>
+                            <option value="TechnicalSupport">Technical Support</option>
+                            <option value="Feedback">Feedback</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <span asp-validation-for="Subject" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="Message"><i class="fas fa-comment"></i> Message</label>
+                        <textarea asp-for="Message" class="form-control" id="Message" rows="4"></textarea>
+                        <span asp-validation-for="Message" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-submit"><i class="fas fa-paper-plane"></i> Send</button>
+                    </div>
+                </form>
+                <script>
+                    function updateLabel() {
+                        var input = document.getElementById('Attachment');
+                        var fileNameSpan = document.getElementById('file-chosen');
+                        if (input.files.length > 0) {
+                            fileNameSpan.innerText = input.files[0].name;
+                        } else {
+                            fileNameSpan.innerText = 'Choose file';
+                        }
+                    }
+                </script>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

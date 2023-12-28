@@ -1,0 +1,10 @@
+﻿@model double
+
+@if (Model >= 70)
+{
+    <p>Congratulations! You passed the quiz with a score of @Model.ToString("0.0")%.</p>
+}
+else
+{
+    <p>Sorry, you did not pass the quiz. Your score is @Model.ToString("0.0")%.</p>
+}

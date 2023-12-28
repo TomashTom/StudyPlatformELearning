@@ -1,0 +1,32 @@
+﻿@model StudyPlatformELearningHub.Models.Course
+
+@{
+    ViewData["Title"] = "Create Course";
+}
+
+<h2>@ViewData["Title"]</h2>
+<style>
+    .capitalize-first-letter {
+        text-transform: capitalize;
+    }
+</style>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="Name" class="control-label">Course Name</label>
+        <input asp-for="Name" class="form-control capitalize-first-letter" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description" class="control-label">Description</label>
+        <textarea asp-for="Description" class="form-control capitalize-first-letter"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="CreatorFullName" class="control-label">Creator Full Name</label>
+        <input asp-for="CreatorFullName" class="form-control" readonly />
+        <span asp-validation-for="CreatorFullName" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>

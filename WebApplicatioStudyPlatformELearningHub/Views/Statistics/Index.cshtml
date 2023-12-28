@@ -1,0 +1,125 @@
+﻿ @model IEnumerable<StudyPlatformELearningHub.Models.Statistic.VideoStatisticsViewModel>
+
+
+<h2>Videos Statistic</h2>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <table id="videoStatisticsTable" class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Title</th>
+                        <th>Views</th>
+                        <th>Average Rating</th>
+                        <th>Category</th>
+                        <th>Course</th>
+                        <th>Creator</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var videoStat in Model)
+                    {
+                        <tr>
+                            <td>@videoStat.Video.Name</td>
+                            <td>@videoStat.ViewCount</td>
+                            <td>@videoStat.AverageRating</td>
+                            <td>@videoStat.CategoryName</td>
+                            <td>@videoStat.CourseName</td>
+                            <td>@videoStat.CreatorFullName</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <canvas id="statisticsChart" width="400" height="400"></canvas>
+        </div>
+    </div>
+</div>
+<!-- Place this at the bottom of your view -->
+<nav aria-label="Video pagination">
+    <ul class="pagination justify-content-center">
+        <!-- Previous Page Link -->
+        <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1 })" aria-label="Previous">
+                <span aria-hidden="true">&laquo; Previous</span>
+            </a>
+        </li>
+
+        <!-- Numbered Page Links -->
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+            </li>
+        }
+
+        <!-- Next Page Link -->
+        <li class="page-item @(ViewBag.CurrentPage >= ViewBag.TotalPages ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1 })" aria-label="Next">
+                <span aria-hidden="true">Next &raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var categories = @Html.Raw(Json.Serialize(Model.Select(v => v.CategoryName).Distinct()));
+        var videoCounts = @Html.Raw(Json.Serialize(Model.GroupBy(v => v.CategoryName).Select(g => g.Count())));
+        var videoViewCounts = @Html.Raw(Json.Serialize(Model.GroupBy(v => v.CategoryName).Select(g => g.Sum(v => v.ViewCount))));
+        var videoRankCounts = @Html.Raw(Json.Serialize(Model.GroupBy(v => v.CategoryName).Select(g => g.Average(v => v.AverageRating))));
+        var colors = generateRandomColors(categories.length);
+
+        // Create the Chart.js chart with your real data
+        var ctx = document.getElementById('statisticsChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: categories,
+                datasets: [
+                    {
+                        label: 'Video Count by Category',
+                        data: videoCounts,
+                        backgroundColor: colors[0],
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Total Video Views by Category',
+                        data: videoViewCounts,
+                        backgroundColor: colors[1],
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Average Video Rank by Category',
+                        data: videoRankCounts,
+                        backgroundColor: colors[2],
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        stepSize: 1
+                    }
+                }
+            }
+        });
+    });
+    function generateRandomColors(count) {
+        var colors = [];
+        for (var i = 0; i < count; i++) {
+            var color = "#" + Math.floor(Math.random() * 16777215).toString(16); 
+            colors.push(color);
+        }
+        return colors;
+    }
+</script>
+
+
+

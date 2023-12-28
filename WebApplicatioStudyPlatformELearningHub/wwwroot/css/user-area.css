@@ -1,0 +1,27 @@
+﻿
+.video-list-table {
+    width: 100%;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-collapse: collapse;
+}
+
+    .video-list-table th, .video-list-table td {
+        padding: 15px;
+        border: 1px solid #eaeaea;
+        text-align: left;
+    }
+
+    .video-list-table th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+
+    .video-list-table video {
+        width: 100%;
+        height: auto;
+    }
+.categories-menu {
+    border-right: 1px solid #ccc; 
+    padding-right: 20px; 
+}

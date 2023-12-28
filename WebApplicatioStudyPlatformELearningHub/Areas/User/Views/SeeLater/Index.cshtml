@@ -1,0 +1,28 @@
+﻿@model List<StudyPlatformELearningHub.Models.SeeLaterVideo>
+
+@{
+    ViewData["Title"] = "See Later Videos";
+}
+
+<h2>@ViewData["Title"]</h2>
+<body>
+    <header>
+        @Html.Partial("_NavigationBar")
+    </header>
+</body>
+@if (Model.Count == 0)
+{
+    <p>No videos saved for later.</p>
+}
+else
+{
+    <ul>
+        @foreach (var item in Model)
+        {
+            <li>
+                @item.Video.Name
+                <a href="@Url.Action("RemoveFromSeeLater", "SeeLater", new { videoId = item.Video.VideoId })">Remove</a>
+            </li>
+        }
+    </ul>
+}

@@ -1,0 +1,119 @@
+﻿@* @model StudyPlatformELearningHub.Models.VideoFile
+
+@{
+    ViewData["Title"] = "Edit Video";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-controller="Upload" asp-action="Edit" asp-route-id="@Model.VideoId" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="VideoId" />
+
+    <!-- Include all fields that are present in the Upload form -->
+    <!-- Existing Video Information -->
+    <div class="form-group">
+        <label asp-for="Name">Video Title</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description">Description</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Difficulty">Difficulty</label>
+        <select asp-for="Difficulty" class="form-select" asp-items="Html.GetEnumSelectList<VideoDifficulty>()">
+            <option value="">Select Difficulty</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Current Video</label>
+        @if (Model.VideoPath != null)
+        {
+            <video controls="controls" width="320" height="240">
+                <source src="@Url.Content("~/videoFiles/" + Model.VideoName)" type="video/mp4" />
+                Your browser does not support the video element.
+            </video>
+        }
+        else
+        {
+            <p>No video found.</p>
+        }
+    </div>
+
+    <div class="form-group">
+        <label for="newVideoFile">New Video (optional)</label>
+        <input type="file" id="newVideoFile" name="newVideoFile" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
+
+<a asp-action="AllVideoListDisplay">Back to List</a>
+ *@
+@model StudyPlatformELearningHub.Models.VideoFile
+
+@{
+    ViewData["Title"] = "Edit Video";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-controller="Upload" asp-action="Edit" asp-route-id="@Model.VideoId" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="VideoId" />
+
+    <!-- Existing Video Information -->
+    <div class="form-group">
+        <label asp-for="Name">Video Title</label>
+        <input asp-for="Name" class="form-control" />
+        @if (Model.VideoId == 0)
+        {
+            <span asp-validation-for="Name" class="text-danger"></span>
+        }
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description">Description</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+        @if (Model.VideoId == 0)
+        {
+            <span asp-validation-for="Description" class="text-danger"></span>
+        }
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Difficulty">Difficulty</label>
+        <select asp-for="Difficulty" class="form-select" asp-items="Html.GetEnumSelectList<VideoDifficulty>()">
+            <option value="">Select Difficulty</option>
+        </select>
+        @if (Model.VideoId == 0)
+        {
+            <span asp-validation-for="Difficulty" class="text-danger"></span>
+        }
+    </div>
+
+    <div class="form-group">
+        <label>Current Video</label>
+        @if (Model.VideoPath != null)
+        {
+            <video controls="controls" width="320" height="240">
+                <source src="@Url.Content("~/videoFiles/" + Model.VideoName)" type="video/mp4" />
+                Your browser does not support the video element.
+            </video>
+        }
+        else
+        {
+            <p>No video found.</p>
+        }
+    </div>
+
+    <div class="form-group">
+        <label for="newVideoFile">New Video (optional)</label>
+        <input type="file" id="newVideoFile" name="newVideoFile" class="form-control"  />
+    </div>
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
+<a asp-action="AllVideoListDisplay">Back to List</a>

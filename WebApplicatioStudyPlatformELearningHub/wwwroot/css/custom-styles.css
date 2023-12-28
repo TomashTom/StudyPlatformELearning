@@ -1,0 +1,42 @@
+﻿/* Ensure "Name" and "Category" columns are in one line */
+.custom-table-lg td.name-and-category {
+    white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden; /* Hide overflow text */
+    text-overflow: ellipsis; /* Show ellipsis (...) for overflow text */
+}
+
+/* Adjust font size if needed for long text */
+.custom-table-lg td.name-and-category {
+    font-size: 16px; /* Adjust the font size as needed */
+}
+
+
+/* If you want to adjust font size for long text, add a class for it */
+.long-text {
+    font-size: 14px; /* Adjust the font size as needed */
+}
+
+/* Define background colors for different statuses */
+/* ... Your status styles remain the same ... */
+
+
+/* Define background colors for different statuses */
+.status-new {
+    background-color: #00ff00; /* Change to your desired color for 'New' status */
+}
+
+.status-work-in-progress {
+    background-color: #ffff00; /* Change to your desired color for 'Work In Progress' */
+}
+
+.status-need-more-detail {
+    background-color: #ff0000; /* Change to your desired color for 'Need More Detail' */
+}
+
+.status-done {
+    background-color: #808080; /* Change to your desired color for 'Done' */
+}
+
+
+
+

@@ -1,0 +1,174 @@
+﻿@model StudyPlatformELearningHub.Models.VideoPlaybackViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Add your custom CSS styles here -->
+    <style>
+        /* Customize styles here */
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .video-card {
+            background-color: #ffffff;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .video-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .video-category {
+            color: #777;
+            font-size: 18px;
+        }
+
+        .video-description {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        .video-player {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .thumbnail {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .question-card {
+            background-color: #ffffff;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .btn-upload {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+            .btn-upload:hover {
+                background-color: #0056b3;
+            }
+    </style>
+</head>
+<body>
+    <h2>Video Uploaded</h2>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <h2 class="mb-4">@ViewData["Title"]</h2>
+
+                @if (Model.Video != null)
+                {
+                    <div class="card mb-4 video-card">
+                        <div class="card-body">
+                            <h3 class="card-title video-title">Video Title: @Html.DisplayFor(model => model.Video.Name)</h3>
+                            <p class="card-text video-category">
+                                Category:
+                                @if (Model.Video.Category != null)
+                                {
+                                    @Model.Video.Category.Name
+                                }
+                                else
+                                {
+                                    <span class="text-danger">Category data is missing.</span>
+                                }
+                            </p>
+                            <p class="card-text video-description">Video Description: @Html.DisplayFor(model => model.Video.Description)</p>
+                            <p class="card-text"><small class="text-muted">Uploaded On: @Model.Video.UploadDateTime.ToString("yyyy-MM-dd HH:mm:ss")</small></p>
+                        </div>
+                      @*   @if (!string.IsNullOrEmpty(Model.Video.VideoPath))
+                        {
+                            <div class="ratio ratio-16x9">
+                                <video controls class="video-player">
+                                    <source src="@Url.Content($"~/{Model.Video.VideoPath}")" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Video.ThumbnailPath))
+                        {
+                            <div class="text-center my-3">
+                                <img src="@Url.Content($"~/{Model.Video.ThumbnailPath}")" alt="Thumbnail" class="thumbnail">
+                            </div>
+                        } *@
+                        <div class="card-video">
+                            <video width="100%" height="auto" controls poster="@Url.Content($"~/{Model.Video.ThumbnailPath}")">
+                                <source src="@Url.Content($"~/videoFiles/{Model.Video.VideoName}")" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                      @*   else
+                        {
+                            <div class="alert alert-warning text-center">Thumbnail image not found.</div>
+                        } *@
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-danger text-center">Video details not found.</div>
+                }
+
+                <h3 class="my-4">Questions and Answers</h3>
+
+                @if (Model.Questions != null && Model.Questions.Any())
+                {
+                    @foreach (var question in Model.Questions)
+                    {
+                        <div class="card mb-3 question-card">
+                            <div class="card-header">
+                                @question.Text
+                            </div>
+                            <ul class="list-group list-group-flush">
+                                @foreach (var answer in question.Answers)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        @answer.Text
+                                        @if (answer.IsCorrect)
+                                        {
+                                            <span class="badge bg-success">Correct</span>
+                                        }
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-info text-center">No questions to display.</div>
+                }
+
+                <a href="@Url.Action("Index", "Upload")" class="btn btn-primary btn-upload mt-4">Upload another video</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,19 @@
+﻿@model StudyPlatformELearningHub.Models.Course
+
+@{
+    ViewData["Title"] = "Delete Course";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<h3>Are you sure you want to delete this course?</h3>
+<div>
+    <h4>@Model.Name</h4>
+    <p>@Model.Description</p>
+    <p>Creator Full Name: @Model.CreatorFullName</p>
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="CourseId" />
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
