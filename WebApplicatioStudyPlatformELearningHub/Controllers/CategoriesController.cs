@@ -11,7 +11,7 @@ using StudyPlatformELearningHub.Models;
 
 namespace StudyPlatformELearningHub.Controllers
 {
-    
+    //test
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
