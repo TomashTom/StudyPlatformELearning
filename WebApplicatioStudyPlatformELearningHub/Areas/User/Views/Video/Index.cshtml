@@ -194,7 +194,7 @@
                                 @foreach (var category in ViewBag.Categories)
                                 {
                                     <div class="form-check">
-                                        <input type="checkbox" class="form-check-input category-checkbox" id="category_@category.CategoryId" name="categories" value="@category.CategoryId" data-category-name="@category.Name">
+                                        <input type="checkbox" class="form-check-input category-checkbox" id="category_@category.CategoryId" name="categoryId" value="@category.CategoryId" data-category-name="@category.Name">
                                         <label class="form-check-label" for="category_@category.CategoryId">@category.Name</label>
                                     </div>
                                 }
@@ -259,8 +259,8 @@
                                 @for (int i = 1; i <= 5; i++)
                                 {
                                     <div class="form-check">
-                                        <input type="checkbox" class="form-check-input star-rating-checkbox" id="filterStars@iCheckbox" name="filterStars" value="@i">
-                                        <label class="form-check-label" for="filterStars@iCheckbox">
+                                        <input type="radio" class="form-check-input star-rating-radio" id="filterStars@iRadio" name="filterStars" value="@i">
+                                        <label class="form-check-label" for="filterStars@iRadio">
                                             @for (int j = 1; j <= i; j++)
                                             {
                                                 <i class="fas fa-star" style="color: yellow;"></i>
@@ -269,10 +269,16 @@
                                     </div>
                                 }
                             </div>
+                            
                         </div>
+
                         <form method="get" action="@Url.Action("Index", "Video", new { area = "User" })">
                           
+
                             <button type="submit" class="btn btn-primary">Apply Filters</button>
+                            <button type="button" id="resetFiltersBtn" class="btn btn-secondary">Reset Filters</button>
+
+
                         </form>
                      
                     </form>
@@ -480,68 +486,184 @@
     <script src="js/google-map.js"></script>
     <script src="js/main.js"></script>
 
-    
 
-    
-    <script>
+   @*  <script>
         $(document).ready(function () {
-            // Function to update selected checkboxes and apply the selected style
+            Function to update the appearance of selected checkboxes
             function updateSelectedCheckboxes() {
-                // Remove the selected style from all checkboxes
-                $('.category-checkbox, .creator-checkbox, input[name="dateRange"], input[name="difficultyLevels"], input[name^="filterStars"]').removeClass('selected-checkbox');
-
-                // Add the selected style to checked checkboxes
-                $('.category-checkbox:checked, .creator-checkbox:checked, input[name="dateRange"]:checked, input[name="difficultyLevels"]:checked, input[name^="filterStars"]:checked').addClass('selected-checkbox');
+                $('.selected-checkbox').removeClass('selected-checkbox');
+                $('input[type=checkbox]:checked, input[type=radio]:checked').addClass('selected-checkbox');
             }
 
-
-            // Function to save selected filters in localStorage
+            Function to save selected filters to localStorage
             function saveSelectedFilters() {
                 var selectedFilters = {
                     categories: $('.category-checkbox:checked').map(function () { return this.value; }).get(),
                     creators: $('.creator-checkbox:checked').map(function () { return this.value; }).get(),
-                    dateRange: $('input[name="dateRange"]:checked').map(function () { return this.value; }).get(),
+                    dateRange: $('input[name="dateRange"]:checked').val(),
                     difficultyLevels: $('input[name="difficultyLevels"]:checked').map(function () { return this.value; }).get(),
-                    filterStars: $('input[name="filterStars"]:checked').map(function () { return this.value; }).get(),
+                    filterStars: $('input[name="filterStars"]:checked').val()
                 };
-
                 localStorage.setItem('selectedFilters', JSON.stringify(selectedFilters));
             }
 
-            // Function to update video names filter based on selected categories
-            function updateVideoNamesFilter() {
-                var selectedCategoryIds = [];
+            Function to restore filters from localStorage
+            function restoreFilters() {
+                var storedFilters = JSON.parse(localStorage.getItem('selectedFilters') || '{}');
+                if (Object.keys(storedFilters).length > 0) {
+                    Set the checkboxes and radios based on stored values
+                    $.each(storedFilters, function (key, values) {
+                        if (Array.isArray(values)) {
+                            values.forEach(function (val) {
+                                $('input[name="' + key + '"][value="' + val + '"]').prop('checked', true);
+                            });
+                        } else {
+                            $('input[name="' + key + '"][value="' + values + '"]').prop('checked', true);
+                        }
+                    });
+                    updateSelectedCheckboxes();
+                }
+            }
 
-                // Get the selected category IDs
-                $('.category-checkbox:checked').each(function () {
-                    selectedCategoryIds.push($(this).val());
+            function fetchFilteredVideos(filters) {
+                $.ajax({
+                    url: '@Url.Action("FilteredVideos", "Video")', Update this URL to match your route
+                    method: 'GET',
+                    data: filters,
+                    success: function (data) {
+                        Update the video list container with the fetched data
+                        $('#videoListContainer').html(data);
+                        No need to refresh the page
+                    },
+                    error: function () {
+                        console.error('Error fetching filtered videos.');
+                    }
                 });
+            } else {
+                // Hide the "Name" filter section and clear name checkboxes
+                $('#nameFilter').hide();
+                nameOptions.empty();
+                // Hide the "No Videos" message
+                noVideosMessage.hide();
+            }
+
+            }
+            function applyFilters() {
+                var selectedFilters = {
+                    categories: $('.category-checkbox:checked').map(function () { return this.value; }).get(),
+                    creators: $('.creator-checkbox:checked').map(function () { return this.value; }).get(),
+                    dateRange: $('input[name="dateRange"]:checked').val(),
+                    difficultyLevels: $('input[name="difficultyLevels"]:checked').map(function () { return this.value; }).get(),
+                    filterStars: $('input[name="filterStars"]:checked').val()
+                };
+                saveSelectedFilters();
+                fetchFilteredVideos(selectedFilters);
+            }
+            $('#applyFiltersBtn').click(function (e) {
+                e.preventDefault();
+                applyFilters();
+            });
+
+
+            $('#resetFiltersBtn').click(function () {
+                Reset all checkboxes and radios
+                $('input[type=checkbox], input[type=radio]').prop('checked', false);
+                updateSelectedCheckboxes();
+                localStorage.removeItem('selectedFilters');
+                Here you would fetch all videos again since the filters are reset
+                fetchFilteredVideos({});
+            });
+            restoreFilters();
+            applyFilters();
+
+            
+            Checkbox and radio button change events
+            $('input[type=checkbox], input[type=radio]').change(function () {
+                updateSelectedCheckboxes();
+            });
+
+            $('.star-rating-radio').on('change', function () {
+                $('.star-rating-radio').not(this).prop('checked', false);
+                saveSelectedFilters();
+                updateSelectedCheckboxes();
+                saveSelectedFilters();Add this line to save the filters whenever they are changed
+            });
+
+            Restore filters from localStorage on page load
+            restoreFilters();
+        });
+
+    </script>  *@
+
+    <script>
+        $(document).ready(function () {
+            // Function to update the visual representation of selected checkboxes
+            function updateSelectedCheckboxes() {
+                const allCheckboxes = $('.category-checkbox, .creator-checkbox, input[name="dateRange"], input[name="difficultyLevels"], input[name^="filterStars"]');
+                allCheckboxes.removeClass('selected-checkbox');
+                allCheckboxes.filter(':checked').addClass('selected-checkbox');
+            }
+
+            // Function to save the current filter states to localStorage
+            function saveSelectedFilters() {
+                const selectedFilters = {
+                    categories: $('.category-checkbox:checked').map((_, el) => $(el).val()).get(),
+                    creators: $('.creator-checkbox:checked').map((_, el) => $(el).val()).get(),
+                    dateRange: $('input[name="dateRange"]:checked').val(),
+                    difficultyLevels: $('input[name="difficultyLevels"]:checked').map((_, el) => $(el).val()).get(),
+                    filterStars: $('input[name="filterStars"]:checked').val()
+                };
+                localStorage.setItem('selectedFilters', JSON.stringify(selectedFilters));
+                updateSelectedCheckboxes();
+                fetchFilteredVideos(); // Add this line to fetch videos based on selected filters
+            }
+
+            // Function to restore filters from localStorage
+            function restoreFilters() {
+                const storedFilters = JSON.parse(localStorage.getItem('selectedFilters'));
+                if (storedFilters) {
+                    $.each(storedFilters, function (key, value) {
+                        if (Array.isArray(value)) {
+                            value.forEach(val => $(`input[name="${key}"][value="${val}"]`).prop('checked', true));
+                        } else {
+                            $(`input[name="${key}"][value="${value}"]`).prop('checked', true);
+                        }
+                    });
+                    updateSelectedCheckboxes();
+                    fetchFilteredVideos(); // Add this line to fetch videos based on restored filters
+                }
+            }
+
+            // Function to fetch filtered videos (modify as per your application's logic)
+            function updateVideoNamesFilter() {
+                var selectedCategoryIds = $('.category-checkbox:checked').map(function () {
+                    return this.value;
+                }).get();
 
                 var nameOptions = $('#nameOptions');
                 var noVideosMessage = $('#noVideosMessage');
 
                 if (selectedCategoryIds.length > 0) {
-                    // Show the "Name" filter section
                     $('#nameFilter').show();
-                    // Remove previous name options
                     nameOptions.empty();
 
                     // Fetch filtered video names via AJAX
                     $.ajax({
-                        url: '@Url.Action("FilterVideos", "Video", new { area = "User" })',
+                        url: '@Url.Action("FilterVideos", "Video", new { area = "User" })', // Update the URL as per your application
                         method: 'POST',
                         data: { categoryIds: selectedCategoryIds },
-                        success: function (filteredNames) {
-                            if (filteredNames.data.length > 0) {
-                                // Generate video name checkboxes
-                                $.each(filteredNames.data, function (index, name) {
+                        success: function (response) {
+                            if (response.data && response.data.length > 0) {
+                                $.each(response.data, function (index, name) {
                                     var checkboxId = 'name_' + name.replace(/\s+/g, '_');
-                                    nameOptions.append('<div class="form-check"><input type="checkbox" class="form-check-input" id="' + checkboxId + '" name="names" value="' + name + '"><label class="form-check-label" for="' + checkboxId + '">' + name + '</label></div>');
+                                    var checkboxHtml = '<div class="form-check">' +
+                                        '<input type="checkbox" class="form-check-input" id="' + checkboxId + '" name="names" value="' + name + '">' +
+                                        '<label class="form-check-label" for="' + checkboxId + '">' + name + '</label>' +
+                                        '</div>';
+                                    nameOptions.append(checkboxHtml);
                                 });
-                                // Hide the "No Videos" message
                                 noVideosMessage.hide();
                             } else {
-                                // Show the "No Videos" message
                                 noVideosMessage.show();
                             }
                         },
@@ -550,91 +672,50 @@
                         }
                     });
                 } else {
-                    // Hide the "Name" filter section and clear name checkboxes
                     $('#nameFilter').hide();
                     nameOptions.empty();
-                    // Hide the "No Videos" message
                     noVideosMessage.hide();
                 }
             }
 
-            // Initial update of selected checkboxes on page load
-            updateSelectedCheckboxes();
-
-            // Restore selected filters from localStorage on page load
-            var storedFilters = localStorage.getItem('selectedFilters');
-            if (storedFilters) {
-                var filters = JSON.parse(storedFilters);
-                filters.categories.forEach(function (categoryId) {
-                    $('#category_' + categoryId).prop('checked', true);
-                });
-                filters.creators.forEach(function (creatorName) {
-                    $('#creator_' + creatorName).prop('checked', true);
-                });
-                filters.dateRange.forEach(function (rangeValue) {
-                    $('input[name="dateRange"][value="' + rangeValue + '"]').prop('checked', true);
-                });
-                filters.difficultyLevels.forEach(function (difficulty) {
-                    $('input[name="difficultyLevels"][value="' + difficulty + '"]').prop('checked', true);
-                });
-                filters.filterStars.forEach(function (filterStars) {
-                    $('input[name="filterStars"][value="' + filterStars + '"]').prop('checked', true);
-                });
-
-
+            // Function to reset all filters
+            function resetAllFilters() {
+                $('input[type=checkbox], input[type=radio]').prop('checked', false);
                 updateSelectedCheckboxes();
+                localStorage.removeItem('selectedFilters');
+                fetchFilteredVideos(); // Add this line to fetch all videos after resetting filters
             }
-            
-            // Update the checkboxes when they are changed
-            $('.category-checkbox, .creator-checkbox, input[name="dateRange"], input[name="difficultyLevels"], input[name="filterStars"]').change(function () {
-                updateSelectedCheckboxes();
+
+            // Event listeners
+            $('#applyFiltersBtn').click(function (e) {
+                e.preventDefault();
                 saveSelectedFilters();
-                updateVideoNamesFilter(); // Update video names filter when categories change
-                // ... rest of your code for handling filter changes
             });
 
-            // Clear Filters button click event
-                   // Clear Filters button click event
-        $('#clearFiltersBtn').click(function () {
-            // Uncheck all checkboxes and remove the selected style for all filters
-                $('.category-checkbox, .creator-checkbox, input[name="dateRange"], input[name="difficultyLevels"], input[name="names"], input[name="filterStars"]').prop('checked', false);
-                $('.category-checkbox, .creator-checkbox, input[name="dateRange"], input[name="difficultyLevels"], input[name="names"], input[name="filterStars"]').removeClass('selected-checkbox');
-
-            // Hide the "Name" filter section and clear name checkboxes
-            $('#nameFilter').hide();
-            $('#nameOptions').empty();
-
-            // Hide the "No Videos" message
-            $('#noVideosMessage').hide();
-
-
-            // Clear stored filters
-            localStorage.removeItem('selectedFilters');
-
-            // Fetch all videos (you can replace this with your code to fetch all videos)
-            $.ajax({
-                url: '@Url.Action("Index", "Video", new { area = "User" })',
-                method: 'GET',
-                success: function (data) {
-                    // Handle the retrieved videos data, for example, update the video list
-                    // You can replace this part with your logic to display videos
-                    $('#videoList').html(data);
-                },
-                error: function () {
-                    console.error('Error fetching all videos.');
-                }
+            $('#resetFiltersBtn').click(function () {
+                resetAllFilters();
             });
-        });
 
-     });
-        $(document).ready(function () {
-            // When any star-rating checkbox is clicked
-            $('.star-rating-checkbox').on('change', function () {
-                // Uncheck all other star-rating checkboxes
-                $('.star-rating-checkbox').not(this).prop('checked', false);
+            $('.category-checkbox, .creator-checkbox, input[name="dateRange"], input[name="difficultyLevels"], input[name="filterStars"]').change(function () {
+                updateVideoNamesFilter();
+                saveSelectedFilters(); // Add this line to save the filters whenever they are changed
             });
+
+            $('.star-rating-radio').on('change', function () {
+                $('.star-rating-radio').not(this).prop('checked', false);
+                saveSelectedFilters(); // Add this line to save the filters whenever they are changed
+            });
+
+            // Restore filters from localStorage on page load
+            restoreFilters();
         });
     </script>
+
+
+
+
+
+
 
 
 

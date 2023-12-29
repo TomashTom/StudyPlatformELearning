@@ -74,7 +74,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
             {
                 
                 int rating = filterStars.First();
-                videosQuery = videosQuery.Where(v => v.Ratings.Any() && Math.Round(v.Ratings.Average(r => r.Rating)) == rating);
+                videosQuery = videosQuery.Where(v => v.Ratings.Any() && Math.Ceiling(v.Ratings.Average(r => r.Rating)) == rating);
             }
             int totalVideos = await videosQuery.CountAsync();
             var videos = await videosQuery.Skip((pageIndex - 1) * pageSize)

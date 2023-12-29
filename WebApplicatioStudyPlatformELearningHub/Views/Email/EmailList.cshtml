@@ -10,7 +10,48 @@
     var sentTimeSortParm = ViewData["SentTimeSortParm"]?.ToString();
     var statusSortParm = ViewData["StatusSortParm"]?.ToString();
 }
+<head>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+
+</head>
 <style>
+    #emailMessagesTable {
+        width: 100%;
+        table-layout: auto; /* Allow table to determine the width of columns based on content */
+    }
+
+        #emailMessagesTable th, #emailMessagesTable td {
+            min-width: 200px; /* Set a minimum width for table headers and cells */
+            padding: 15px; /* Adjust cell padding */
+            word-wrap: break-word; /* Ensure text wraps in cells */
+        }
+
+    .table-responsive {
+        overflow-x: auto; /* Allow table to scroll horizontally if wider than screen */
+    }
+    .custom-container {
+        max-width: 3600px; /* Adjust this value to suit your needs */
+    }
+    .status-new {
+        background-color: #e8f4ea; /* Soft green */
+        color: #276749; /* Dark green text for contrast */
+    }
+
+    .status-work-in-progress {
+        background-color: #fffaf3; /* Soft yellow */
+        color: #975a16; /* Dark yellow text for contrast */
+    }
+
+    .status-need-more-detail {
+        background-color: #fee2e2; /* Soft red */
+        color: #9b2c2c; /* Dark red text for contrast */
+    }
+
+    .status-done {
+        background-color: #e2e8f0; /* Soft grey */
+        color: #1e293b; /* Dark grey text for contrast */
+    }
+
     .message {
         max-height: 100px; 
         overflow: hidden;
@@ -62,7 +103,7 @@ td {
         }
     });
 </script>
-<div class="container mt-4">
+<div class="custom-container mt-4">
     <h2 class="display-4">@ViewData["Title"]</h2>
     <a asp-action="ArchivedEmailList" class="btn btn-secondary mb-3">Archived</a>
 
@@ -130,31 +171,35 @@ td {
                             </form>
                         </td>
                         <td>
-                            <!-- Archive/Restore Form -->
-                            @if (!message.IsArchived)
-                            {
-                                <form asp-action="Archive" method="post">
-                                    @Html.AntiForgeryToken()
+                            <div style="display: flex; justify-content: space-around; align-items: center;">
+                                @if (!message.IsArchived)
+                                {
+                                    <form asp-action="Archive" method="post" style="margin-right: 5px;">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="Id" value="@message.Id" />
+                                        <button type="submit" class="btn btn-warning btn-sm" title="Archive">
+                                            <i class="fas fa-archive"></i>
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-action="Restore" method="post" style="margin-right: 5px;">
+                                        <input type="hidden" name="Id" value="@message.Id" />
+                                        <button type="submit" class="btn btn-info btn-sm" title="Restore">
+                                            <i class="fas fa-box-open"></i>
+                                        </button>
+                                    </form>
+                                }
+                                <form asp-action="Delete" method="post" onsubmit="return confirm('Are you sure you want to delete this message?');" style="margin-left: 5px;">
                                     <input type="hidden" name="Id" value="@message.Id" />
-                                    <button type="submit" class="btn btn-warning btn-sm">Archive</button>
-                                </form>
-                            }
-                            else
-                            {
-                                <form asp-action="Restore" method="post" class="d-inline-block">
-                                    <input type="hidden" name="Id" value="@message.Id" />
-                                    <button type="submit" class="btn btn-info btn-sm">
-                                        <i class="fas fa-box-open"></i> Restore
+                                    <button type="submit" class="btn btn-danger btn-sm" title="Delete">
+                                        <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
-                            }
-                            <form asp-action="Delete" method="post" onsubmit="return confirm('Are you sure you want to delete this message?');">
-                                <input type="hidden" name="Id" value="@message.Id" />
-                                <button type="submit" class="btn btn-danger btn-sm">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
-                            </form>
+                            </div>
                         </td>
+
                     </tr>
                 }
             </tbody>
@@ -195,6 +240,7 @@ td {
         }
     }
 }
+
 
 
 

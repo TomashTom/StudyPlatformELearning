@@ -11,7 +11,6 @@ using StudyPlatformELearningHub.Models;
 
 namespace StudyPlatformELearningHub.Controllers
 {
-    //test
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -43,7 +42,6 @@ namespace StudyPlatformELearningHub.Controllers
             {
                 return NotFound();
             }
-
             return View(category);
         }
 
@@ -54,7 +52,6 @@ namespace StudyPlatformELearningHub.Controllers
             return View();
         }
 
-    
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CategoryId,Name,Description")] Category category)
@@ -89,7 +86,6 @@ namespace StudyPlatformELearningHub.Controllers
             return View(category);
         }
 
-       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("CategoryId,Name,Description")] Category category)
@@ -121,7 +117,6 @@ namespace StudyPlatformELearningHub.Controllers
             }
             return View(category);
         }
-
         // GET: Categories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -129,17 +124,14 @@ namespace StudyPlatformELearningHub.Controllers
             {
                 return NotFound();
             }
-
             var category = await _context.Categories
                 .FirstOrDefaultAsync(m => m.CategoryId == id);
             if (category == null)
             {
                 return NotFound();
             }
-
             return View(category);
         }
-
         // POST: Categories/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -154,11 +146,9 @@ namespace StudyPlatformELearningHub.Controllers
             {
                 _context.Categories.Remove(category);
             }
-            
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
         private bool CategoryExists(int id)
         {
           return (_context.Categories?.Any(e => e.CategoryId == id)).GetValueOrDefault();

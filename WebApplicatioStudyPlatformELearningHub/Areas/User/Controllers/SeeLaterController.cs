@@ -48,10 +48,8 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
             {
                 playlist = await _context.Playlists.FindAsync(playlistId.Value);
                 playlist.VideoId = videoId;
-                // Add logging
             }
 
-            // Now add the video to the playlist
             var seeLaterVideo = new SeeLaterVideo
             {
                 VideoId = videoId,
@@ -59,31 +57,22 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                 Note = note,
                 PlaylistId = playlist?.PlaylistId
             };
-            // Add logging
             _context.SeeLaterVideos.Add(seeLaterVideo);
 
             if (playlist != null)
             {
-                // Eagerly load the Videos collection for the playlist
                 playlist = await _context.Playlists
                     .Include(p => p.Videos)
                     .FirstOrDefaultAsync(p => p.PlaylistId == playlist.PlaylistId);
 
                 if (playlist != null)
                 {
-                    // Now that the playlist is properly loaded, you can add the video to its Videos collection
                     playlist.Videos.Add(seeLaterVideo);
                 }
             }
             await _context.SaveChangesAsync();
-
-            // Redirect to the "Play" action with the videoId parameter
             return RedirectToAction("Play", "User", new { id = videoId });
         }
-
-
-       
-
         public async Task<IActionResult> RemoveFromSeeLater(int videoId)
         {
             var userId = _userManager.GetUserId(User);
