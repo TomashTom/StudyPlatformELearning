@@ -1,0 +1,34 @@
+﻿@model IEnumerable<StudyPlatformELearningHub.Models.VideoViewModel>
+
+<div class="row">
+    @foreach (var videoVM in Model)
+    {
+        if (videoVM.Video.Status == StudyPlatformELearningHub.Models.VideoStatus.Active)
+        {
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    @if (!string.IsNullOrEmpty(videoVM.Video.ThumbnailPath))
+                    {
+                        <img src="@Url.Content($"~/{videoVM.Video.ThumbnailPath}")" alt="Thumbnail" class="card-img-top">
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">Video Title: @videoVM.Video.Name</h5>
+                        <p class="card-text">Description: @videoVM.Video.Description</p>
+                        <p class="card-text">Creator Name @videoVM.Video.CreatorFullName</p>
+                        <p class="card-text">Difficulty: @videoVM.Video.Difficulty</p>
+                        <p class="card-text">Upload Date Time: @videoVM.Video.UploadDateTime</p>
+                        <p>
+                            Average Rating:
+                            @for (int i = 0; i < videoVM.AverageRating; i++)
+                            {
+                                <i class="fa fa-star" style="color: yellow;"></i>
+                            }
+                        </p>
+                        <p class="card-text"><i class="fa fa-eye"></i> Views: @videoVM.ViewCount</p>
+                        <a href="@Url.Action("Play", "Video", new { area = "User", id = videoVM.Video.VideoId })" class="btn btn-primary stretched-link">Play</a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

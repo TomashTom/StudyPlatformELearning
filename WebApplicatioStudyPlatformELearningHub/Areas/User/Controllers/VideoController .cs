@@ -76,6 +76,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                 int rating = filterStars.First();
                 videosQuery = videosQuery.Where(v => v.Ratings.Any() && Math.Ceiling(v.Ratings.Average(r => r.Rating)) == rating);
             }
+           
             int totalVideos = await videosQuery.CountAsync();
             var videos = await videosQuery.Skip((pageIndex - 1) * pageSize)
                                   .Take(pageSize)
@@ -87,7 +88,13 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                                   })
                                   .AsQueryable()
                                   .ToListAsync();
-
+            ViewBag.CurrentFilterCategoryId = categoryId;
+            ViewBag.CurrentFilterTimeRange = timeRange;
+            ViewBag.CurrentFilterSearch = search;
+            ViewBag.CurrentFilterNames = names;
+            ViewBag.CurrentFilterCreators = creators;
+            ViewBag.CurrentFilterDifficultyLevels = difficultyLevels;
+            ViewBag.CurrentFilterStars = filterStars;
             ViewBag.TotalVideos = totalVideos;
             ViewBag.PageIndex = pageIndex;
             ViewBag.PageSize = pageSize;
