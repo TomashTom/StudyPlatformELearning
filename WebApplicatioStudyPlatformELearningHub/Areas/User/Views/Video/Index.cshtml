@@ -696,14 +696,14 @@
                 resetAllFilters();
             });
 
-            $('.category-checkbox, .creator-checkbox, input[name="dateRange"], input[name="difficultyLevels"], input[name="filterStars"]').change(function () {
-                updateVideoNamesFilter();
-                saveSelectedFilters(); // Add this line to save the filters whenever they are changed
+            $('.category-checkbox, .creator-checkbox, input[name="dateRange"], input[name="difficultyLevels"], input[name^="filterStars"]').change(function () {
+                updateVideoNamesFilter(); // Update video names based on selected categories
+                saveSelectedFilters(); // Save the filters whenever they are changed
             });
 
             $('.star-rating-radio').on('change', function () {
                 $('.star-rating-radio').not(this).prop('checked', false);
-                saveSelectedFilters(); // Add this line to save the filters whenever they are changed
+                saveSelectedFilters(); // Save the filters whenever they are changed
             });
 
             // Restore filters from localStorage on page load
