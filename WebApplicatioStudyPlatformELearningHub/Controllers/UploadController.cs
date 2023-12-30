@@ -39,7 +39,7 @@ public class UploadController : Controller
         // Get the current user's full name
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var user = await _userManager.FindByIdAsync(userId);
-        var creatorFullName = user?.UserName; // Assuming the UserName is the full name, or adjust as needed
+        var creatorFullName = user?.UserName; 
         ViewBag.Courses = await _context.Courses
                                    .Where(c => c.CreatorFullName == creatorFullName)
                                    .ToListAsync();

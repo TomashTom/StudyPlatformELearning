@@ -10121,5 +10121,36 @@ textarea.form-control {
         overflow-x: auto; /* Allows table to scroll horizontally on small screens */
     }
 }
+@media (min-width: 2200px) {
+    .custom-container {
+        max-width: 2200px; /* Width for large screens */
+    }
+}
+
+@media (min-width: 2200px) and (max-width: 2200px) {
+    .custom-container {
+        max-width: 2200px; /* Width for medium screens */
+    }
+}
+@media (max-width: 768px) {
+    .actions-container {
+        flex-wrap: wrap; /* Allows items to wrap onto the next line on smaller screens */
+    }
+}
+@media (max-width: 768px) {
+    .actions-cell {
+        align-items: center;
+    }
+
+    .actions-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .input-group {
+        width: 100%;
+    }
+}
+
 
 
