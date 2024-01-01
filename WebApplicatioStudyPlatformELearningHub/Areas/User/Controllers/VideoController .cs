@@ -542,7 +542,6 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
             var userHeart = comment.Hearts.FirstOrDefault(h => h.UserId == userId);
             if (userHeart != null)
             {
-                // User has already hearted the comment, so remove the heart
                 comment.Hearts.Remove(userHeart);
                 comment.UserHearted = false; // Update UserHearted property
 
