@@ -38,12 +38,33 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                 videosQuery = videosQuery.Where(v => v.CategoryId == categoryId.Value);
             }
             // Apply Time Range Filter
+            //if (!string.IsNullOrEmpty(timeRange))
+            //{
+            //    DateTime cutoffDate = DateTime.UtcNow.AddDays(-int.Parse(timeRange));
+            //    videosQuery = videosQuery.Where(v => v.UploadDateTime >= cutoffDate);
+            //}
+            DateTime currentTime = DateTime.UtcNow;
+
             if (!string.IsNullOrEmpty(timeRange))
             {
-                DateTime cutoffDate = DateTime.UtcNow.AddDays(-int.Parse(timeRange));
-                videosQuery = videosQuery.Where(v => v.UploadDateTime >= cutoffDate);
+                switch (timeRange)
+                {
+                    case "newest": // Last 7 days
+                        DateTime cutoffNewest = currentTime.AddDays(-7);
+                        videosQuery = videosQuery.Where(v => v.UploadDateTime >= cutoffNewest);
+                        break;
+                    case "30": // From 7 to 30 days ago
+                        DateTime cutoff30Start = currentTime.AddDays(-30);
+                        DateTime cutoff30End = currentTime.AddDays(-7);
+                        videosQuery = videosQuery.Where(v => v.UploadDateTime >= cutoff30Start && v.UploadDateTime < cutoff30End);
+                        break;
+                    case "60": // From 30 to 60 days ago
+                        DateTime cutoff60Start = currentTime.AddDays(-60);
+                        DateTime cutoff60End = currentTime.AddDays(-30);
+                        videosQuery = videosQuery.Where(v => v.UploadDateTime >= cutoff60Start && v.UploadDateTime < cutoff60End);
+                        break;
+                }
             }
-
             // Apply Search Filter
             if (!string.IsNullOrEmpty(search))
             {
@@ -554,12 +575,13 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
        
         private async Task<List<VideoFile>> GetRecommendedVideos(int categoryId, string creatorFullName, int currentVideoId)
         {
+
             return await _context.VideoFiles
-                                 .Where(v => v.CategoryId == categoryId
-                                             && v.CreatorFullName == creatorFullName
-                                             && v.VideoId != currentVideoId) // Exclude the current video
-                                 .OrderByDescending(v => v.UploadDateTime) // Sort by newest
-                                 .ToListAsync();
+                        .Where(v => v.CategoryId == categoryId
+                                    && (v.VideoId != currentVideoId)
+                                    && v.CourseId == null) // Include videos without a CourseId
+                        .OrderByDescending(v => v.UploadDateTime) // Sort by newest
+                        .ToListAsync();
         }
         
 

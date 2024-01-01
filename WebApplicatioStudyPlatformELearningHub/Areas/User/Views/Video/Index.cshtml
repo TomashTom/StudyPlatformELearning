@@ -141,7 +141,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
         <div class="container">
-            <a class="navbar-brand" href="index.html"><span>Study</span>Lab</a>
+            <a class="navbar-brand"<span>Study</span>Lab</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="oi oi-menu"></span> Menu
             </button>
@@ -201,7 +201,7 @@
                             </div>
                         </div>
                         <div id="nameFilter" style="display: none;">
-                            <label>Name:</label>
+                            <label>Title:</label>
                             <div id="nameOptions">
                                 <!-- Names will be populated here based on the selected category -->
                             </div>
@@ -224,24 +224,28 @@
                                 }
                             </div>
                         </div>
-                        <!-- Date Range filter -->
                         <div class="form-group">
                             <label>Date Range:</label>
                             <div>
+                                <!-- Last 7 days (newest) -->
                                 <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="last7DaysCheckbox" name="dateRange" value="7">
-                                    <label class="form-check-label" for="last7DaysCheckbox">Last 7 days</label>
+                                    <input type="radio" class="form-check-input" id="newestCheckbox" name="dateRange" value="newest">
+                                    <label class="form-check-label" for="newestCheckbox">Last 7 days</label>
                                 </div>
+                                <!-- From 7 to 30 days ago -->
                                 <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="last30DaysCheckbox" name="dateRange" value="30">
-                                    <label class="form-check-label" for="last30DaysCheckbox">Last 30 days</label>
+                                    <input type="radio" class="form-check-input" id="last30DaysCheckbox" name="dateRange" value="30">
+                                    <label class="form-check-label" for="last30DaysCheckbox">From 7 to 30 days ago</label>
                                 </div>
+                                <!-- From 30 to 60 days ago -->
                                 <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="last60DaysCheckbox" name="dateRange" value="60">
-                                    <label class="form-check-label" for="last60DaysCheckbox">Last 2 months</label>
+                                    <input type="radio" class="form-check-input" id="last60DaysCheckbox" name="dateRange" value="60">
+                                    <label class="form-check-label" for="last60DaysCheckbox">From 30 to 60 days ago</label>
                                 </div>
                             </div>
                         </div>
+
+
                         <div class="form-group">
                             <label>Difficulty Level:</label>
                             @foreach (var level in Enum.GetValues(typeof(StudyPlatformELearningHub.Models.VideoDifficulty)))

@@ -1,14 +1,29 @@
 ﻿@page
 @model AccessDeniedModel
 @{
-    ViewData["Title"] = "Access denied";
+    ViewData["Title"] = "Access Denied";
 }
 
-<header>
-    <h1 class="text-danger">@ViewData["Title"]</h1>
-    <p class="text-danger">You do not have access to this resource yet. <br /> Please contact with admin to get faster confirm</p>
-   
-</header>
-<li class="nav-item">
-    <a asp-area="User" asp-controller="UserContactUs" asp-action="Index" class="nav-link">Contact Us</a>
-</li>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="mt-5">
+                <h1 class="display-4 text-danger">@ViewData["Title"]</h1>
+                <p class="lead text-muted animated fadeIn">
+                    Currently, you do not have permission to access this resource.
+                </p>
+                <p class="text-muted animated fadeIn">
+                    Our administrator will contact you within 24 hours. If you need immediate assistance, please.
+                    <div class="mt-4 animated fadeInUp delay-2s">
+                        <button onclick="location.href='@Url.Action("Index", "UserContactUs", new { area = "User" })'" class="btn btn-primary">
+                            <i class="fas fa-envelope"></i> Contact Us
+                        </button>
+                    </div>
+                </p>
+                <div class="mt-3 animated fadeIn delay-3s">
+                    <img src="~/images/access.png" alt="Access Denied" class="img-fluid" style="max-width: 400px;"> <!-- Increased max-width -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

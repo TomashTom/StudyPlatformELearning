@@ -8,12 +8,18 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContents">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item">
-                    <a asp-area="User" asp-controller="UserContactUs" asp-action="Index" class="nav-link">Contact Us</a>
-                </li>
-                <li class="nav-item">
-                    <a asp-area="User" asp-controller="UserProfiles" asp-action="Index" class="nav-link">User Profile</a>
-                </li>
+                @if (!(ViewContext.RouteData.Values["controller"].ToString() == "UserContactUs" && ViewContext.RouteData.Values["action"].ToString() == "Index"))
+                {
+                    <li class="nav-item">
+                        <a asp-area="User" asp-controller="UserContactUs" asp-action="Index" class="nav-link">Contact Us</a>
+                    </li>
+                }
+                @if (!(ViewContext.RouteData.Values["controller"].ToString() == "UserProfiles" && ViewContext.RouteData.Values["action"].ToString() == "Index"))
+                {
+                    <li class="nav-item">
+                        <a asp-area="User" asp-controller="UserProfiles" asp-action="Index" class="nav-link">User Profile</a>
+                    </li>
+                }
                 @if (User.Identity.IsAuthenticated && (User.IsInRole("admin") || User.IsInRole("teacher")))
                 {
                     <li class="nav-item">
@@ -21,11 +27,12 @@
                     </li>
                 }
             </ul>
-            <partial name="_LoginPartial" /> 
+            <partial name="_LoginPartial" />
         </div>
-        
     </div>
 </nav>
+
+
 @section styles {
     <style>
         .navbar {
