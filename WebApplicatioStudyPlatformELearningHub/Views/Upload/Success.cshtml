@@ -101,31 +101,13 @@
                             <p class="card-text video-description">Video Description: @Html.DisplayFor(model => model.Video.Description)</p>
                             <p class="card-text"><small class="text-muted">Uploaded On: @Model.Video.UploadDateTime.ToString("yyyy-MM-dd HH:mm:ss")</small></p>
                         </div>
-                      @*   @if (!string.IsNullOrEmpty(Model.Video.VideoPath))
-                        {
-                            <div class="ratio ratio-16x9">
-                                <video controls class="video-player">
-                                    <source src="@Url.Content($"~/{Model.Video.VideoPath}")" type="video/mp4">
-                                    Your browser does not support the video tag.
-                                </video>
-                            </div>
-                        }
-                        @if (!string.IsNullOrEmpty(Model.Video.ThumbnailPath))
-                        {
-                            <div class="text-center my-3">
-                                <img src="@Url.Content($"~/{Model.Video.ThumbnailPath}")" alt="Thumbnail" class="thumbnail">
-                            </div>
-                        } *@
+               
                         <div class="card-video">
                             <video width="100%" height="auto" controls poster="@Url.Content($"~/{Model.Video.ThumbnailPath}")">
                                 <source src="@Url.Content($"~/videoFiles/{Model.Video.VideoName}")" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
                         </div>
-                      @*   else
-                        {
-                            <div class="alert alert-warning text-center">Thumbnail image not found.</div>
-                        } *@
                     </div>
                 }
                 else

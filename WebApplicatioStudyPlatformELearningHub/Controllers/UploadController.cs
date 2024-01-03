@@ -12,8 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using FoolProof;
-
-
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 [Authorize(Roles = "Teacher")]
 [Authorize(Policy = "ConfirmedTeacher")]
@@ -23,12 +22,14 @@ public class UploadController : Controller
     private readonly ApplicationDbContext _context;
     private readonly IWebHostEnvironment _environment;
     private readonly UserManager<IdentityUser> _userManager;
+    private readonly ILogger<UploadController> _logger;
 
-    public UploadController(ApplicationDbContext context, IWebHostEnvironment environment, UserManager<IdentityUser> userManager)
+    public UploadController(ApplicationDbContext context, IWebHostEnvironment environment, UserManager<IdentityUser> userManager, ILogger<UploadController> logger)
     {
         _context = context;
         _environment = environment;
         _userManager = userManager;
+        _logger = logger;
     }
 
     public async Task<IActionResult> Index()
@@ -164,7 +165,7 @@ public class UploadController : Controller
             .Where(v => v.UserId == userId)
             .Include(v => v.Category)
             .Include(v => v.Course)
-            .OrderByDescending(v => v.UploadDateTime) // Order by upload date, for example
+            .OrderByDescending(v => v.UploadDateTime) 
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .ToList();
@@ -216,82 +217,313 @@ public class UploadController : Controller
         return RedirectToAction(nameof(AllVideoListDisplay));
     }
 
-    // GET: Upload/Edit/5
-    public async Task<IActionResult> Edit(int? id)
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id,  int? deletedQuestionId)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = await _userManager.FindByIdAsync(userId);
+        var creatorFullName = user?.UserName;
 
-        var videoFile = await _context.VideoFiles.FindAsync(id);
+        ViewBag.Courses = await _context.Courses
+                                   .Where(c => c.CreatorFullName == creatorFullName)
+                                   .ToListAsync();
+
+        var videoFile = await _context.VideoFiles
+            .Include(v => v.Questions)
+            .ThenInclude(q => q.Answers) 
+            .FirstOrDefaultAsync(v => v.VideoId == id);
+
+        //if (deletedQuestionId.HasValue)
+        //{
+        //    var questionToDelete = await _context.Questions.FindAsync(deletedQuestionId.Value);
+        //    if (questionToDelete != null)
+        //    {
+        //        _context.Questions.Remove(questionToDelete);
+        //        await _context.SaveChangesAsync();
+        //    }
+        //}
         if (videoFile == null)
         {
             return NotFound();
         }
-        ViewBag.Courses = _context.Courses.ToList(); // Add this line
+
+       
+        ViewBag.Categories = await _context.Categories.ToListAsync();
+        ViewBag.CreatorFullName = creatorFullName;
         return View(videoFile);
+
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Edit(int id, VideoFile videoFile, IFormFile newVideoFile)
-    {
-        // Find the video record to edit
-        var existingVideo = await _context.VideoFiles.FindAsync(id);
 
-        if (existingVideo == null)
+    // POST: Upload/Edit/5
+    //[HttpPost]
+    //public async Task<IActionResult> Edit(int id, VideoFile videoFile)
+    //{
+    //    if (id != videoFile.VideoId)
+    //    {
+    //        return NotFound();
+    //    }
+
+    //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    //    var user = await _userManager.FindByIdAsync(userId);
+    //    var creatorFullName = user?.UserName;
+
+    //    if (!ModelState.IsValid)
+    //    {
+    //        ViewBag.Courses = await _context.Courses
+    //                                   .Where(c => c.CreatorFullName == creatorFullName)
+    //                                   .ToListAsync();
+    //        ViewBag.Categories = await _context.Categories.ToListAsync();
+    //        ViewBag.CreatorFullName = creatorFullName;
+    //        return View(videoFile);
+    //    }
+    //    var existingVideo = await _context.VideoFiles
+    //     .Include(v => v.Questions)
+    //     .ThenInclude(q => q.Answers)
+    //     .FirstOrDefaultAsync(v => v.VideoId == id);
+
+    //    if (existingVideo == null)
+    //    {
+    //        return NotFound();
+    //    }
+    //    // Update the properties you want to allow editing for
+    //    existingVideo.Name = videoFile.Name;
+    //    existingVideo.Description = videoFile.Description;
+    //    existingVideo.Difficulty = videoFile.Difficulty;
+    //    existingVideo.CategoryId = videoFile.CategoryId;
+    //    existingVideo.CourseId = videoFile.CourseId;
+    //    if (videoFile.Questions != null)
+    //    {
+    //        foreach (var question in videoFile.Questions)
+    //        {
+    //            var existingQuestion = existingVideo.Questions
+    //                .FirstOrDefault(q => q.Id == question.Id);
+
+    //            if (existingQuestion != null)
+    //            {
+    //                existingQuestion.Text = question.Text;
+    //                // Update or add answers
+    //                UpdateAnswers(existingQuestion, question.Answers);
+    //            }
+    //            else
+    //            {
+    //                // Add new question
+    //                existingVideo.Questions.Add(new Question
+    //                {
+    //                    Text = question.Text,
+    //                    Answers = question.Answers.Select(a => new Answer
+    //                    {
+    //                        Text = a.Text,
+    //                        IsCorrect = a.IsCorrect
+    //                    }).ToList()
+    //                });
+    //            }
+    //        }
+
+    //        // Remove questions not in updated model
+    //        RemoveUnwantedQuestions(existingVideo, videoFile.Questions);
+    //    }
+
+    //    try
+    //    {
+    //        await _context.SaveChangesAsync();
+    //        TempData["Message"] = "Video updated successfully!";
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        _logger.LogError($"Error updating video: {ex}");
+    //        // Handle exception
+    //    }
+
+    //    return RedirectToAction(nameof(AllVideoListDisplay));
+    //}
+    //private void UpdateAnswers(Question existingQuestion, ICollection<Answer> newAnswers)
+    //{
+    //    if (newAnswers != null)
+    //    {
+    //        foreach (var answer in newAnswers)
+    //        {
+    //            var existingAnswer = existingQuestion.Answers
+    //                .FirstOrDefault(a => a.Id == answer.Id);
+
+    //            if (existingAnswer != null)
+    //            {
+    //                existingAnswer.Text = answer.Text;
+    //                existingAnswer.IsCorrect = answer.IsCorrect;
+    //            }
+    //            else
+    //            {
+    //                existingQuestion.Answers.Add(new Answer
+    //                {
+    //                    Text = answer.Text,
+    //                    IsCorrect = answer.IsCorrect
+    //                });
+    //            }
+    //        }
+
+    //        // Remove answers not in the updated model
+    //        var answersToRemove = existingQuestion.Answers
+    //            .Where(a => !newAnswers.Any(ans => ans.Id == a.Id))
+    //            .ToList();
+
+    //        foreach (var answerToRemove in answersToRemove)
+    //        {
+    //            _context.Answers.Remove(answerToRemove);
+    //        }
+    //    }
+    //}
+    //private void RemoveUnwantedQuestions(VideoFile existingVideo, ICollection<Question> newQuestions)
+    //{
+    //    var questionsToRemove = existingVideo.Questions
+    //        .Where(q => !newQuestions.Any(nq => nq.Id == q.Id))
+    //        .ToList();
+
+    //    foreach (var questionToRemove in questionsToRemove)
+    //    {
+    //        _context.Questions.Remove(questionToRemove);
+    //    }
+    //}
+    [HttpPost]
+    public async Task<IActionResult> Edit(int id, VideoFile videoFile)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+            var creatorFullName = user?.UserName;
+
+        if (id != videoFile.VideoId)
         {
             return NotFound();
         }
 
         if (!ModelState.IsValid)
         {
-            foreach (var key in ModelState.Keys)
-            {
-                var errors = ModelState[key].Errors;
-                foreach (var error in errors)
-                {
-                    Console.WriteLine($"Key: {key}, Error: {error.ErrorMessage}");
-                }
-            }
-
-            ViewBag.Courses = await _context.Courses.ToListAsync();
+            ViewBag.Courses = await _context.Courses
+                                       .Where(c => c.CreatorFullName == creatorFullName)
+                                       .ToListAsync();
+            ViewBag.Categories = await _context.Categories.ToListAsync();
+            ViewBag.CreatorFullName = creatorFullName;
             return View(videoFile);
         }
 
-        // Update video properties based on user input
+        var existingVideo = await _context.VideoFiles
+            .Include(v => v.Questions)
+                .ThenInclude(q => q.Answers)
+            .FirstOrDefaultAsync(v => v.VideoId == id);
+
+        if (existingVideo == null)
+        {
+            return NotFound();
+        }
+
         existingVideo.Name = videoFile.Name;
         existingVideo.Description = videoFile.Description;
         existingVideo.Difficulty = videoFile.Difficulty;
+        existingVideo.CategoryId = videoFile.CategoryId;
+        existingVideo.CourseId = videoFile.CourseId;
 
-        if (newVideoFile != null && newVideoFile.Length > 0)
+        UpdateQuestionsAndAnswers(existingVideo, videoFile);
+
+        try
         {
-            // Handle the new video file upload (if provided)
-            string uploadFolder = Path.Combine(_environment.WebRootPath, "videoFiles");
-            string newVideoFileName = Guid.NewGuid().ToString() + Path.GetExtension(newVideoFile.FileName);
-            string newVideoFilePath = Path.Combine(uploadFolder, newVideoFileName);
-
-            if (!Directory.Exists(uploadFolder))
-            {
-                Directory.CreateDirectory(uploadFolder);
-            }
-
-            using (var fileStream = new FileStream(newVideoFilePath, FileMode.Create))
-            {
-                await newVideoFile.CopyToAsync(fileStream);
-            }
-
-            // Update the video file properties
-            existingVideo.VideoName = newVideoFileName;
-            existingVideo.VideoPath = Path.Combine("videoFiles", newVideoFileName);
+            await _context.SaveChangesAsync();
+            TempData["Message"] = "Video updated successfully!";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error updating video: {ex}");
+            ModelState.AddModelError("", "An error occurred while updating the video.");
+            return View(videoFile);
         }
 
-        // Save changes to the database
-        await _context.SaveChangesAsync();
-
-        TempData["Message"] = "Video updated successfully!";
         return RedirectToAction(nameof(AllVideoListDisplay));
     }
+
+
+
+    private void UpdateQuestionsAndAnswers(VideoFile existingVideo, VideoFile videoFile)
+    {
+        // Check for null
+        if (videoFile.Questions == null) return;
+
+        // Track the IDs of new/updated questions to identify deletions later
+        var updatedQuestionIds = new HashSet<int>(videoFile.Questions.Select(q => q.Id));
+
+        // Update and Add New Questions and Answers
+        foreach (var question in videoFile.Questions)
+        {
+            var existingQuestion = existingVideo.Questions.FirstOrDefault(q => q.Id == question.Id);
+
+            if (existingQuestion != null)
+            {
+                // Update existing question
+                existingQuestion.Text = question.Text;
+                UpdateAnswers(existingQuestion, question);
+            }
+            else
+            {
+                // Add new question
+                existingVideo.Questions.Add(question);
+            }
+        }
+
+        // Remove Questions and their Answers that were deleted
+        foreach (var existingQuestion in existingVideo.Questions.ToList())
+        {
+            if (!updatedQuestionIds.Contains(existingQuestion.Id))
+            {
+                _context.Questions.Remove(existingQuestion);
+            }
+        }
+    }
+
+    private void UpdateAnswers(Question existingQuestion, Question updatedQuestion)
+    {
+        // Check for null
+        if (updatedQuestion.Answers == null) return;
+
+        // Track the IDs of new/updated answers to identify deletions later
+        var updatedAnswerIds = new HashSet<int>(updatedQuestion.Answers.Select(a => a.Id));
+
+        // Update and Add New Answers
+        foreach (var answer in updatedQuestion.Answers)
+        {
+            var existingAnswer = existingQuestion.Answers.FirstOrDefault(a => a.Id == answer.Id);
+
+            if (existingAnswer != null)
+            {
+                // Update existing answer
+                existingAnswer.Text = answer.Text;
+                existingAnswer.IsCorrect = answer.IsCorrect;
+            }
+            else
+            {
+                // Add new answer
+                existingQuestion.Answers.Add(answer);
+            }
+        }
+
+        // Remove Answers that were deleted
+        foreach (var existingAnswer in existingQuestion.Answers.ToList())
+        {
+            if (!updatedAnswerIds.Contains(existingAnswer.Id))
+            {
+                existingQuestion.Answers.Remove(existingAnswer);
+                _context.Answers.Remove(existingAnswer);
+            }
+        }
+    }
+    //[HttpPost]
+    //public async Task<IActionResult> DeleteQuestion(int questionId)
+    //{
+    //    var question = await _context.Questions.FindAsync(questionId);
+    //    if (question != null)
+    //    {
+    //        _context.Questions.Remove(question);
+    //        await _context.SaveChangesAsync();
+    //        return Json(new { success = true });
+    //    }
+    //    return Json(new { success = false });
+    //}
 
 
 

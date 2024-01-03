@@ -1,21 +1,31 @@
-﻿@* @model StudyPlatformELearningHub.Models.VideoFile
+﻿@model StudyPlatformELearningHub.Models.VideoFile
 
 @{
     ViewData["Title"] = "Edit Video";
+    var questionList = Model.Questions?.ToList() ?? new List<Question>();
 }
 
-<h2>@ViewData["Title"]</h2>
+
+<h2>Edit Video</h2>
 
 <form asp-controller="Upload" asp-action="Edit" asp-route-id="@Model.VideoId" method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="VideoId" />
 
-    <!-- Include all fields that are present in the Upload form -->
-    <!-- Existing Video Information -->
     <div class="form-group">
         <label asp-for="Name">Video Title</label>
         <input asp-for="Name" class="form-control" />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
+    <div class="input-group mb-4">
+        <span class="input-group-text"><i class="fas fa-user"></i></span>
+        <input type="text" id="CreatorFullName" name="CreatorFullName" class="form-control" placeholder="Creator's Full Name" value="@ViewBag.CreatorFullName" required readonly>
+    </div>
+
+    <div class="form-group">
+        <input asp-for="VideoName" class="form-control" type="hidden" readonly>
+        <span asp-validation-for="VideoName" class="text-danger"></span>
+    </div>
+
 
     <div class="form-group">
         <label asp-for="Description">Description</label>
@@ -28,92 +38,107 @@
         <select asp-for="Difficulty" class="form-select" asp-items="Html.GetEnumSelectList<VideoDifficulty>()">
             <option value="">Select Difficulty</option>
         </select>
+        <span asp-validation-for="Difficulty" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label>Current Video</label>
-        @if (Model.VideoPath != null)
-        {
-            <video controls="controls" width="320" height="240">
-                <source src="@Url.Content("~/videoFiles/" + Model.VideoName)" type="video/mp4" />
-                Your browser does not support the video element.
-            </video>
-        }
-        else
-        {
-            <p>No video found.</p>
-        }
-    </div>
-
-    <div class="form-group">
-        <label for="newVideoFile">New Video (optional)</label>
-        <input type="file" id="newVideoFile" name="newVideoFile" class="form-control" />
-    </div>
-    <button type="submit" class="btn btn-primary">Save Changes</button>
-</form>
-
-<a asp-action="AllVideoListDisplay">Back to List</a>
- *@
-@model StudyPlatformELearningHub.Models.VideoFile
-
-@{
-    ViewData["Title"] = "Edit Video";
-}
-
-<h2>@ViewData["Title"]</h2>
-
-<form asp-controller="Upload" asp-action="Edit" asp-route-id="@Model.VideoId" method="post" enctype="multipart/form-data">
-    <input type="hidden" asp-for="VideoId" />
-
-    <!-- Existing Video Information -->
-    <div class="form-group">
-        <label asp-for="Name">Video Title</label>
-        <input asp-for="Name" class="form-control" />
-        @if (Model.VideoId == 0)
-        {
-            <span asp-validation-for="Name" class="text-danger"></span>
-        }
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Description">Description</label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-        @if (Model.VideoId == 0)
-        {
-            <span asp-validation-for="Description" class="text-danger"></span>
-        }
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Difficulty">Difficulty</label>
-        <select asp-for="Difficulty" class="form-select" asp-items="Html.GetEnumSelectList<VideoDifficulty>()">
-            <option value="">Select Difficulty</option>
+        <label asp-for="CategoryId">Category</label>
+        <select asp-for="CategoryId" class="form-select" asp-items="@(new SelectList(ViewBag.Categories, "CategoryId", "Name"))">
+            <option value="">Select Category</option>
         </select>
-        @if (Model.VideoId == 0)
-        {
-            <span asp-validation-for="Difficulty" class="text-danger"></span>
-        }
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label>Current Video</label>
-        @if (Model.VideoPath != null)
-        {
-            <video controls="controls" width="320" height="240">
-                <source src="@Url.Content("~/videoFiles/" + Model.VideoName)" type="video/mp4" />
-                Your browser does not support the video element.
-            </video>
-        }
-        else
-        {
-            <p>No video found.</p>
-        }
+        <label asp-for="CourseId">Course</label>
+        <select asp-for="CourseId" class="form-select" asp-items="@(new SelectList(ViewBag.Courses, "CourseId", "Name"))">
+            <option value="">Select Course</option>
+        </select>
+        <span asp-validation-for="CourseId" class="text-danger"></span>
     </div>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <div class="form-group">
-        <label for="newVideoFile">New Video (optional)</label>
-        <input type="file" id="newVideoFile" name="newVideoFile" class="form-control"  />
-    </div>
+    <h3 class="my-4">Questions and Answers</h3>
+
+    @for (int qIndex = 0; qIndex < questionList.Count; qIndex++)
+    {
+        var question = questionList[qIndex]; // Directly access the question
+        <div class="card mb-3 question-card">
+            <div class="card-header">
+                <input type="text" asp-for="@question.Text" class="form-control" />
+                <input type="hidden" asp-for="@question.Id" />
+            </div>
+            <ul class="list-group list-group-flush answer-list" data-question-index="@qIndex">
+                @if (question.Answers != null)
+                {
+                    var answerList = question.Answers.ToList(); // Convert answers to List for indexing
+                    for (int aIndex = 0; aIndex < answerList.Count; aIndex++)
+                    {
+                        var answer = answerList[aIndex]; // Directly access the answer
+                        <li class="list-group-item">
+                            <input type="text" asp-for="@answer.Text" class="form-control" />
+                            <input type="hidden" asp-for="@answer.Id" />
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" asp-for="@answer.IsCorrect" />
+                                <label class="form-check-label">Correct</label>
+                            </div>
+                        </li>
+                    }
+                }
+            </ul>
+            <div class="card-footer">
+                @* <button type="button" class="btn btn-danger delete-question" data-question-id="@question.Id">Delete Question</button> *@
+            </div>
+        </div>
+    }
+
+
+  @*   <button type="button" id="addQuestion" class="btn btn-primary">Add Question</button> *@
     <button type="submit" class="btn btn-primary">Save Changes</button>
 </form>
+
 <a asp-action="AllVideoListDisplay">Back to List</a>
+
+@* @section Scripts {
+    <script>
+        document.querySelectorAll('.add-answer').forEach(button => {
+            button.addEventListener('click', function () {
+                var questionIndex = this.getAttribute('data-question-index');
+                var answerList = this.closest('.question-card').querySelector('.answer-list');
+                var newAnswerIndex = answerList.children.length; // Get the next index for the new answer
+
+                // Create the list item for the new answer
+                var li = document.createElement('li');
+                li.setAttribute('class', 'list-group-item');
+                li.innerHTML = `
+                            <input type="text" name="Questions[${questionIndex}].Answers[${newAnswerIndex}].Text" class="form-control" placeholder="Answer" />
+                            <input type="hidden" name="Questions[${questionIndex}].Answers[${newAnswerIndex}].Id" value="0" />
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="Questions[${questionIndex}].Answers[${newAnswerIndex}].IsCorrect" />
+                                <label class="form-check-label">Correct</label>
+                            </div>
+                        `;
+                answerList.appendChild(li);
+            });
+        });
+        document.getElementById('addQuestion').addEventListener('click', function () {
+            var questionIndex = document.querySelectorAll('.question-card').length;
+
+            var questionDiv = document.createElement('div');
+            questionDiv.classList.add('card', 'mb-3', 'question-card');
+            questionDiv.innerHTML = `
+                        <div class="card-header">
+                            <input type="text" name="Questions[${questionIndex}].Text" class="form-control" placeholder="Question" />
+                            <input type="hidden" name="Questions[${questionIndex}].Id" value="0" />
+                        </div>
+                        <ul class="list-group list-group-flush answer-list" data-question-index="${questionIndex}"></ul>
+                        <div class="card-footer">
+                            <button type="button" class="btn btn-outline-secondary add-answer" data-question-index="${questionIndex}">Add Answer</button>
+                        </div>
+                    `;
+
+            this.before(questionDiv); // Insert new question before the Add Question button
+        });
+    </script>
+}
+ *@
