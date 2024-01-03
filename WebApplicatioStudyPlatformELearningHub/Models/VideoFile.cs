@@ -15,6 +15,7 @@ namespace StudyPlatformELearningHub.Models
         public string? Description { get; set; }
 
         [Display(Name = "Creator's Full Name")]
+
         public string CreatorFullName { get; set; }
         public string? VideoPath { get; set; }
 
