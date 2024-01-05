@@ -5,140 +5,222 @@
     var questionList = Model.Questions?.ToList() ?? new List<Question>();
 }
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
 
-<h2>Edit Video</h2>
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
 
-<form asp-controller="Upload" asp-action="Edit" asp-route-id="@Model.VideoId" method="post" enctype="multipart/form-data">
-    <input type="hidden" asp-for="VideoId" />
+        /* Form Styles */
+        .form-label {
+            font-weight: bold;
+        }
 
-    <div class="form-group">
-        <label asp-for="Name">Video Title</label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
-    </div>
-    <div class="input-group mb-4">
-        <span class="input-group-text"><i class="fas fa-user"></i></span>
-        <input type="text" id="CreatorFullName" name="CreatorFullName" class="form-control" placeholder="Creator's Full Name" value="@ViewBag.CreatorFullName" required readonly>
-    </div>
+        .form-control {
+            margin-bottom: 15px;
+        }
 
-    <div class="form-group">
-        <input asp-for="VideoName" class="form-control" type="hidden" readonly>
-        <span asp-validation-for="VideoName" class="text-danger"></span>
-    </div>
+        .invalid-feedback {
+            color: red;
+            font-size: 12px;
+        }
 
+        /* Button Styles */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
 
-    <div class="form-group">
-        <label asp-for="Description">Description</label>
-        <textarea asp-for="Description" class="form-control"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+            transition: background-color 0.3s ease;
+        }
 
-    <div class="form-group">
-        <label asp-for="Difficulty">Difficulty</label>
-        <select asp-for="Difficulty" class="form-select" asp-items="Html.GetEnumSelectList<VideoDifficulty>()">
-            <option value="">Select Difficulty</option>
-        </select>
-        <span asp-validation-for="Difficulty" class="text-danger"></span>
-    </div>
+            .btn-primary:hover {
+                background-color: #0056b3;
+            }
 
-    <div class="form-group">
-        <label asp-for="CategoryId">Category</label>
-        <select asp-for="CategoryId" class="form-select" asp-items="@(new SelectList(ViewBag.Categories, "CategoryId", "Name"))">
-            <option value="">Select Category</option>
-        </select>
-        <span asp-validation-for="CategoryId" class="text-danger"></span>
-    </div>
+        .btn-secondary {
+            background-color: #6c757d;
+            color: #fff;
+            transition: background-color 0.3s ease;
+        }
 
-    <div class="form-group">
-        <label asp-for="CourseId">Course</label>
-        <select asp-for="CourseId" class="form-select" asp-items="@(new SelectList(ViewBag.Courses, "CourseId", "Name"))">
-            <option value="">Select Course</option>
-        </select>
-        <span asp-validation-for="CourseId" class="text-danger"></span>
-    </div>
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            .btn-secondary:hover {
+                background-color: #545b62;
+            }
 
-    <h3 class="my-4">Questions and Answers</h3>
+        /* Card Styles */
+        .card {
+            border: none;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
 
-    @for (int qIndex = 0; qIndex < questionList.Count; qIndex++)
-    {
-        var question = questionList[qIndex]; // Directly access the question
-        <div class="card mb-3 question-card">
-            <div class="card-header">
-                <input type="text" asp-for="@question.Text" class="form-control" />
-                <input type="hidden" asp-for="@question.Id" />
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 10px 15px;
+        }
+
+        .card-body {
+            padding: 15px;
+        }
+
+        /* Header Styles */
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        h4 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        h5 {
+            font-size: 16px;
+            margin-top: 15px;
+        }
+
+        /* Input Styles */
+        .input-group-text {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .form-check-label {
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Edit Video</h2>
+        <form asp-controller="Upload" asp-action="Edit" asp-route-id="@Model.VideoId" method="post" enctype="multipart/form-data" class="my-4">
+            <input type="hidden" asp-for="VideoId" />
+
+            <div class="form-group">
+                <label for="Name" class="form-label">Video Title</label>
+                <input type="text" asp-for="Name" class="form-control" required />
+                <div class="invalid-feedback">
+                    Please provide a video title.
+                </div>
             </div>
-            <ul class="list-group list-group-flush answer-list" data-question-index="@qIndex">
-                @if (question.Answers != null)
-                {
-                    var answerList = question.Answers.ToList(); // Convert answers to List for indexing
-                    for (int aIndex = 0; aIndex < answerList.Count; aIndex++)
-                    {
-                        var answer = answerList[aIndex]; // Directly access the answer
-                        <li class="list-group-item">
-                            <input type="text" asp-for="@answer.Text" class="form-control" />
-                            <input type="hidden" asp-for="@answer.Id" />
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" asp-for="@answer.IsCorrect" />
-                                <label class="form-check-label">Correct</label>
+
+            <div class="input-group my-4">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                <input type="text" id="CreatorFullName" name="CreatorFullName" class="form-control" placeholder="Creator's Full Name" value="@ViewBag.CreatorFullName" required readonly>
+            </div>
+
+            <input asp-for="VideoName" class="form-control" type="hidden" readonly>
+
+            <div class="form-group">
+                <label for="Description" class="form-label">Description</label>
+                <textarea asp-for="Description" class="form-control" required></textarea>
+                <div class="invalid-feedback">
+                    Please provide a description.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="Difficulty" class="form-label">Difficulty</label>
+                <select asp-for="Difficulty" class="form-select" required asp-items="Html.GetEnumSelectList<VideoDifficulty>()">
+                    <option value="">Select Difficulty</option>
+                </select>
+                <div class="invalid-feedback">
+                    Please select a difficulty level.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="CategoryId" class="form-label">Category</label>
+                <select asp-for="CategoryId" class="form-select" required asp-items="@(new SelectList(ViewBag.Categories, "CategoryId", "Name"))">
+                    <option value="">Select Category</option>
+                </select>
+                <div class="invalid-feedback">
+                    Please select a category.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="CourseId" class="form-label">Course</label>
+                <select asp-for="CourseId" class="form-select" asp-items="@(new SelectList(ViewBag.Courses, "CourseId", "Name"))">
+                    <option value="">Select Course</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+    </div>
+
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Questions and Answers</h2>
+        <div id="questions-container">
+            @for (int qIndex = 0; qIndex < questionList.Count; qIndex++)
+            {
+                var question = questionList[qIndex];
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Question</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label class="fw-bold">Question Text</label>
+                            <input type="text" class="form-control" value="@question.Text" readonly />
+                        </div>
+                        <!-- Button to edit the question -->
+                        <a asp-controller="Upload" asp-action="EditQuestion" asp-route-id="@question.Id" class="btn btn-primary">Edit Question</a>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var answer in question.Answers)
+                        {
+                            <div class="mb-3">
+                                <label class="fw-bold">Answer</label>
+                                <input type="text" class="form-control" value="@answer.Text" readonly />
+
+                                <label class="fw-bold">Incorrect Message</label>
+                                <input type="text" class="form-control" value="@answer.IncorrectMessage" readonly />
+
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" name="correctAnswer" value="@answer.Id" @(answer.IsCorrect ? "checked disabled" : "disabled") />
+                                    <label class="form-check-label">
+                                        @if (answer.IsCorrect)
+                                        {
+                                            <span class="text-success">Correct Answer</span>
+                                        }
+                                    </label>
+                                </div>
+                                <!-- Button to edit the answer -->
+                                <a asp-controller="Upload" asp-action="EditAnswer" asp-route-id="@answer.Id" class="btn btn-primary mt-2">Edit Answer</a>
                             </div>
-                        </li>
-                    }
-                }
-            </ul>
-            <div class="card-footer">
-                @* <button type="button" class="btn btn-danger delete-question" data-question-id="@question.Id">Delete Question</button> *@
-            </div>
+                        }
+                    </div>
+                </div>
+            }
+            <button type="button" class="btn btn-primary" onclick="addQuestion()">Add Question</button>
         </div>
-    }
+        <a asp-action="AllVideoListDisplay" class="btn btn-secondary mt-3">Back to List</a>
+    </div>
+</body>
+</html>
 
-
-  @*   <button type="button" id="addQuestion" class="btn btn-primary">Add Question</button> *@
-    <button type="submit" class="btn btn-primary">Save Changes</button>
-</form>
-
-<a asp-action="AllVideoListDisplay">Back to List</a>
-
-@* @section Scripts {
-    <script>
-        document.querySelectorAll('.add-answer').forEach(button => {
-            button.addEventListener('click', function () {
-                var questionIndex = this.getAttribute('data-question-index');
-                var answerList = this.closest('.question-card').querySelector('.answer-list');
-                var newAnswerIndex = answerList.children.length; // Get the next index for the new answer
-
-                // Create the list item for the new answer
-                var li = document.createElement('li');
-                li.setAttribute('class', 'list-group-item');
-                li.innerHTML = `
-                            <input type="text" name="Questions[${questionIndex}].Answers[${newAnswerIndex}].Text" class="form-control" placeholder="Answer" />
-                            <input type="hidden" name="Questions[${questionIndex}].Answers[${newAnswerIndex}].Id" value="0" />
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="Questions[${questionIndex}].Answers[${newAnswerIndex}].IsCorrect" />
-                                <label class="form-check-label">Correct</label>
-                            </div>
-                        `;
-                answerList.appendChild(li);
-            });
-        });
-        document.getElementById('addQuestion').addEventListener('click', function () {
-            var questionIndex = document.querySelectorAll('.question-card').length;
-
-            var questionDiv = document.createElement('div');
-            questionDiv.classList.add('card', 'mb-3', 'question-card');
-            questionDiv.innerHTML = `
-                        <div class="card-header">
-                            <input type="text" name="Questions[${questionIndex}].Text" class="form-control" placeholder="Question" />
-                            <input type="hidden" name="Questions[${questionIndex}].Id" value="0" />
-                        </div>
-                        <ul class="list-group list-group-flush answer-list" data-question-index="${questionIndex}"></ul>
-                        <div class="card-footer">
-                            <button type="button" class="btn btn-outline-secondary add-answer" data-question-index="${questionIndex}">Add Answer</button>
-                        </div>
-                    `;
-
-            this.before(questionDiv); // Insert new question before the Add Question button
-        });
-    </script>
-}
- *@

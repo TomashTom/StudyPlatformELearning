@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StudyPlatformELearningHub.Data;
 
@@ -11,9 +12,10 @@ using StudyPlatformELearningHub.Data;
 namespace StudyPlatformELearningHub.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240104133938_FileNameUpdate")]
+    partial class FileNameUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -243,9 +245,6 @@ namespace StudyPlatformELearningHub.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsCorrect")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsEditing")
                         .HasColumnType("bit");
 
                     b.Property<int>("QuestionId")
@@ -531,9 +530,6 @@ namespace StudyPlatformELearningHub.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("IsEditing")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Text")
                         .IsRequired()

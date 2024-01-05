@@ -23,8 +23,12 @@ namespace StudyPlatformELearningHub.Models
         public DateTime UploadDateTime { get; set; }
         public int QuestionId { get; set; }
         public int AnswerId { get; set; }
-        public ICollection<Question>? Questions { get; set; }
-
+        //public ICollection<Question>? Questions { get; set; }
+        public List<Question>? Questions { get; set; }
+        public VideoFile()
+        {
+            Questions = new List<Question>();
+        }
         public string? UserId { get; set; }
 
         public int CategoryId { get; set; }
@@ -45,7 +49,7 @@ namespace StudyPlatformELearningHub.Models
 
         [NotMapped]
         public int ViewCount => UserVideoViews?.Count ?? 0;
-
+        
 
 
         public ICollection<UserVideoView> UserVideoViews { get; set; } = new List<UserVideoView>();
@@ -61,4 +65,5 @@ namespace StudyPlatformELearningHub.Models
         Active = 1,
         Inactive = 0,
     }
+
 }

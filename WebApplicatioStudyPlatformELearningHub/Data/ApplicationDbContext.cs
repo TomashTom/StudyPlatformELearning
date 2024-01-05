@@ -96,9 +96,11 @@ namespace StudyPlatformELearningHub.Data
                .HasMany(c => c.Videos) // Assuming Course has a collection of VideoFiles
                .WithOne(v => v.Course) // Assuming VideoFile has a Course property
                .HasForeignKey(v => v.CourseId) // Assuming VideoFile has a CourseId foreign key
-               .OnDelete(DeleteBehavior.Cascade); // Enable cascading delete
+               .OnDelete(DeleteBehavior.Cascade);
+           
 
-            }
+        }
+
 
 
 

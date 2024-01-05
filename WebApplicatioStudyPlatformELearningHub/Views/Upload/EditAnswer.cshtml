@@ -1,0 +1,33 @@
+﻿@model StudyPlatformELearningHub.Models.Answer
+
+@{
+    ViewData["Title"] = "Edit Answer";
+}
+
+<h2>Edit Answer</h2>
+
+<form asp-controller="Upload" asp-action="EditAnswer" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="QuestionId" />
+    <div class="form-group">
+        <label asp-for="Text" class="control-label"></label>
+        <input asp-for="Text" class="form-control" />
+        <span asp-validation-for="Text" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="IsCorrect" class="control-label"></label>
+        <input asp-for="IsCorrect" />
+        <span asp-validation-for="IsCorrect" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="IncorrectMessage" class="control-label"></label>
+        <input asp-for="IncorrectMessage" class="form-control" />
+        <span asp-validation-for="IncorrectMessage" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Save" class="btn btn-primary" />
+    </div>
+</form>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
