@@ -545,13 +545,14 @@ public class UploadController : Controller
     {
         if (ModelState.IsValid)
         {
+
             foreach (var question in model.Questions)
             {
                 _context.Questions.Add(question);
 
             }
             await _context.SaveChangesAsync();
-            return RedirectToAction("QuestionsSavedSuccessfully");
+            return RedirectToAction("AllVideoListDisplay");
         }
         return View(model);
     }
@@ -578,19 +579,48 @@ public class UploadController : Controller
 
         return RedirectToAction("AllVideoListDisplay");
     }
+    //[HttpPost]
+    //public async Task<IActionResult> AddQuestion(Question question)
+    //{
+    //    if (ModelState.IsValid)
+    //    {
+    //        // Add the question to the database
+    //        _context.Questions.Add(question);
+    //        await _context.SaveChangesAsync();
 
+    //        // Optionally, you can return a JSON response or a redirect to a success page
+    //        return Json(new { success = true, message = "Question added successfully" });
+    //    }
 
+    //    // Handle validation errors here, if needed
+    //    return BadRequest(ModelState);
+    //}
+    //[HttpPost]
+    //public async Task<IActionResult> AddAnswer(int questionId, Answer answer)
+    //{
+    //    if (ModelState.IsValid)
+    //    {
+    //        // Retrieve the question by its ID
+    //        var question = await _context.Questions.FindAsync(questionId);
 
+    //        if (question == null)
+    //        {
+    //            return NotFound("Question not found");
+    //        }
 
+    //        // Add the answer to the question's Answers collection
+    //        question.Answers.Add(answer);
 
+    //        // Save changes to the database
+    //        await _context.SaveChangesAsync();
 
+    //        // Optionally, you can return a JSON response or a redirect to a success page
+    //        return Json(new { success = true, message = "Answer added successfully" });
+    //    }
 
-
-
-
-
-
-
+    //    // Handle validation errors here, if needed
+    //    return BadRequest(ModelState);
+    //}
 
 
 }
