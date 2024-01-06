@@ -13,8 +13,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-Learning Hub</title>
-
-    <link rel="stylesheet" href="your-styles.css">
     <script src="your-scripts.js"></script>
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
@@ -184,11 +182,11 @@
         }
 
         .section-title {
-            font-size: 2rem; /* Increase the font size for prominence */
-            color: #007bff; /* Use a custom color (adjust as needed) */
-            text-transform: uppercase; /* Uppercase text for a modern look */
-            letter-spacing: 2px; /* Add letter spacing for spacing between characters */
-            margin-bottom: 20px; /* Adjust the margin as needed */
+            font-size: 2rem; 
+            color: #007bff; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            margin-bottom: 20px; 
         }
     </style>
 </head>
@@ -240,39 +238,39 @@
                                     </div>
                                 </div>
                             </div>
-
-
-
                         }
                     </div>
                 </div>
             </section>
         }
+       
+
 
     </div>
-    <div class="mt-5 d-flex flex-column align-items-center">
-        <div class="btn-group-vertical btn-group-lg shadow-sm" role="group">
-            @if (User.IsInRole("Teacher"))
-            {
-                <a class="btn btn-outline-secondary m-1" asp-area="" asp-controller="Course" asp-action="Index">
-                    <i class="fas fa-book"></i> Courses
-                </a>
 
-                <a class="btn btn-outline-secondary m-1" asp-area="" asp-controller="Upload" asp-action="Index">
-                    <i class="fas fa-upload"></i> Upload Videos
-                </a>
-                <a class="btn btn-outline-secondary m-1" asp-area="" asp-controller="Upload" asp-action="AllVideoListDisplay">
-                    <i class="fas fa-video"></i> View Uploaded Videos
-                </a>
-                <a class="btn btn-outline-secondary m-1" asp-area="" asp-controller="UserStatistic" asp-action="Index">
-                    <i class="fas fa-chart-line"></i> My Statistic
-                </a>
+    <div class="mt-5 custom-container">
+        <div class="btn-group-vertical btn-group-lg shadow-sm text-center" role="group">
+                @if (User.IsInRole("Teacher"))
+                {
+                    <a class="btn btn-outline-secondary m-1" asp-area="" asp-controller="Course" asp-action="Index">
+                        <i class="fas fa-book"></i> Courses
+                    </a>
 
-                <a class="btn btn-outline-secondary m-1" asp-area="" asp-controller="User" asp-action="Index">
-                    <i class="fas fa-users"></i> Users Area
-                </a>
+                    <a class="btn btn-outline-secondary m-1" asp-area="" asp-controller="Upload" asp-action="Index">
+                        <i class="fas fa-upload"></i> Upload Videos
+                    </a>
+                    <a class="btn btn-outline-secondary m-1" asp-area="" asp-controller="Upload" asp-action="AllVideoListDisplay">
+                        <i class="fas fa-video"></i> View Uploaded Videos
+                    </a>
+                    <a class="btn btn-outline-secondary m-1" asp-area="" asp-controller="UserStatistic" asp-action="Index">
+                        <i class="fas fa-chart-line"></i> My Statistic
+                    </a>
+
+                    <a class="btn btn-outline-secondary m-1" asp-area="" asp-controller="User" asp-action="Index">
+                        <i class="fas fa-users"></i> Users Area
+                    </a>
                
-            }
+                }
             @if (User.IsInRole("Admin"))
             {
                 <a class="btn btn-outline-secondary m-1" asp-area="" asp-controller="EntityRoles" asp-action="Index">
@@ -298,6 +296,73 @@
                 </a>
             }
         </div>
+        <style>
+            .btn-group-vertical {
+                display: inline-flex;
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+            }
+
+            .btn-outline-secondary {
+                color: white; /* Text color */
+                background-color: #5a7d9a; /* Button color - a muted blue */
+                border: none;
+                margin: 0.5rem 0; /* Adds space between buttons */
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+                transition: all 0.3s ease;
+            }
+
+                .btn-outline-secondary i {
+                    margin-right: 0.5rem;
+                }
+
+                .btn-outline-secondary:hover {
+                    background-color: #3c5a78; /* Darker blue on hover */
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+                }
+
+            /* Adjust the alignment and width of the button group */
+            .btn-group-vertical .btn {
+                padding: 1rem 1.5rem; /* Increase padding for a larger button */
+                font-size: 1.1rem; /* Increase font size for better readability */
+                border: none; /* Remove borders for a cleaner look */
+                margin: 0.25rem 0; /* Add a bit of margin between buttons */
+            }
+
+                .btn-group-vertical .btn:hover {
+                    background-color: #e9ecef; /* Slightly change color on hover for feedback */
+                    color: #333;
+                }
+
+                .btn-group-vertical .btn .fas {
+                    margin-right: 0.5rem; /* Space between icon and text */
+                    font-size: 1.25rem; /* Larger icon size */
+                }
+
+            /* Ensure that the container is taking full width */
+            custom-container {
+                margin: 0 auto; /* Center horizontally by setting margin left and right to auto */
+                display: flex;
+                justify-content: center; /* Center horizontally within the parent */
+                align-items: center; /* Center vertically within the parent */
+                width: 100%; /* Full width of the parent */
+                max-width: 800px; /* Maximum width to ensure it doesn't get too wide */
+                padding: 2rem; /* Add padding inside the container */
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Optional: add a shadow for depth */
+                background: #fff; /* Set a white background or any color you prefer */
+                border-radius: 0.5rem; /* Rounded corners for a modern look */
+            }
+
+
+            h1 {
+                color: #3c5a78; /* Echo the darker blue for text headers */
+            }
+
+            
+
+        </style>
     </div>
+    
 </body>
 </html>

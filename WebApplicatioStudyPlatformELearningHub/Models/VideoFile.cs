@@ -49,8 +49,6 @@ namespace StudyPlatformELearningHub.Models
 
         [NotMapped]
         public int ViewCount => UserVideoViews?.Count ?? 0;
-        
-
 
         public ICollection<UserVideoView> UserVideoViews { get; set; } = new List<UserVideoView>();
     }

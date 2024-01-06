@@ -218,11 +218,19 @@ public class UploadController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Edit(int id, int? deletedQuestionId)
+    public async Task<IActionResult> Edit(int id)
     {
+        var existingVideo = await _context.VideoFiles.FindAsync(id);
+
+        if (existingVideo == null)
+        {
+            // If the video file is not found, return NotFound
+            return NotFound();
+        }
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var user = await _userManager.FindByIdAsync(userId);
         var creatorFullName = user?.UserName;
+       
 
         ViewBag.Courses = await _context.Courses
                                    .Where(c => c.CreatorFullName == creatorFullName)
@@ -234,23 +242,20 @@ public class UploadController : Controller
             .FirstOrDefaultAsync(v => v.VideoId == id);
 
        
-        if (videoFile == null)
-        {
-            return NotFound();
-        }
+       
 
 
         ViewBag.Categories = await _context.Categories.ToListAsync();
         ViewBag.CreatorFullName = creatorFullName;
-        return View(videoFile);
+        return View(existingVideo);
 
     }
-
-
-    
     [HttpPost]
-    public async Task<IActionResult> Edit(int id, VideoFile videoFile, IFormFile newVideoFile, IFormFile newThumbnailImage)
+    public async Task<IActionResult> Edit(int id, VideoFile videoFile, IFormFile? newVideoFile, IFormFile? newThumbnailImage)
     {
+
+        ModelState.Remove("newVideoFile ");
+        ModelState.Remove("newThumbnailImage ");
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var user = await _userManager.FindByIdAsync(userId);
         var creatorFullName = user?.UserName;
@@ -279,6 +284,12 @@ public class UploadController : Controller
         {
             return NotFound();
         }
+        existingVideo.Name = videoFile.Name;
+        existingVideo.Description = videoFile.Description;
+        existingVideo.Difficulty = videoFile.Difficulty;
+        existingVideo.CategoryId = videoFile.CategoryId;
+        existingVideo.CourseId = videoFile.CourseId;
+
         if (newVideoFile != null && newVideoFile.Length > 0)
         {
             string uploadFolder = Path.Combine(_environment.WebRootPath, "videoFiles");
@@ -299,7 +310,6 @@ public class UploadController : Controller
             existingVideo.VideoPath = Path.Combine("videoFiles", uniqueVideoFileName);
         }
 
-        // Check if a new thumbnail image is uploaded
         if (newThumbnailImage != null && newThumbnailImage.Length > 0)
         {
             string thumbnailFolder = Path.Combine(_environment.WebRootPath, "videoThumbnails");
@@ -319,11 +329,6 @@ public class UploadController : Controller
             existingVideo.ThumbnailPath = Path.Combine("videoThumbnails", uniqueThumbnailFileName);
         }
 
-        existingVideo.Name = videoFile.Name;
-        existingVideo.Description = videoFile.Description;
-        existingVideo.Difficulty = videoFile.Difficulty;
-        existingVideo.CategoryId = videoFile.CategoryId;
-        existingVideo.CourseId = videoFile.CourseId;
 
         _context.Update(existingVideo);
         await _context.SaveChangesAsync();
@@ -369,8 +374,6 @@ public class UploadController : Controller
 
                 _context.Update(questionToUpdate);
                 await _context.SaveChangesAsync();
-
-                // Assuming that the Question model has a foreign key property named VideoId
                 return RedirectToAction("Edit", "Upload", new { id = questionToUpdate.VideoId });
             }
             catch (DbUpdateConcurrencyException)
@@ -387,10 +390,7 @@ public class UploadController : Controller
         }
       
         return View(model);
-
-
     }
-
     private bool QuestionExists(int id)
     {
         return _context.Questions.Any(e => e.Id == id);

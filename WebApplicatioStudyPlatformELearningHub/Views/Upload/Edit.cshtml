@@ -12,8 +12,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>@ViewData["Title"]</title>
     <style>
+        /* Set a max-width for the video and image to make them smaller */
+        .video-container video,
+        .card-img-top {
+            max-width: 320px; /* Adjust the width as needed */
+            height: auto; /* Maintain the aspect ratio */
+            display: block; /* To enable margin 'auto' to work */
+            margin: 0; /* Center the video/image within the container */
+            object-fit: contain; /* Ensures the content is fully visible */
+        }
+
+        /* Ensure the form controls align with the smaller video and image */
+        .form-group .form-control,
+        .form-group label {
+          
+            display: block; /* Stack the label and input */
+        }
+
+     
+     
+
+
         /* Global Styles */
         body {
             font-family: Arial, sans-serif;
@@ -129,6 +151,9 @@
         }
         <form asp-controller="Upload" asp-action="Edit" asp-route-id="@Model.VideoId" method="post" enctype="multipart/form-data" class="my-4">
             <input type="hidden" asp-for="VideoId" />
+            <input type="hidden" asp-for="VideoPath" />
+            <input type="hidden" asp-for="ThumbnailPath" />
+
 
             <div class="form-group">
                 <label for="Name" class="form-label">Video Title</label>
@@ -179,17 +204,43 @@
                     <option value="">Select Course</option>
                 </select>
             </div>
+           
+        
             <div class="form-group">
                 <label for="newVideoFile" class="form-label">Upload New Video File (Optional)</label>
                 <input type="file" class="form-control" name="newVideoFile" />
             </div>
+
+            @if (!string.IsNullOrEmpty(Model.VideoName))
+            {
+                <div class="form-group">
+                    <label>Current Video</label>
+                    <div class="video-container">
+                        <video controls>
+                            <source src="@Url.Content($"~/videoFiles/{Model.VideoName}")" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+            }
 
             <div class="form-group">
                 <label for="newThumbnailImage" class="form-label">Upload New Thumbnail Image (Optional)</label>
                 <input type="file" class="form-control" name="newThumbnailImage" />
             </div>
 
-            <button type="submit" class="btn btn-primary">Save Changes</button>
+            @if (!string.IsNullOrEmpty(Model.ThumbnailPath))
+            {
+                <div class="form-group">
+                    <label>Current Thumbnail</label>
+                    <img src="@Url.Content($"~/{Model.ThumbnailPath}")" alt="Thumbnail" class="card-img-top">
+                </div>
+            }
+
+
+
+            <button type="submit" class="btn btn-primary save-changes">Save Changes</button>
+
         </form>
     </div>
 
@@ -243,4 +294,33 @@
     </div>
 </body>
 </html>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var saveButton = document.querySelector('.save-changes');
+            if (saveButton) {
+                saveButton.addEventListener('click', function (event) {
+                    event.preventDefault();  // Prevent the default form submission
+                    var form = this.closest("form");
 
+                    // Show SweetAlert confirmation
+                    Swal.fire({
+                        title: 'Are you sure you want to save these changes?',
+                        text: 'Please confirm that you want to save the updates.',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, save it!',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();  // Submit the form programmatically
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+}

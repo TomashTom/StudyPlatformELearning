@@ -4,6 +4,22 @@
 @{
     ViewData["Title"] = "My Uploaded Videos";
 }
+@functions {
+    public string TruncateDescription(string description, int maxLength)
+    {
+        if (string.IsNullOrEmpty(description))
+        {
+            return description;
+        }
+
+        if (description.Length <= maxLength)
+        {
+            return description;
+        }
+
+        return description.Substring(0, maxLength) + "...";
+    }
+ }
 <div class="container mt-5">
     <h2 class="mb-4 text-center">@ViewData["Title"]</h2>
     <input type="text" id="searchBox" placeholder="Search videos..." class="form-control mb-4" onkeyup="searchVideos()" />
@@ -25,19 +41,16 @@
                         <h5 class="card-title">Title: @video.Name</h5>
                         <p class="card-text"><strong>Category:</strong> @(video.Category?.Name ?? "No Category")</p>
                         <p class="card-text"><strong>Description:</strong> @video.Description</p>
+                        <p class="card-text"><strong>Description:</strong> @TruncateDescription(@video.Description, 40)
                         <p class="card-text"><strong>Course:</strong> @(video.Course?.Name ?? "No Course")</p>
                         <p class="card-text"><small class="text-muted">Uploaded On: @video.UploadDateTime.ToString("yyyy-MM-dd")</small></p>
                         <p class="card-text"><strong>Status:</strong> @video.Status</p>
                     </div>
                     <div class="card-footer bg-white">
-                        <a href="@Url.Action("Edit", new { id = video.VideoId })" class="btn btn-outline-primary btn-sm">Edit</a>
+                        <a href="@Url.Action("Edit", new { id = video.VideoId })" class="btn btn-outline-primary btn-sm">Edit</a> 
                         <form method="post" asp-action="DeleteVideo" class="d-inline-block">
                             <input type="hidden" name="id" value="@video.VideoId" />
-                           @*  <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button> *@
-                           @*   <button type="button" class="btn btn-outline-danger btn-sm" onclick="showDeleteConfirmation('@video.VideoId')">Delete</button>  *@
-                           @*  <button type="submit" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button> *@
-                            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="showDeleteConfirmation('@video.VideoId')">Delete</button>
- 
+                            <button type="submit" class="btn btn-outline-danger btn-sm show-alert" data-id="@video.VideoId">Delete</button>
                         </form>
                         @if (video.Status == VideoStatus.Active)
                         {
@@ -74,32 +87,11 @@
 </nav>
 
 
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header" style="background-color: #ff6b6b; color: #fff;">
-                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p class="confirmation-message">Are you absolutely sure you want to delete this video? This action cannot be undone, and all of its content will be permanently removed from the system.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form id="deleteForm" method="post">
-                    <input type="hidden" id="deleteVideoId" name="id" value="" />
-                    <button type="submit" class="btn btn-danger" style="background-color: #ff6b6b; border-color: #ff6b6b;">Delete</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-
 @section Styles {
     <style>
+        .swal2-container {
+            z-index: 1060 !important; /* Ensure this is higher than the z-index of other elements */
+        }
         .confirmation-message {
             font-size: 16px;
             line-height: 1.5;
@@ -220,6 +212,8 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         function searchVideos() {
             var input, filter, videosContainer, videos, title, i, txtValue;
@@ -236,31 +230,38 @@
                 }
             }
         }
-        function showDeleteConfirmation(videoId) {
-            // Show a confirmation dialog
-            
-            // if (confirm("Are you sure you want to delete this video with all its content?")) {
-            //     // User clicked "OK" in the confirmation dialog, proceed with deletion
-            //     var form = document.getElementById("deleteForm");
-            //     var deleteVideoId = document.getElementById("deleteVideoId");
-            //     deleteVideoId.value = videoId;
-            //     form.submit();
-            // }
-            // // If user clicks "Cancel," do nothing
-            function showDeleteConfirmation(videoId) {
-                // Set the videoId to the hidden input field
-                var deleteVideoId = document.getElementById("deleteVideoId");
-                deleteVideoId.value = videoId;
-            }
 
-            document.getElementById('modalDeleteButton').addEventListener('click', function () {
-                // Submit the form when the "Delete" button in the modal is clicked
-                var form = document.getElementById("deleteForm");
-                form.submit();
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('form.d-inline-block').forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();  // Prevent the default form submission
+                    var button = form.querySelector('.show-alert');
+                    var videoId = button.dataset.id;  // Get the video ID
+
+                    // Show SweetAlert confirmation
+                    Swal.fire({
+                        title: 'Are you sure you want to delete?',
+                        text: 'If you delete this data, it cannot be recovered.',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Data has been deleted!',
+                                icon: 'success'
+                            }).then(() => {
+                                form.submit();
+                            });
+                        }
+                    });
+                });
             });
+        });
 
-        }
-        
         $(document).ready(function () {
             $("#searchBox").on("keyup", function () {
                 var searchTerm = $(this).val().toLowerCase();
