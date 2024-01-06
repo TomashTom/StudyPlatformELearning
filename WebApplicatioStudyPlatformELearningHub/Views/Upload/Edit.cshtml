@@ -1,8 +1,10 @@
 ﻿@model StudyPlatformELearningHub.Models.VideoFile
 
+
 @{
     ViewData["Title"] = "Edit Video";
-    var questionList = Model.Questions?.ToList() ?? new List<Question>();
+    // var questionList = Model.Questions?.ToList() ?? new List<Question>();
+    var questionList = Model.Questions.ToList();
 }
 
 <!DOCTYPE html>
@@ -116,6 +118,15 @@
 <body>
     <div class="container mt-5">
         <h2 class="text-center mb-4">Edit Video</h2>
+        @if (Model.VideoName != null && Model.ThumbnailPath != null)
+        {
+            <div class="card-video">
+                <video width="100%" height="auto" controls poster="@Url.Content($"~/{Model.ThumbnailPath}")">
+                    <source src="@Url.Content($"~/videoFiles/{Model.VideoName}")" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        }
         <form asp-controller="Upload" asp-action="Edit" asp-route-id="@Model.VideoId" method="post" enctype="multipart/form-data" class="my-4">
             <input type="hidden" asp-for="VideoId" />
 
@@ -167,6 +178,15 @@
                 <select asp-for="CourseId" class="form-select" asp-items="@(new SelectList(ViewBag.Courses, "CourseId", "Name"))">
                     <option value="">Select Course</option>
                 </select>
+            </div>
+            <div class="form-group">
+                <label for="newVideoFile" class="form-label">Upload New Video File (Optional)</label>
+                <input type="file" class="form-control" name="newVideoFile" />
+            </div>
+
+            <div class="form-group">
+                <label for="newThumbnailImage" class="form-label">Upload New Thumbnail Image (Optional)</label>
+                <input type="file" class="form-control" name="newThumbnailImage" />
             </div>
 
             <button type="submit" class="btn btn-primary">Save Changes</button>
