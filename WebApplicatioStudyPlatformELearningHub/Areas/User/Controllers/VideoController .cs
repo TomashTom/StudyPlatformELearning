@@ -2,11 +2,7 @@
 using StudyPlatformELearningHub.Data;
 using StudyPlatformELearningHub.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Security.Claims;
-using System.Xml.Linq;
-using System.ComponentModel.Design;
 
 namespace StudyPlatformELearningHub.Areas.User.Controllers
 {
@@ -14,7 +10,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
     public class VideoController : Controller
     {
         private readonly ApplicationDbContext _context;
-        
+
 
         public VideoController(ApplicationDbContext context)
         {
@@ -23,7 +19,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
 
 
 
-        public async Task<IActionResult> Index(int? categoryId,  string timeRange, string search,
+        public async Task<IActionResult> Index(int? categoryId, string dateRangeFilter, string search,
                                        List<string> names, List<string> creators,
                                        List<string> difficultyLevels, List<int> filterStars, int pageIndex = 1, int pageSize = 6)
         {
@@ -43,28 +39,42 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
             //    DateTime cutoffDate = DateTime.UtcNow.AddDays(-int.Parse(timeRange));
             //    videosQuery = videosQuery.Where(v => v.UploadDateTime >= cutoffDate);
             //}
-            DateTime currentTime = DateTime.UtcNow;
-
-            if (!string.IsNullOrEmpty(timeRange))
+            // Apply Time Range Filter
+            // Apply Time Range Filter
+            if (!string.IsNullOrEmpty(dateRangeFilter))
             {
-                switch (timeRange)
+                // Parse the selected date range to an integer
+                if (int.TryParse(dateRangeFilter, out int dateRangeValue))
                 {
-                    case "newest": // Last 7 days
-                        DateTime cutoffNewest = currentTime.AddDays(-7);
-                        videosQuery = videosQuery.Where(v => v.UploadDateTime >= cutoffNewest);
-                        break;
-                    case "30": // From 7 to 30 days ago
-                        DateTime cutoff30Start = currentTime.AddDays(-30);
-                        DateTime cutoff30End = currentTime.AddDays(-7);
-                        videosQuery = videosQuery.Where(v => v.UploadDateTime >= cutoff30Start && v.UploadDateTime < cutoff30End);
-                        break;
-                    case "60": // From 30 to 60 days ago
-                        DateTime cutoff60Start = currentTime.AddDays(-60);
-                        DateTime cutoff60End = currentTime.AddDays(-30);
-                        videosQuery = videosQuery.Where(v => v.UploadDateTime >= cutoff60Start && v.UploadDateTime < cutoff60End);
-                        break;
+                    DateTime currentDate = DateTime.UtcNow;
+                    DateTime lowerBound = currentDate;
+                    DateTime upperBound = currentDate;
+
+                    switch (dateRangeValue)
+                    {
+                        case 7:
+                            lowerBound = currentDate.AddDays(-7);
+                            break;
+                        case 30:
+                            // For the last 30 days, excluding the most recent 7 days
+                            lowerBound = currentDate.AddDays(-30);
+                            upperBound = currentDate.AddDays(-7);
+                            break;
+                        case 60:
+                            // For the last 60 days, excluding the most recent 30 days
+                            lowerBound = currentDate.AddDays(-60);
+                            upperBound = currentDate.AddDays(-30);
+                            break;
+                            // Add more cases for additional date range options if needed
+                    }
+
+                    videosQuery = videosQuery.Where(v => v.UploadDateTime >= lowerBound && v.UploadDateTime < upperBound);
                 }
             }
+
+
+
+
             // Apply Search Filter
             if (!string.IsNullOrEmpty(search))
             {
@@ -93,24 +103,24 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
             // Apply Rating Filter
             if (filterStars.Count > 0)
             {
-                
+
                 int rating = filterStars.First();
                 videosQuery = videosQuery.Where(v => v.Ratings.Any() && Math.Ceiling(v.Ratings.Average(r => r.Rating)) == rating);
             }
-           
+
             int totalVideos = await videosQuery.CountAsync();
             var videos = await videosQuery.Skip((pageIndex - 1) * pageSize)
                                   .Take(pageSize)
                                   .Select(v => new VideoViewModel
                                   {
                                       Video = v,
-                                      AverageRating = v.Ratings.Any() ? v.Ratings.Average(r =>                r.Rating) : 0,
+                                      AverageRating = v.Ratings.Any() ? v.Ratings.Average(r => r.Rating) : 0,
                                       ViewCount = v.UserVideoViews.Count
                                   })
                                   .AsQueryable()
                                   .ToListAsync();
             ViewBag.CurrentFilterCategoryId = categoryId;
-            ViewBag.CurrentFilterTimeRange = timeRange;
+            ViewBag.CurrentFilterTimeRange = dateRangeFilter;
             ViewBag.CurrentFilterSearch = search;
             ViewBag.CurrentFilterNames = names;
             ViewBag.CurrentFilterCreators = creators;
@@ -140,11 +150,11 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
 
         public async Task<IActionResult> Play(int id, int? CourseId)
         {
-            
+
             Console.WriteLine($"AllComments: {ViewBag.AllComments}");
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userNickname = await GetUserNicknameAsync(userId);
-           
+
 
             ViewData["Nickname"] = userNickname ?? "DefaultNickname";
 
@@ -165,7 +175,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                 // Redirect to the login page in the 'Identity' area
                 return RedirectToPage("/Account/Login", new { area = "Identity", ReturnUrl = returnUrl });
             }
-          
+
             //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var video = await _context.VideoFiles
@@ -175,12 +185,12 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                      .Include(v => v.SeeLaterVideos)
                      .FirstOrDefaultAsync(v => v.VideoId == id);
 
-            if(video == null)
-{
+            if (video == null)
+            {
                 return NotFound($"Video with ID {id} not found.");
             }
 
-           
+
             // Check if the user has already viewed this video
             var hasViewed = _context.UserVideoViews.Any(vv => vv.UserId == userId && vv.VideoId == id);
 
@@ -204,7 +214,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
             var isVideoSaved = await _context.SeeLaterVideos
                 .AnyAsync(sv => sv.VideoId == id && sv.UserId == userId);
             var recommendedVideos = await GetRecommendedVideos(video.CategoryId, video.CreatorFullName, currentVideo.VideoId);
-          
+
 
 
             var questions = await _context.Questions
@@ -234,7 +244,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
               .Where(p => p.CourseId == video.CourseId)
               .Include(c => c.Videos)
               .ToList();
-            
+
 
 
             var courseViewModels = coursesWithVideos.Select(course => new CourseViewModel
@@ -242,7 +252,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                 Course = course,
                 Videos = course.Videos.Where(video => video.CourseId != null).ToList()
             });
-          
+
 
             //
             var viewModel = new VideoPlayViewModel
@@ -261,7 +271,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                 Comments = comments,
                 Videos = recommendedVideos,
                 courseViewModels = courseViewModels
-               
+
             };
 
             viewModel.Context = _context;
@@ -270,7 +280,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
         private async Task<string> GetUserNicknameAsync(string userId)
         {
             var user = await _context.Users.FindAsync(userId);
-            return user?.UserName; 
+            return user?.UserName;
         }
         [HttpPost]
         public async Task<IActionResult> AddComment(int videoId, string content, string nickname)
@@ -293,8 +303,8 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
             HttpContext.Session.SetString("Nickname", nickname);
             return RedirectToAction("Play", new { id = videoId });
         }
-      
-        
+
+
 
 
         [HttpPost]
@@ -458,7 +468,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
 
 
 
-        
+
         [HttpPost]
         public async Task<IActionResult> LikeComment(int commentId, int videoId)
         {
@@ -571,10 +581,9 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
 
             return RedirectToAction("Play", new { id = videoId });
         }
-       
+
         private async Task<List<VideoFile>> GetRecommendedVideos(int categoryId, string creatorFullName, int currentVideoId)
         {
-
             return await _context.VideoFiles
                                  .Where(v => v.CategoryId == categoryId
                                              && v.CreatorFullName == creatorFullName
@@ -582,7 +591,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                                  .OrderByDescending(v => v.UploadDateTime) // Sort by newest
                                  .ToListAsync();
         }
-        
+
 
 
 
