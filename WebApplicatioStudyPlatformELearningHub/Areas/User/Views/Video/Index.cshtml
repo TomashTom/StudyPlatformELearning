@@ -10,7 +10,22 @@
 @{
     int totalPages = (int)Math.Ceiling((double)ViewBag.TotalVideos / ViewBag.PageSize);
 }
+@functions {
+    public string TruncateDescription(string description, int maxLength)
+    {
+        if (string.IsNullOrEmpty(description))
+        {
+            return description;
+        }
 
+        if (description.Length <= maxLength)
+        {
+            return description;
+        }
+
+        return description.Substring(0, maxLength) + "...";
+    }
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -31,9 +46,9 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
 
-   
-   
-    
+
+
+
     <style>
         /* Custom styles for course folder */
         .card-folder {
@@ -54,7 +69,7 @@
             margin-top: 10px; /* Adjust the top margin to separate the icon and button */
         }
 
-       
+
         .hero-wrap {
             background-size: cover;
             background-repeat: no-repeat;
@@ -132,22 +147,21 @@
         }
 
         .selected-checkbox {
-            background-color: #007bff; 
+            background-color: #007bff;
             color: white;
         }
-   
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
         <div class="container">
-            <a class="navbar-brand"<span>Study</span>Lab</a>
+            <a class="navbar-brand"><span>Study</span>Lab</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="oi oi-menu"></span> Menu
             </button>
             <div class="collapse navbar-collapse" id="ftco-nav">
                 <ul class="navbar-nav ml-auto">
-                  
+
                     <li class="nav-item">
                         <a asp-area="User" asp-controller="UserContactUs" asp-action="Index" class="nav-link">Contact Us</a>
                     </li>
@@ -164,18 +178,18 @@
                         <partial name="_LoginPartial" class="nav-link" />
                     </li>
                 </ul>
-                
+
             </div>
         </div>
     </nav>
-   
- 
-    <header class="hero-wrap hero-wrap-2" style="background-image: url('images/bg_2.jpg');">
+
+
+    <header class="hero-wrap hero-wrap-2">
         <div class="overlay"></div>
         <div class="container">
             <div class="row no-gutters slider-text align-items-end justify-content-center">
                 <div class="col-md-9 ftco-animate pb-5 text-center">
-                    <p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home <i class="fa fa-chevron-right"></i></a></span> <span>Course Lists <i class="fa fa-chevron-right"></i></span></p>
+                    <p class="breadcrumbs"><span class="mr-2"><a>Home <i class="fa fa-chevron-right"></i></a></span> <span>Course Lists <i class="fa fa-chevron-right"></i></span></p>
                     <h1 class="mb-0 bread">Course Lists</h1>
                 </div>
             </div>
@@ -201,7 +215,7 @@
                             </div>
                         </div>
                         <div id="nameFilter" style="display: none;">
-                            <label>Title:</label>
+                            <label>Name:</label>
                             <div id="nameOptions">
                                 <!-- Names will be populated here based on the selected category -->
                             </div>
@@ -224,24 +238,41 @@
                                 }
                             </div>
                         </div>
+                        <!-- Date Range filter -->
+                        @*    <div class="form-group">
+                        <label>Date Range:</label>
+                        <div>
+                        <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="last7DaysCheckbox" name="dateRange" value="7">
+                        <label class="form-check-label" for="last7DaysCheckbox">Last 7 days</label>
+                        </div>
+                        <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="last30DaysCheckbox" name="dateRange" value="30">
+                        <label class="form-check-label" for="last30DaysCheckbox">Last 30 days</label>
+                        </div>
+                        <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="last60DaysCheckbox" name="dateRange" value="60">
+                        <label class="form-check-label" for="last60DaysCheckbox">Last 2 months</label>
+                        </div>
+                        </div>
+                        </div> *@
                         <div class="form-group">
-                            <label>Date Range:</label>
+                            <label>Filter by Date Range:</label>
                             <div>
-                                <!-- Last 7 days (newest) -->
+                                <!-- Use the name "dateRangeFilter" for all radio buttons to group them -->
                                 <div class="form-check">
-                                    <input type="radio" class="form-check-input" id="newestCheckbox" name="dateRange" value="newest">
-                                    <label class="form-check-label" for="newestCheckbox">Last 7 days</label>
+                                    <input type="radio" class="form-check-input date-range-radio" id="filterDate7" name="dateRangeFilter" value="7">
+                                    <label class="form-check-label" for="filterDate7">Last 7 Days</label>
                                 </div>
-                                <!-- From 7 to 30 days ago -->
                                 <div class="form-check">
-                                    <input type="radio" class="form-check-input" id="last30DaysCheckbox" name="dateRange" value="30">
-                                    <label class="form-check-label" for="last30DaysCheckbox">From 7 to 30 days ago</label>
+                                    <input type="radio" class="form-check-input date-range-radio" id="filterDate30" name="dateRangeFilter" value="30">
+                                    <label class="form-check-label" for="filterDate30">Last 30 Days</label>
                                 </div>
-                                <!-- From 30 to 60 days ago -->
                                 <div class="form-check">
-                                    <input type="radio" class="form-check-input" id="last60DaysCheckbox" name="dateRange" value="60">
-                                    <label class="form-check-label" for="last60DaysCheckbox">From 30 to 60 days ago</label>
+                                    <input type="radio" class="form-check-input date-range-radio" id="filterDate60" name="dateRangeFilter" value="60">
+                                    <label class="form-check-label" for="filterDate60">Last 60 Days</label>
                                 </div>
+                                <!-- Add more date range options as needed -->
                             </div>
                         </div>
 
@@ -273,25 +304,24 @@
                                     </div>
                                 }
                             </div>
-                            
+
                         </div>
 
-                        <form method="get" action="@Url.Action("Index", "Video", new { area = "User" })">
-                          
+                        <form id="filterForm" action="@Url.Action("Index", "Video", new { area = "User" })">
+
 
                             <button type="submit" class="btn btn-primary">Apply Filters</button>
                             <button type="button" id="resetFiltersBtn" class="btn btn-secondary">Reset Filters</button>
 
 
                         </form>
-                     
+
                     </form>
-                    
+
                 </div>
                 <div class="col-md-8">
                     <!-- Display selected filters -->
- 
-                    @if (TempData["SelectedCategoryIds"] != null || TempData["SelectedCreatorNames"] != null || TempData["SelectedDifficultyLevels"] != null || TempData["SelectedDateRange"] != null || TempData["SelectedRatingFilter"] != null)
+                    @if (TempData["SelectedCategoryIds"] != null || TempData["SelectedCreatorNames"] != null || TempData["SelectedDifficultyLevels"] != null || TempData["SelecteddateRangeFilter"] != null || TempData["SelectedRatingFilter"] != null)
                     {
                         <div class="selected-filters">
                             <h3>Selected Filters:</h3>
@@ -323,11 +353,11 @@
                             }
 
 
-                            @if (TempData["SelectedDateRange"] != null)
+                            @if (TempData["SelecteddateRangeFilter"] != null)
                             {
                                 <p>
                                     <strong>Date Range:</strong>
-                                    <span>@TempData["SelectedDateRange"]</span>
+                                    <span>@TempData["SelecteddateRangeFilter"]</span>
                                 </p>
                             }
 
@@ -358,16 +388,17 @@
                                         }
                                         <div class="card-body">
                                             <h5 class="card-title">Video Title: @videoVM.Video.Name</h5>
-                                            <p class="card-text">Description: @videoVM.Video.Description</p>
+                                            @*   <p class="card-text">Description: @videoVM.Video.Description</p> *@
+                                            <p class="card-text">Description: @TruncateDescription(videoVM.Video.Description, 40)
                                             <p class="card-text">Creator Name @videoVM.Video.CreatorFullName</p>
                                             <p class="card-text">Difficulty: @videoVM.Video.Difficulty</p>
                                             <p class="card-text">Upload Date Time: @videoVM.Video.UploadDateTime</p>
                                             <p>
                                                 Average Rating:
-                                                @for (int i = 0; i < videoVM.AverageRating; i++)
-                                                {
+                                                    @for (int i = 0; i < videoVM.AverageRating; i++)
+                                                    {
                                                     <i class="fa fa-star" style="color: yellow;"></i>
-                                                }
+                                                    }
                                             </p>
 
                                             <p class="card-text"><i class="fa fa-eye"></i> Views: @videoVM.ViewCount</p>
@@ -386,10 +417,10 @@
                                 </div>
                             }
                         }
-                       
+
                     </div>
 
-                 
+
                     <nav aria-label="Video navigation" class="my-4">
                         <ul class="pagination">
                             @if (ViewBag.PageIndex > 1)
@@ -451,8 +482,8 @@
 
                 </div>
 
-              
-               
+
+
             </div>
         </div>
     </section>
@@ -480,19 +511,20 @@
     <script src="js/jquery.animateNumber.min.js"></script>
     <script src="js/bootstrap-datepicker.js"></script>
     <script src="js/scrollax.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&sensor=false"></script>
-    <script src="js/google-map.js"></script>
+    @*     <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&sensor=false"></script> *@
+    @*  <script src="js/google-map.js"></script> *@
     <script src="js/main.js"></script>
 
 
 
 
-   
+
+
 
     <script>
         // Function to update the visual representation of selected checkboxes
         function updateSelectedCheckboxes() {
-            const allCheckboxes = $('.category-checkbox, .creator-checkbox, input[name="dateRange"], input[name="difficultyLevels"], input[name^="filterStars"]');
+            const allCheckboxes = $('.category-checkbox, .creator-checkbox, input[name="dateRangeFilter"], input[name="difficultyLevels"], input[name^="filterStars"]');
             allCheckboxes.removeClass('selected-checkbox');
             allCheckboxes.filter(':checked').addClass('selected-checkbox');
         }
@@ -502,7 +534,7 @@
             const selectedFilters = {
                 categories: $('.category-checkbox:checked').map((_, el) => $(el).val()).get(),
                 creators: $('.creator-checkbox:checked').map((_, el) => $(el).val()).get(),
-                dateRange: $('input[name="dateRange"]:checked').val(),
+                dateRange: $('input[name="dateRangeFilter"]:checked').val(),
                 difficultyLevels: $('input[name="difficultyLevels"]:checked').map((_, el) => $(el).val()).get(),
                 filterStars: $('input[name="filterStars"]:checked').val()
             };
@@ -597,9 +629,7 @@
                 success: function (data) {
                     $('#videoListContainer').html(data);
                 },
-                error: function () {
-                    console.error('Error fetching filtered videos.');
-                }
+
             });
         }
 
@@ -615,15 +645,15 @@
         }
 
         // Event delegation for filter checkboxes, radio buttons, and buttons
-        $(document).on('change', '.category-checkbox, .creator-checkbox, input[name="dateRange"], input[name="difficultyLevels"], input[name^="filterStars"]', function () {
+        $(document).on('change', '.category-checkbox, .creator-checkbox, input[name="dateRangeFilter"], input[name="difficultyLevels"], input[name^="filterStars"]', function () {
             updateVideoNamesFilter();
             saveSelectedFilters(); // Save filters as cookies and localStorage when they change
         });
 
         $(document).on('click', '#applyFiltersBtn', function (e) {
-           
+
             saveSelectedFilters(); // Save filters as cookies and localStorage when the "Apply Filters" button is clicked
-            
+
         });
 
         $(document).on('click', '#resetFiltersBtn', function () {
@@ -635,6 +665,34 @@
             $('.star-rating-radio').not(this).prop('checked', false);
             saveSelectedFilters(); // Save filters as cookies and localStorage when star rating changes
         });
+        // Event listener for date range radio buttons
+        $(document).on('change', '.date-range-radio', function () {
+            // Get the selected date range value
+            const selectedDateRange = $('input[name="dateRangeFilter"]:checked').val();
+
+            // Perform actions based on the selected date range
+            switch (selectedDateRange) {
+                case "7":
+                    // Filter videos for the last 7 days
+                    applyDateRangeFilter(7);
+                    break;
+                case "30":
+                    // Filter videos for the last 30 days
+                    applyDateRangeFilter(30);
+                    break;
+                case "60":
+                    // Filter videos for the last 60 days
+                    applyDateRangeFilter(60);
+                    break;
+                // Add more cases for other date ranges as needed
+            }
+
+            // Save selected filters when the date range changes
+            saveSelectedFilters();
+        });
+
+
+
 
         // Restore filters from cookies or localStorage on page load
         restoreFilters();
