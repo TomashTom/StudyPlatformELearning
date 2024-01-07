@@ -13,8 +13,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-Learning Hub</title>
-    <script src="your-scripts.js"></script>
-    <link rel="stylesheet" href="/css/styles.css">
+
+@*     <link rel="stylesheet" href="/css/styles.css"> *@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <style>
@@ -207,7 +207,7 @@
         {
             <section class="hero">
                 <div class="hero-content text-center">
-                    <h1 class="display-4">Welcome to the E-Learning Hub</h1>
+                    <h1 class="display-4">Welcome to the E-Learning StudyHub</h1>
                     <p class="lead">Explore a world of knowledge and learning.</p>
                     <div class="cta-buttons">
                         <a href="/Identity/Account/Login" class="btn btn-primary btn-lg mr-3">Log In</a>
@@ -311,7 +311,26 @@
                 margin: 0.5rem 0; /* Adds space between buttons */
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
                 transition: all 0.3s ease;
+                position: relative;
+                overflow: hidden;
             }
+
+                .btn-outline-secondary::before {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 110%; /* Slightly larger than the button itself */
+                    height: 110%;
+                    background-color: #f0f0f0; /* Light background color */
+                    z-index: -1;
+                    transition: all 0.3s;
+                }
+
+                .btn-outline-secondary:hover::before {
+                    background-color: #e0e0e0; /* Color changes on hover */
+                }
 
                 .btn-outline-secondary i {
                     margin-right: 0.5rem;

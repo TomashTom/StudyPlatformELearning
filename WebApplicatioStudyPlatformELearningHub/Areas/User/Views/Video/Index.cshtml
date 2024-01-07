@@ -185,7 +185,7 @@
     </nav>
    
  
-    <header class="hero-wrap hero-wrap-2" style="background-image: url('images/bg_2.jpg');">
+    <header class="hero-wrap hero-wrap-2">
         <div class="overlay"></div>
         <div class="container">
             <div class="row no-gutters slider-text align-items-end justify-content-center">
@@ -240,7 +240,7 @@
                             </div>
                         </div>
                         <!-- Date Range filter -->
-                        <div class="form-group">
+                     @*    <div class="form-group">
                             <label>Date Range:</label>
                             <div>
                                 <div class="form-check">
@@ -256,7 +256,28 @@
                                     <label class="form-check-label" for="last60DaysCheckbox">Last 2 months</label>
                                 </div>
                             </div>
+                        </div> *@
+                        <div class="form-group">
+                            <label>Filter by Date Range:</label>
+                            <div>
+                                <!-- Use the name "dateRangeFilter" for all radio buttons to group them -->
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input date-range-radio" id="filterDate7" name="dateRangeFilter" value="7">
+                                    <label class="form-check-label" for="filterDate7">Last 7 Days</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input date-range-radio" id="filterDate30" name="dateRangeFilter" value="30">
+                                    <label class="form-check-label" for="filterDate30">Last 30 Days</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input date-range-radio" id="filterDate60" name="dateRangeFilter" value="60">
+                                    <label class="form-check-label" for="filterDate60">Last 60 Days</label>
+                                </div>
+                                <!-- Add more date range options as needed -->
+                            </div>
                         </div>
+
+
                         <div class="form-group">
                             <label>Difficulty Level:</label>
                             @foreach (var level in Enum.GetValues(typeof(StudyPlatformELearningHub.Models.VideoDifficulty)))
@@ -287,7 +308,7 @@
                             
                         </div>
 
-                        <form method="get" action="@Url.Action("Index", "Video", new { area = "User" })">
+                        <form id="filterForm" action="@Url.Action("Index", "Video", new { area = "User" })">
                           
 
                             <button type="submit" class="btn btn-primary">Apply Filters</button>
@@ -301,8 +322,7 @@
                 </div>
                 <div class="col-md-8">
                     <!-- Display selected filters -->
- 
-                    @if (TempData["SelectedCategoryIds"] != null || TempData["SelectedCreatorNames"] != null || TempData["SelectedDifficultyLevels"] != null || TempData["SelectedDateRange"] != null || TempData["SelectedRatingFilter"] != null)
+                    @if (TempData["SelectedCategoryIds"] != null || TempData["SelectedCreatorNames"] != null || TempData["SelectedDifficultyLevels"] != null || TempData["SelecteddateRangeFilter"] != null || TempData["SelectedRatingFilter"] != null)
                     {
                         <div class="selected-filters">
                             <h3>Selected Filters:</h3>
@@ -334,11 +354,11 @@
                             }
 
 
-                            @if (TempData["SelectedDateRange"] != null)
+                            @if (TempData["SelecteddateRangeFilter"] != null)
                             {
                                 <p>
                                     <strong>Date Range:</strong>
-                                    <span>@TempData["SelectedDateRange"]</span>
+                                    <span>@TempData["SelecteddateRangeFilter"]</span>
                                 </p>
                             }
 
@@ -492,8 +512,8 @@
     <script src="js/jquery.animateNumber.min.js"></script>
     <script src="js/bootstrap-datepicker.js"></script>
     <script src="js/scrollax.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&sensor=false"></script>
-    <script src="js/google-map.js"></script>
+@*     <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&sensor=false"></script> *@
+   @*  <script src="js/google-map.js"></script> *@
     <script src="js/main.js"></script>
 
 
@@ -505,7 +525,7 @@
     <script>
         // Function to update the visual representation of selected checkboxes
         function updateSelectedCheckboxes() {
-            const allCheckboxes = $('.category-checkbox, .creator-checkbox, input[name="dateRange"], input[name="difficultyLevels"], input[name^="filterStars"]');
+            const allCheckboxes = $('.category-checkbox, .creator-checkbox, input[name="dateRangeFilter"], input[name="difficultyLevels"], input[name^="filterStars"]');
             allCheckboxes.removeClass('selected-checkbox');
             allCheckboxes.filter(':checked').addClass('selected-checkbox');
         }
@@ -515,7 +535,7 @@
             const selectedFilters = {
                 categories: $('.category-checkbox:checked').map((_, el) => $(el).val()).get(),
                 creators: $('.creator-checkbox:checked').map((_, el) => $(el).val()).get(),
-                dateRange: $('input[name="dateRange"]:checked').val(),
+                dateRange: $('input[name="dateRangeFilter"]:checked').val(),
                 difficultyLevels: $('input[name="difficultyLevels"]:checked').map((_, el) => $(el).val()).get(),
                 filterStars: $('input[name="filterStars"]:checked').val()
             };
@@ -610,9 +630,7 @@
                 success: function (data) {
                     $('#videoListContainer').html(data);
                 },
-                error: function () {
-                    console.error('Error fetching filtered videos.');
-                }
+                
             });
         }
 
@@ -628,7 +646,7 @@
         }
 
         // Event delegation for filter checkboxes, radio buttons, and buttons
-        $(document).on('change', '.category-checkbox, .creator-checkbox, input[name="dateRange"], input[name="difficultyLevels"], input[name^="filterStars"]', function () {
+        $(document).on('change', '.category-checkbox, .creator-checkbox, input[name="dateRangeFilter"], input[name="difficultyLevels"], input[name^="filterStars"]', function () {
             updateVideoNamesFilter();
             saveSelectedFilters(); // Save filters as cookies and localStorage when they change
         });
@@ -648,6 +666,34 @@
             $('.star-rating-radio').not(this).prop('checked', false);
             saveSelectedFilters(); // Save filters as cookies and localStorage when star rating changes
         });
+        // Event listener for date range radio buttons
+        $(document).on('change', '.date-range-radio', function () {
+            // Get the selected date range value
+            const selectedDateRange = $('input[name="dateRangeFilter"]:checked').val();
+
+            // Perform actions based on the selected date range
+            switch (selectedDateRange) {
+                case "7":
+                    // Filter videos for the last 7 days
+                    applyDateRangeFilter(7);
+                    break;
+                case "30":
+                    // Filter videos for the last 30 days
+                    applyDateRangeFilter(30);
+                    break;
+                case "60":
+                    // Filter videos for the last 60 days
+                    applyDateRangeFilter(60);
+                    break;
+                // Add more cases for other date ranges as needed
+            }
+
+            // Save selected filters when the date range changes
+            saveSelectedFilters();
+        });
+
+
+
 
         // Restore filters from cookies or localStorage on page load
         restoreFilters();

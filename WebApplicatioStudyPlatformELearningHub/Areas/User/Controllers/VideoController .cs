@@ -23,7 +23,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
 
 
 
-        public async Task<IActionResult> Index(int? categoryId,  string timeRange, string search,
+        public async Task<IActionResult> Index(int? categoryId, string dateRangeFilter, string search,
                                        List<string> names, List<string> creators,
                                        List<string> difficultyLevels, List<int> filterStars, int pageIndex = 1, int pageSize = 6)
         {
@@ -38,11 +38,46 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                 videosQuery = videosQuery.Where(v => v.CategoryId == categoryId.Value);
             }
             // Apply Time Range Filter
-            if (!string.IsNullOrEmpty(timeRange))
+            //if (!string.IsNullOrEmpty(timeRange))
+            //{
+            //    DateTime cutoffDate = DateTime.UtcNow.AddDays(-int.Parse(timeRange));
+            //    videosQuery = videosQuery.Where(v => v.UploadDateTime >= cutoffDate);
+            //}
+            // Apply Time Range Filter
+            // Apply Time Range Filter
+            if (!string.IsNullOrEmpty(dateRangeFilter))
             {
-                DateTime cutoffDate = DateTime.UtcNow.AddDays(-int.Parse(timeRange));
-                videosQuery = videosQuery.Where(v => v.UploadDateTime >= cutoffDate);
+                // Parse the selected date range to an integer
+                if (int.TryParse(dateRangeFilter, out int dateRangeValue))
+                {
+                    DateTime currentDate = DateTime.UtcNow;
+                    DateTime lowerBound = currentDate;
+                    DateTime upperBound = currentDate;
+
+                    switch (dateRangeValue)
+                    {
+                        case 7:
+                            lowerBound = currentDate.AddDays(-7);
+                            break;
+                        case 30:
+                            // For the last 30 days, excluding the most recent 7 days
+                            lowerBound = currentDate.AddDays(-30);
+                            upperBound = currentDate.AddDays(-7);
+                            break;
+                        case 60:
+                            // For the last 60 days, excluding the most recent 30 days
+                            lowerBound = currentDate.AddDays(-60);
+                            upperBound = currentDate.AddDays(-30);
+                            break;
+                            // Add more cases for additional date range options if needed
+                    }
+
+                    videosQuery = videosQuery.Where(v => v.UploadDateTime >= lowerBound && v.UploadDateTime < upperBound);
+                }
             }
+
+
+
 
             // Apply Search Filter
             if (!string.IsNullOrEmpty(search))
@@ -89,7 +124,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                                   .AsQueryable()
                                   .ToListAsync();
             ViewBag.CurrentFilterCategoryId = categoryId;
-            ViewBag.CurrentFilterTimeRange = timeRange;
+            ViewBag.CurrentFilterTimeRange = dateRangeFilter;
             ViewBag.CurrentFilterSearch = search;
             ViewBag.CurrentFilterNames = names;
             ViewBag.CurrentFilterCreators = creators;
