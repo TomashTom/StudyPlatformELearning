@@ -579,25 +579,10 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
         {
             return await _context.VideoFiles
                                  .Where(v => v.CategoryId == categoryId
-                                             && v.CreatorFullName == creatorFullName
                                              && v.VideoId != currentVideoId) // Exclude the current video
                                  .OrderByDescending(v => v.UploadDateTime) // Sort by newest
                                  .ToListAsync();
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     }
 
