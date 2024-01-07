@@ -1,4 +1,4 @@
-﻿@page
+﻿@* @page
 @model RegisterConfirmationModel
 @{
     ViewData["Title"] = "Register confirmation";
@@ -21,3 +21,16 @@
     }
 }
 
+ *@
+@page
+@model RegisterConfirmationModel
+@{
+    var message = TempData["Message"] as string;
+}
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert alert-info">
+        @Html.Raw(message)
+    </div>
+}
