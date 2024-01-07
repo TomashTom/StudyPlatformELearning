@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StudyPlatformELearningHub.Data;
 
@@ -11,9 +12,10 @@ using StudyPlatformELearningHub.Data;
 namespace StudyPlatformELearningHub.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240104133726_FileNameUp")]
+    partial class FileNameUp
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -245,9 +247,6 @@ namespace StudyPlatformELearningHub.Migrations
                     b.Property<bool>("IsCorrect")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsEditing")
-                        .HasColumnType("bit");
-
                     b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
@@ -259,7 +258,7 @@ namespace StudyPlatformELearningHub.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("Answers", (string)null);
+                    b.ToTable("Answers");
                 });
 
             modelBuilder.Entity("StudyPlatformELearningHub.Models.Category", b =>
@@ -280,7 +279,7 @@ namespace StudyPlatformELearningHub.Migrations
 
                     b.HasKey("CategoryId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("StudyPlatformELearningHub.Models.Comment", b =>
@@ -339,7 +338,7 @@ namespace StudyPlatformELearningHub.Migrations
 
                     b.HasIndex("VideoId");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("StudyPlatformELearningHub.Models.Course", b =>
@@ -367,7 +366,7 @@ namespace StudyPlatformELearningHub.Migrations
 
                     b.HasKey("CourseId");
 
-                    b.ToTable("Courses", (string)null);
+                    b.ToTable("Courses");
                 });
 
             modelBuilder.Entity("StudyPlatformELearningHub.Models.EmailMessage", b =>
@@ -417,7 +416,7 @@ namespace StudyPlatformELearningHub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EmailMessages", (string)null);
+                    b.ToTable("EmailMessages");
                 });
 
             modelBuilder.Entity("StudyPlatformELearningHub.Models.EmailSend", b =>
@@ -453,7 +452,7 @@ namespace StudyPlatformELearningHub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EmailSends", (string)null);
+                    b.ToTable("EmailSends");
                 });
 
             modelBuilder.Entity("StudyPlatformELearningHub.Models.EntityRole", b =>
@@ -495,7 +494,7 @@ namespace StudyPlatformELearningHub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EntityRoles", (string)null);
+                    b.ToTable("EntityRoles");
                 });
 
             modelBuilder.Entity("StudyPlatformELearningHub.Models.Playlist", b =>
@@ -521,19 +520,16 @@ namespace StudyPlatformELearningHub.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Playlists", (string)null);
+                    b.ToTable("Playlists");
                 });
 
             modelBuilder.Entity("StudyPlatformELearningHub.Models.Question", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("QuestionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("IsEditing")
-                        .HasColumnType("bit");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QuestionId"), 1L, 1);
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -542,11 +538,11 @@ namespace StudyPlatformELearningHub.Migrations
                     b.Property<int>("VideoId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("QuestionId");
 
                     b.HasIndex("VideoId");
 
-                    b.ToTable("Questions", (string)null);
+                    b.ToTable("Questions");
                 });
 
             modelBuilder.Entity("StudyPlatformELearningHub.Models.SeeLaterVideo", b =>
@@ -584,7 +580,7 @@ namespace StudyPlatformELearningHub.Migrations
 
                     b.HasIndex("VideoId");
 
-                    b.ToTable("SeeLaterVideos", (string)null);
+                    b.ToTable("SeeLaterVideos");
                 });
 
             modelBuilder.Entity("StudyPlatformELearningHub.Models.UserBlockStatus", b =>
@@ -604,7 +600,7 @@ namespace StudyPlatformELearningHub.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserBlockStatuses", (string)null);
+                    b.ToTable("UserBlockStatuses");
                 });
 
             modelBuilder.Entity("StudyPlatformELearningHub.Models.UserHeart", b =>
@@ -619,7 +615,7 @@ namespace StudyPlatformELearningHub.Migrations
 
                     b.HasIndex("CommentId");
 
-                    b.ToTable("UserHearts", (string)null);
+                    b.ToTable("UserHearts");
                 });
 
             modelBuilder.Entity("StudyPlatformELearningHub.Models.UserLike", b =>
@@ -634,7 +630,7 @@ namespace StudyPlatformELearningHub.Migrations
 
                     b.HasIndex("CommentId");
 
-                    b.ToTable("UserLikes", (string)null);
+                    b.ToTable("UserLikes");
                 });
 
             modelBuilder.Entity("StudyPlatformELearningHub.Models.UserVideoView", b =>
@@ -661,7 +657,7 @@ namespace StudyPlatformELearningHub.Migrations
 
                     b.HasIndex("VideoId");
 
-                    b.ToTable("UserVideoViews", (string)null);
+                    b.ToTable("UserVideoViews");
                 });
 
             modelBuilder.Entity("StudyPlatformELearningHub.Models.VideoFile", b =>
@@ -722,7 +718,7 @@ namespace StudyPlatformELearningHub.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("VideoFiles", (string)null);
+                    b.ToTable("VideoFiles");
                 });
 
             modelBuilder.Entity("StudyPlatformELearningHub.Models.VideoRating", b =>
@@ -749,7 +745,7 @@ namespace StudyPlatformELearningHub.Migrations
 
                     b.HasIndex("VideoId");
 
-                    b.ToTable("VideoRatings", (string)null);
+                    b.ToTable("VideoRatings");
                 });
 
             modelBuilder.Entity("StudyPlatformELearningHub.Models.VideoViewModel", b =>
@@ -769,7 +765,7 @@ namespace StudyPlatformELearningHub.Migrations
 
                     b.HasIndex("VideoId");
 
-                    b.ToTable("VideoViewModel", (string)null);
+                    b.ToTable("VideoViewModel");
                 });
 
             modelBuilder.Entity("StudyPlatformELearningHub.Models.ApplicationUser", b =>

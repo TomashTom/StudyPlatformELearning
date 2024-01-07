@@ -21,18 +21,6 @@ internal class Program
 
 
 
-        //builder.Services.AddAuthentication().AddGoogle(googleOptions =>
-
-        //{
-        //    googleOptions.ClientId = builder.Configuration["GoogleKeys:ClientId"];
-        //    googleOptions.ClientSecret = builder.Configuration["GoogleKeys:ClientSecret"];
-        //});
-
-        //builder.Services.AddAuthentication().AddFacebook(facebookOptions =>
-        //{
-        //    facebookOptions.AppId = "2036367573403106";
-        //    facebookOptions.AppSecret = "988e352f2ac2f6ee55115949e5feb242";
-        //});
 
         builder.Services.AddControllersWithViews();
 

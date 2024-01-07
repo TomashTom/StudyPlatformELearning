@@ -11,7 +11,7 @@
 
 <div class="container my-5">
     <h2 class="text-center mb-5">Upload Video</h2>
-    <form method="post" enctype="multipart/form-data" id="uploadForm" class="rounded bg-white shadow p-5">
+    <form method="post"  enctype="multipart/form-data" id="uploadForm" class="rounded bg-white shadow p-5">
 
         <div class="input-group mb-4">
             <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
@@ -168,7 +168,7 @@
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="questions[${questionIdx}].Answers[${answerIndex}].IsCorrect" value="true" />
                             <input type="text" name="questions[${questionIdx}].Answers[${answerIndex}].Text" class="form-control" placeholder="Answer Text" />
-                            <input type="text" name="questions[${questionIdx}].Answers[${answerIndex}].IncorrectMessage" class="form-control" placeholder="Message for incorrect answer" />
+                            <input type="text" name="questions[${questionIdx}].Answers[${answerIndex}].IncorrectMessage" class="form-control" placeholder="Message for answer" />
                             <button type="button" class="btn btn-danger btn-sm" onclick="removeAnswer(this)">Remove Answer</button>
                         </div>`;
             answersContainer.append(answerHtml);

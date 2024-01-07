@@ -4,6 +4,22 @@
 @{
     ViewData["Title"] = "My Uploaded Videos";
 }
+@functions {
+    public string TruncateDescription(string description, int maxLength)
+    {
+        if (string.IsNullOrEmpty(description))
+        {
+            return description;
+        }
+
+        if (description.Length <= maxLength)
+        {
+            return description;
+        }
+
+        return description.Substring(0, maxLength) + "...";
+    }
+ }
 <div class="container mt-5">
     <h2 class="mb-4 text-center">@ViewData["Title"]</h2>
     <input type="text" id="searchBox" placeholder="Search videos..." class="form-control mb-4" onkeyup="searchVideos()" />
@@ -13,19 +29,6 @@
         {
             <div class="col-md-4 mb-4 video-item">
                 <div class="card video-card shadow-sm">
-@*                     <div class="card-img-top">
-                        <video width="100%" height="auto" controls>
-                            <source src="@Url.Content($"~/videoFiles/{video.VideoName}")" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-                    <!-- Thumbnail display -->
-                    @if (!string.IsNullOrEmpty(video.ThumbnailPath))
-                    {
-                        <div class="text-center p-2">
-                            <img src="@Url.Content($"~/{video.ThumbnailPath}")" alt="Thumbnail" class="img-thumbnail">
-                        </div>
-                    } *@
                     <div class="card-video">
                         <video width="100%" height="auto" controls poster="@Url.Content($"~/{video.ThumbnailPath}")">
                             <source src="@Url.Content($"~/videoFiles/{video.VideoName}")" type="video/mp4">
@@ -38,13 +41,17 @@
                         <h5 class="card-title">Title: @video.Name</h5>
                         <p class="card-text"><strong>Category:</strong> @(video.Category?.Name ?? "No Category")</p>
                         <p class="card-text"><strong>Description:</strong> @video.Description</p>
+                        <p class="card-text"><strong>Description:</strong> @TruncateDescription(@video.Description, 40)
                         <p class="card-text"><strong>Course:</strong> @(video.Course?.Name ?? "No Course")</p>
                         <p class="card-text"><small class="text-muted">Uploaded On: @video.UploadDateTime.ToString("yyyy-MM-dd")</small></p>
                         <p class="card-text"><strong>Status:</strong> @video.Status</p>
                     </div>
                     <div class="card-footer bg-white">
-                        <a href="@Url.Action("Edit", new { id = video.VideoId })" class="btn btn-outline-primary btn-sm">Edit</a>
-                        <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal" data-video-id="@video.VideoId">Delete</button>
+                        <a href="@Url.Action("Edit", new { id = video.VideoId })" class="btn btn-outline-primary btn-sm">Edit</a> 
+                        <form method="post" asp-action="DeleteVideo" class="d-inline-block">
+                            <input type="hidden" name="id" value="@video.VideoId" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm show-alert" data-id="@video.VideoId">Delete</button>
+                        </form>
                         @if (video.Status == VideoStatus.Active)
                         {
                             <form method="post" asp-action="ChangeVideoStatus" class="d-inline-block">
@@ -79,31 +86,50 @@
     </ul>
 </nav>
 
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Are you sure you want to delete this video?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form id="deleteForm" method="post">
-                    <input type="hidden" id="deleteVideoId" name="id" value="" />
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                </form>
-
-            </div>
-        </div>
-    </div>
-</div>
 
 @section Styles {
     <style>
-        
+        .swal2-container {
+            z-index: 1060 !important; /* Ensure this is higher than the z-index of other elements */
+        }
+        .confirmation-message {
+            font-size: 16px;
+            line-height: 1.5;
+            color: #333; /* Adjust the text color as needed */
+        }
+        /* Styling for the Delete Modal */
+        #deleteModal {
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent background overlay */
+        }
+
+        .modal-content {
+            border-radius: 10px; /* Rounded corners for the modal */
+        }
+
+        .modal-header {
+            border: none; /* Remove the border in the header */
+            border-radius: 10px 10px 0 0; /* Rounded corners only at the top */
+        }
+
+        .modal-body {
+            padding: 20px; /* Add padding to the modal body */
+        }
+
+        .modal-footer {
+            border: none; /* Remove the border in the footer */
+            border-radius: 0 0 10px 10px; /* Rounded corners only at the bottom */
+        }
+
+        .btn-danger {
+            background-color: #dc3545; /* Red background for the "Delete" button */
+            border-color: #dc3545; /* Red border color for the button */
+            color: #fff; /* White text color */
+        }
+
+            .btn-danger:hover {
+                background-color: #c82333; /* Darker red on hover */
+                border-color: #bd2130; /* Darker border color on hover */
+            }
         .video-thumbnail {
             position: relative;
             padding-top: 56.25%; /* 16:9 Aspect Ratio */
@@ -186,6 +212,8 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         function searchVideos() {
             var input, filter, videosContainer, videos, title, i, txtValue;
@@ -202,6 +230,38 @@
                 }
             }
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('form.d-inline-block').forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    event.preventDefault();  // Prevent the default form submission
+                    var button = form.querySelector('.show-alert');
+                    var videoId = button.dataset.id;  // Get the video ID
+
+                    // Show SweetAlert confirmation
+                    Swal.fire({
+                        title: 'Are you sure you want to delete?',
+                        text: 'If you delete this data, it cannot be recovered.',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Data has been deleted!',
+                                icon: 'success'
+                            }).then(() => {
+                                form.submit();
+                            });
+                        }
+                    });
+                });
+            });
+        });
+
         $(document).ready(function () {
             $("#searchBox").on("keyup", function () {
                 var searchTerm = $(this).val().toLowerCase();
@@ -219,12 +279,6 @@
                         $(this).hide();
                     }
                 });
-            });
-            $('.delete-btn').on('click', function () {
-                var videoId = $(this).data('video-id'); // Get the video ID
-                var deleteUrl = '@Url.Action("DeleteVideo", "Upload")' + '?id=' + videoId; // Construct the URL
-                $('#deleteForm').attr('action', deleteUrl); // Set the form's action
-                $('#deleteVideoId').val(videoId); // Optional: Set the hidden input with the video ID if used
             });
             $('.btn-change-status').on('click', function () {
                 var videoId = $(this).data('video-id');

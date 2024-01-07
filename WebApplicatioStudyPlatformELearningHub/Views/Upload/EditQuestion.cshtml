@@ -1,0 +1,25 @@
+﻿@model StudyPlatformELearningHub.Models.Question
+
+@{
+    ViewData["Title"] = "Edit Question";
+}
+
+<h2>Edit Question</h2>
+
+<form asp-controller="Upload" asp-action="EditQuestion" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div class="form-group">
+        <label asp-for="Text" class="control-label"></label>
+        <input asp-for="Text" class="form-control" />
+        <span asp-validation-for="Text" class="text-danger"></span>
+    </div>
+
+
+    <div class="form-group">
+        <input type="submit" value="Save" class="btn btn-primary" />
+    </div>
+</form>
+
+<div>
+    <a asp-action="Edit" asp-controller="Upload" asp-route-id="@Model.VideoId">Back to Video</a>
+</div>

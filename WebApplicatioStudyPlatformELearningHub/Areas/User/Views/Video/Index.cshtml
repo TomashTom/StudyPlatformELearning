@@ -25,7 +25,7 @@
 
         return description.Substring(0, maxLength) + "...";
     }
-}
+ }
 
 <!DOCTYPE html>
 <html lang="en">
@@ -182,8 +182,8 @@
             </div>
         </div>
     </nav>
-
-
+   
+ 
     <header class="hero-wrap hero-wrap-2">
         <div class="overlay"></div>
         <div class="container">
@@ -239,22 +239,22 @@
                             </div>
                         </div>
                         <!-- Date Range filter -->
-                        @*    <div class="form-group">
-                        <label>Date Range:</label>
-                        <div>
-                        <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="last7DaysCheckbox" name="dateRange" value="7">
-                        <label class="form-check-label" for="last7DaysCheckbox">Last 7 days</label>
-                        </div>
-                        <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="last30DaysCheckbox" name="dateRange" value="30">
-                        <label class="form-check-label" for="last30DaysCheckbox">Last 30 days</label>
-                        </div>
-                        <div class="form-check">
-                        <input type="checkbox" class="form-check-input" id="last60DaysCheckbox" name="dateRange" value="60">
-                        <label class="form-check-label" for="last60DaysCheckbox">Last 2 months</label>
-                        </div>
-                        </div>
+                     @*    <div class="form-group">
+                            <label>Date Range:</label>
+                            <div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="last7DaysCheckbox" name="dateRange" value="7">
+                                    <label class="form-check-label" for="last7DaysCheckbox">Last 7 days</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="last30DaysCheckbox" name="dateRange" value="30">
+                                    <label class="form-check-label" for="last30DaysCheckbox">Last 30 days</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="last60DaysCheckbox" name="dateRange" value="60">
+                                    <label class="form-check-label" for="last60DaysCheckbox">Last 2 months</label>
+                                </div>
+                            </div>
                         </div> *@
                         <div class="form-group">
                             <label>Filter by Date Range:</label>
@@ -308,7 +308,7 @@
                         </div>
 
                         <form id="filterForm" action="@Url.Action("Index", "Video", new { area = "User" })">
-
+                          
 
                             <button type="submit" class="btn btn-primary">Apply Filters</button>
                             <button type="button" id="resetFiltersBtn" class="btn btn-secondary">Reset Filters</button>
@@ -388,7 +388,7 @@
                                         }
                                         <div class="card-body">
                                             <h5 class="card-title">Video Title: @videoVM.Video.Name</h5>
-                                            @*   <p class="card-text">Description: @videoVM.Video.Description</p> *@
+                                          @*   <p class="card-text">Description: @videoVM.Video.Description</p> *@
                                             <p class="card-text">Description: @TruncateDescription(videoVM.Video.Description, 40)
                                             <p class="card-text">Creator Name @videoVM.Video.CreatorFullName</p>
                                             <p class="card-text">Difficulty: @videoVM.Video.Difficulty</p>
@@ -511,8 +511,8 @@
     <script src="js/jquery.animateNumber.min.js"></script>
     <script src="js/bootstrap-datepicker.js"></script>
     <script src="js/scrollax.min.js"></script>
-    @*     <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&sensor=false"></script> *@
-    @*  <script src="js/google-map.js"></script> *@
+@*     <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&sensor=false"></script> *@
+   @*  <script src="js/google-map.js"></script> *@
     <script src="js/main.js"></script>
 
 
@@ -629,7 +629,7 @@
                 success: function (data) {
                     $('#videoListContainer').html(data);
                 },
-
+                
             });
         }
 
