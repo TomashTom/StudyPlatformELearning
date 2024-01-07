@@ -2,11 +2,7 @@
 using StudyPlatformELearningHub.Data;
 using StudyPlatformELearningHub.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Security.Claims;
-using System.Xml.Linq;
-using System.ComponentModel.Design;
 
 namespace StudyPlatformELearningHub.Areas.User.Controllers
 {
