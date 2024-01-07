@@ -9,12 +9,87 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>@ViewData["Title"]</title>
     <style>
+        .button-container {
+    display: flex; /* Display the buttons in a row */
+    justify-content: space-between; /* Add space between the buttons */
+    align-items: center; /* Center the buttons vertically */
+}
+
+/* Custom button styles */
+.custom-button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Primary button */
+.btn-primary.custom-button {
+    background-color: #007bff;
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary.custom-button:hover {
+    background-color: #0056b3;
+}
+
+/* Secondary button */
+.btn-secondary.custom-button {
+    background-color: #6c757d;
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+.btn-secondary.custom-button:hover {
+    background-color: #545b62;
+}
+        .custom-button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Primary button */
+.btn-primary.custom-button {
+    background-color: #007bff;
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary.custom-button:hover {
+    background-color: #0056b3;
+}
+
+/* Secondary button */
+.btn-secondary.custom-button {
+    background-color: #6c757d;
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+.btn-secondary.custom-button:hover {
+    background-color: #545b62;
+}
+         .delete-button {
+            background-color: #ff5a5a; /* Red background color */
+            color: white; /* White text color */
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .delete-button:hover {
+            background-color: #ff0000; /* Darker red on hover */
+        }
         /* Set a max-width for the video and image to make them smaller */
         .video-container video,
         .card-img-top {
@@ -258,16 +333,19 @@
                         <div class="mb-3">
                             <label class="fw-bold">Question Text</label>
                             <input type="text" class="form-control" value="@question.Text" readonly />
+                            <button class="delete-button" onclick="deleteQuestion(@question.Id)">Delete</button>
                         </div>
                         <!-- Button to edit the question -->
                         <a asp-controller="Upload" asp-action="EditQuestion" asp-route-id="@question.Id" class="btn btn-primary">Edit Question</a>
+                    
                     </div>
                     <div class="card-body">
                         @foreach (var answer in question.Answers)
                         {
                             <div class="mb-3">
-                                <label class="fw-bold">Answer</label>
+                                <label class="fw-bold">Answer</label>  
                                 <input type="text" class="form-control" value="@answer.Text" readonly />
+                                <button class="delete-button" onclick="deleteAnswer(@answer.Id)">Delete</button>
                                 <label class="fw-bold">Incorrect Message</label>
                                 <input type="text" class="form-control" value="@answer.IncorrectMessage" readonly />
 
@@ -282,6 +360,7 @@
                                 </div>
                                 <!-- Button to edit the answer -->
                                 <a asp-controller="Upload" asp-action="EditAnswer" asp-route-id="@answer.Id" class="btn btn-primary mt-2">Edit Answer</a>
+                              
                             </div> 
                         }
                     </div>
@@ -292,11 +371,13 @@
 
         </div>
        
-        <a asp-action="CreateQuestion" asp-controller="Upload" class="btn btn-primary">Create New Question</a>
-        <a asp-action="AllVideoListDisplay" class="btn btn-secondary mt-3">Back to List</a>
+        <div class="button-container">
+            <a asp-action="CreateQuestion" asp-controller="Upload" class="btn btn-primary custom-button">Create New Question</a>
+            <a asp-action="AllVideoListDisplay" class="btn btn-secondary custom-button">Back to List</a>
+        </div>
+
     </div>
-</body>
-</html>
+
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -325,9 +406,48 @@
                 });
             }
         });
-      
-     
-        
 
+        function deleteQuestion(id) {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteQuestion", "Upload")",
+                data: { id: id },
+                success: function (result) {
+                    if (result.success) {
+                        // Refresh the current page
+                        location.reload();
+                    } else {
+                        // Handle the error, e.g., show an error message
+                        alert("Error: " + result.error);
+                    }
+                },
+                error: function () {
+                    alert("An error occurred while deleting the question.");
+                }
+            });
+        }
+
+        function deleteAnswer(id) {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("DeleteAnswer", "Upload")",
+                data: { id: id },
+                success: function (result) {
+                    if (result.success) {
+                        // Refresh the current page
+                        location.reload();
+                    } else {
+                        // Handle the error, e.g., show an error message
+                        alert("Error: " + result.error);
+                    }
+                },
+                error: function () {
+                    alert("An error occurred while deleting the question.");
+                }
+            });
+        }
     </script>
 }
+</body>
+
+</html>

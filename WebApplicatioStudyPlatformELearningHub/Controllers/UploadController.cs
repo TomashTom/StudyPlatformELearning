@@ -655,74 +655,83 @@ public class UploadController : Controller
         }
         else
         {
-            // Handle the case where no videos are found in the database
-            // You can return a default value or throw an exception based on your requirements.
-            return 0; // Default to 0 if no videos are found
+    
+            return 0; 
+        }
+    }
+    [HttpPost]
+    public IActionResult DeleteQuestion(int id, int videoId)
+    {
+        try
+        {
+
+            var questionToDelete = _context.Questions.FirstOrDefault(q => q.Id == id);
+
+            if (questionToDelete == null)
+            {
+                return NotFound(); 
+            }
+
+
+            _context.Questions.Remove(questionToDelete);
+
+
+            _context.SaveChanges();
+
+            return Json(new { success = true });
+
+        }
+        catch (Exception ex)
+        {
+       
+            _logger.LogError(ex, "An error occurred during question deletion.");
+
+            return StatusCode(500); 
         }
     }
 
 
 
+    [HttpPost]
+    public IActionResult DeleteAnswer(int id)
+    {
+        try
+        {
+          
+            var answerToDelete = _context.Answers.FirstOrDefault(a => a.Id == id);
 
+            if (answerToDelete == null)
+            {
+                return NotFound(); 
+            }
 
+         
+            _context.Answers.Remove(answerToDelete);
 
+            
+            _context.SaveChanges();
 
-    //[HttpPost]
-    //[ValidateAntiForgeryToken]
-    //public async Task<IActionResult> CreateQuestion(QuestionViewModel model, int videoId)
-    //{
+            return Json(new { success = true });
+        }
+        catch (Exception ex)
+        {
+           
+             _logger.LogError(ex, "An error occurred during answer deletion.");
 
-    //    if (ModelState.IsValid)
-    //    {
-    //        // Save the new question to the database
-    //        foreach (var question in model.Questions)
-    //        {
-    //            int videoId = 1;
-    //            var newQuestion = new Question
-    //            {
-    //                Text = question.Text,
-    //                Answers = new List<Answer>() // Create a list to hold answers
-    //            };
-    //            foreach (var answer in question.Answers)
-    //            {
-    //                // Create a new Answer and add it to the newQuestion's Answers list
-    //                var newAnswer = new Answer
-    //                {
-    //                    Text = answer.Text,
-    //                    IsCorrect = answer.IsCorrect,
-    //                    IncorrectMessage = answer.IncorrectMessage
-    //                };
-
-    //                newQuestion.Answers.Add(newAnswer);
-    //            }
-
-
-    //            _context.Questions.Add(newQuestion);
-
-    //        }
-
-    //        await _context.SaveChangesAsync();
-    //        return RedirectToAction("AllVideoListDisplay");
-    //    }
-    //    foreach (var key in ModelState.Keys)
-    //    {
-    //        var errors = ModelState[key].Errors;
-    //        foreach (var error in errors)
-    //        {
-    //            Console.WriteLine($"Field: {key}, Error: {error.ErrorMessage}");
-    //        }
-    //    }
-
-
-    //    // If ModelState is not valid, return to the form with validation errors
-    //    return View(model);
-    //}
-
-
-
+            return StatusCode(500); 
+        }
+    }
 
 
 }
+
+
+
+
+
+
+
+
 
 
 
