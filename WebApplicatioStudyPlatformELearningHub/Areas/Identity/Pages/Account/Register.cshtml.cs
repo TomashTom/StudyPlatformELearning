@@ -199,11 +199,14 @@ namespace StudyPlatformELearningHub.Areas.Identity.Pages.Account
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
+                        TempData["Message"] = "Registration successful. Please check your email to confirm your account before logging in.";
                         return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
                     }
                     else
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
+                        TempData["Message"] = "Registration successful. We've signed you in.";
+
                         return LocalRedirect(returnUrl);
                     }
                 }

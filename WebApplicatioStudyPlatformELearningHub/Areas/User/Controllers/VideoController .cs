@@ -21,7 +21,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
 
         public async Task<IActionResult> Index(int? categoryId, string dateRangeFilter, string search,
                                        List<string> names, List<string> creators,
-                                       List<string> difficultyLevels, List<int> filterStars, int pageIndex = 1, int pageSize = 6)
+                                       List<string> difficultyLevels, List<int> filterStars, int pageIndex = 1, int pageSize = 4)
         {
             ViewBag.Categories = await _context.Categories.ToListAsync();
             ViewBag.CreatorFullNames = await _context.VideoFiles.Select(v => v.CreatorFullName).Distinct().ToListAsync();
@@ -33,14 +33,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
             {
                 videosQuery = videosQuery.Where(v => v.CategoryId == categoryId.Value);
             }
-            // Apply Time Range Filter
-            //if (!string.IsNullOrEmpty(timeRange))
-            //{
-            //    DateTime cutoffDate = DateTime.UtcNow.AddDays(-int.Parse(timeRange));
-            //    videosQuery = videosQuery.Where(v => v.UploadDateTime >= cutoffDate);
-            //}
-            // Apply Time Range Filter
-            // Apply Time Range Filter
+       
             if (!string.IsNullOrEmpty(dateRangeFilter))
             {
                 // Parse the selected date range to an integer

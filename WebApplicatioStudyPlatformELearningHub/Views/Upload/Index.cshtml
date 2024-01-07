@@ -146,17 +146,17 @@
         const addQuestion = () => {
             const container = $('#questions-container');
             const questionHtml = `
-                        <div class="question-group" id="question-group-${questionIndex}">
-                            <div class="form-group">
-                                <label>Question</label>
-                                <input type="text" name="questions[${questionIndex}].Text" class="form-control" />
-                                <button type="button" class="btn btn-danger btn-sm" onclick="removeQuestion(${questionIndex})">Remove Question</button>
-                            </div>
-                            <div class="answers-container" id="answers-container-${questionIndex}">
-                                <!-- Answers will be added here -->
-                            </div>
-                            <button type="button" class="btn btn-primary btn-sm" onclick="addAnswer(${questionIndex})">Add Answer</button>
-                        </div>`;
+            <div class="question-group" id="question-group-${questionIndex}">
+                <div class="form-group">
+                    <label>Question</label>
+                    <textarea name="questions[${questionIndex}].Text" class="form-control"></textarea>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeQuestion(${questionIndex})">Remove Question</button>
+                </div>
+                <div class="answers-container" id="answers-container-${questionIndex}">
+                    <!-- Answers will be added here -->
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" onclick="addAnswer(${questionIndex})">Add Answer</button>
+            </div>`;
             container.append(questionHtml);
             questionIndex++;
         };
@@ -165,14 +165,15 @@
             const answersContainer = $(`#answers-container-${questionIdx}`);
             const answerIndex = answersContainer.find('.form-check').length;
             const answerHtml = `
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="questions[${questionIdx}].Answers[${answerIndex}].IsCorrect" value="true" />
-                            <input type="text" name="questions[${questionIdx}].Answers[${answerIndex}].Text" class="form-control" placeholder="Answer Text" />
-                            <input type="text" name="questions[${questionIdx}].Answers[${answerIndex}].IncorrectMessage" class="form-control" placeholder="Message for answer" />
-                            <button type="button" class="btn btn-danger btn-sm" onclick="removeAnswer(this)">Remove Answer</button>
-                        </div>`;
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="questions[${questionIdx}].Answers[${answerIndex}].IsCorrect" value="true" />
+                <textarea name="questions[${questionIdx}].Answers[${answerIndex}].Text" class="form-control" placeholder="Answer Text" required></textarea>
+                <textarea name="questions[${questionIdx}].Answers[${answerIndex}].IncorrectMessage" class="form-control" placeholder="Message for answer" required></textarea>
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeAnswer(this)">Remove Answer</button>
+            </div>`;
             answersContainer.append(answerHtml);
         };
+
 
         const removeQuestion = questionIdx => {
             $(`#question-group-${questionIdx}`).remove();

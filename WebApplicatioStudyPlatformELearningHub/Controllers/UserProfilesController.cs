@@ -161,5 +161,61 @@ namespace StudyPlatformELearningHub.Controllers
 
 
         }
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound();
+            }
+
+            var entityRole = await _context.EntityRoles
+                .FirstOrDefaultAsync(er => er.UserId == id);
+            if (entityRole == null)
+            {
+                return NotFound();
+            }
+
+            return View(entityRole);
+        }
+
+        [HttpPost, ActionName("DeleteConfirmed")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteConfirmed(string id)
+        {
+            var entityRole = await _context.EntityRoles
+                .FirstOrDefaultAsync(er => er.UserId == id);
+            if (entityRole != null)
+            {
+                _context.EntityRoles.Remove(entityRole);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("User with ID: {UserId} has been deleted.", id);
+
+
+                var user = await _userManager.FindByIdAsync(id);
+                if (user != null)
+                {
+                    var result = await _userManager.DeleteAsync(user);
+                    if (result.Succeeded)
+                    {
+                        _logger.LogInformation("IdentityUser with ID: {UserId} has been deleted.", user.Id);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Failed to delete IdentityUser with ID: {UserId}.", user.Id);
+
+                    }
+                }
+            }
+            else
+            {
+                _logger.LogWarning("Attempted to delete a non-existing user role with ID: {UserId}", id);
+                return NotFound();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
