@@ -13,6 +13,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using FoolProof;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using static System.Net.Mime.MediaTypeNames;
 
 [Authorize(Roles = "Teacher")]
 [Authorize(Policy = "ConfirmedTeacher")]
@@ -540,6 +541,7 @@ public class UploadController : Controller
 
         return View(viewModel);
     }
+
     [HttpPost]
     public async Task<IActionResult> SaveQuestions(QuizViewModel model)
     {
@@ -556,6 +558,8 @@ public class UploadController : Controller
         }
         return View(model);
     }
+   
+
     [HttpGet]
     public async Task<IActionResult> SearchCategories(string term)
     {
@@ -579,48 +583,143 @@ public class UploadController : Controller
 
         return RedirectToAction("AllVideoListDisplay");
     }
+
+
+
+    [HttpGet]
+    public IActionResult CreateQuestion()
+    {
+        int currentVideoId = FetchCurrentVideoIdFromDatabase();
+
+        var model = new QuestionViewModel();
+        ViewBag.VideoId = currentVideoId;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateQuestion(int videoId, QuestionViewModel model)
+    {
+        var video = await _context.VideoFiles.FindAsync(videoId);
+
+        if (video == null)
+        {
+            // The provided videoId doesn't exist in the VideoFiles table
+            ModelState.AddModelError("VideoId", "Invalid video selection.");
+        }
+
+        if (ModelState.IsValid)
+        {
+            // Save the new question to the database
+            foreach (var question in model.Questions)
+            {
+                var newQuestion = new Question
+                {
+                    Text = question.Text,
+                    VideoId = videoId, // Set the VideoId for the question based on the selected video
+                    Answers = new List<Answer>() // Create a list to hold answers
+                };
+                foreach (var answer in question.Answers)
+                {
+                    // Create a new Answer and add it to the newQuestion's Answers list
+                    var newAnswer = new Answer
+                    {
+                        Text = answer.Text,
+                        IsCorrect = answer.IsCorrect,
+                        IncorrectMessage = answer.IncorrectMessage
+                    };
+
+                    newQuestion.Answers.Add(newAnswer);
+                }
+
+                _context.Questions.Add(newQuestion);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("AllVideoListDisplay");
+        }
+
+
+        ViewBag.VideoId = videoId;
+        return View(model);
+    }
+    private int FetchCurrentVideoIdFromDatabase()
+    {
+        // Define your logic for determining the current video.
+        // For example, you could choose the video with the highest ID as the current video.
+        var currentVideo = _context.VideoFiles.OrderByDescending(v => v.VideoId).FirstOrDefault();
+
+        if (currentVideo != null)
+        {
+            return currentVideo.VideoId;
+        }
+        else
+        {
+            // Handle the case where no videos are found in the database
+            // You can return a default value or throw an exception based on your requirements.
+            return 0; // Default to 0 if no videos are found
+        }
+    }
+
+
+
+
+
+
+
     //[HttpPost]
-    //public async Task<IActionResult> AddQuestion(Question question)
+    //[ValidateAntiForgeryToken]
+    //public async Task<IActionResult> CreateQuestion(QuestionViewModel model, int videoId)
     //{
+
     //    if (ModelState.IsValid)
     //    {
-    //        // Add the question to the database
-    //        _context.Questions.Add(question);
-    //        await _context.SaveChangesAsync();
-
-    //        // Optionally, you can return a JSON response or a redirect to a success page
-    //        return Json(new { success = true, message = "Question added successfully" });
-    //    }
-
-    //    // Handle validation errors here, if needed
-    //    return BadRequest(ModelState);
-    //}
-    //[HttpPost]
-    //public async Task<IActionResult> AddAnswer(int questionId, Answer answer)
-    //{
-    //    if (ModelState.IsValid)
-    //    {
-    //        // Retrieve the question by its ID
-    //        var question = await _context.Questions.FindAsync(questionId);
-
-    //        if (question == null)
+    //        // Save the new question to the database
+    //        foreach (var question in model.Questions)
     //        {
-    //            return NotFound("Question not found");
+    //            int videoId = 1;
+    //            var newQuestion = new Question
+    //            {
+    //                Text = question.Text,
+    //                Answers = new List<Answer>() // Create a list to hold answers
+    //            };
+    //            foreach (var answer in question.Answers)
+    //            {
+    //                // Create a new Answer and add it to the newQuestion's Answers list
+    //                var newAnswer = new Answer
+    //                {
+    //                    Text = answer.Text,
+    //                    IsCorrect = answer.IsCorrect,
+    //                    IncorrectMessage = answer.IncorrectMessage
+    //                };
+
+    //                newQuestion.Answers.Add(newAnswer);
+    //            }
+
+
+    //            _context.Questions.Add(newQuestion);
+
     //        }
 
-    //        // Add the answer to the question's Answers collection
-    //        question.Answers.Add(answer);
-
-    //        // Save changes to the database
     //        await _context.SaveChangesAsync();
-
-    //        // Optionally, you can return a JSON response or a redirect to a success page
-    //        return Json(new { success = true, message = "Answer added successfully" });
+    //        return RedirectToAction("AllVideoListDisplay");
+    //    }
+    //    foreach (var key in ModelState.Keys)
+    //    {
+    //        var errors = ModelState[key].Errors;
+    //        foreach (var error in errors)
+    //        {
+    //            Console.WriteLine($"Field: {key}, Error: {error.ErrorMessage}");
+    //        }
     //    }
 
-    //    // Handle validation errors here, if needed
-    //    return BadRequest(ModelState);
+
+    //    // If ModelState is not valid, return to the form with validation errors
+    //    return View(model);
     //}
+
+
+
 
 
 }

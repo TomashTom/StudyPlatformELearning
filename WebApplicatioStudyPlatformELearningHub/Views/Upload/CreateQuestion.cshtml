@@ -1,0 +1,86 @@
+﻿@model StudyPlatformELearningHub.Models.QuestionViewModel
+
+@{
+    ViewData["Title"] = "Create Question";
+}
+
+<div class="container">
+    <h2>Create a New Question</h2>
+    <form asp-controller="Upload" asp-action="CreateQuestion" method="post" id="question-form">
+        <!-- Add a hidden field for videoId -->
+        <input type="hidden" name="VideoId" value="@ViewBag.VideoId" />
+
+
+        <div id="questions-container">
+            <!-- Questions and answers will be added here dynamically -->
+        </div>
+        <button type="button" class="btn btn-primary" onclick="addQuestion()">Add Question</button>
+        <button type="submit" class="btn btn-success">Create Question</button>
+    </form>
+</div>
+
+
+<script>
+    let questionIndex = 0;
+
+    const addQuestion = () => {
+        const container = $('#questions-container');
+        const questionHtml = `
+            <div class="question-group" id="question-group-${questionIndex}">
+                <div class="form-group">
+                    <label>Question</label>
+                    <input type="text" name="Questions[${questionIndex}].Text" class="form-control" />
+                    <input type="file" name="Questions[${questionIndex}].Video" class="form-control-file" style="display: none;" />
+
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeQuestion(${questionIndex})">Remove Question</button>
+                </div>
+                <div class="answers-container" id="answers-container-${questionIndex}">
+                    <!-- Answers will be added here -->
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" onclick="addAnswer(${questionIndex})">Add Answer</button>
+            </div>`;
+        container.append(questionHtml);
+        questionIndex++;
+    };
+
+    const addAnswer = questionIdx => {
+        const answersContainer = $(`#answers-container-${questionIdx}`);
+        const answerIndex = answersContainer.find('.form-check').length;
+        const answerHtml = `
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="Questions[${questionIdx}].Answers[${answerIndex}].IsCorrect" value="true" />
+                <input type="text" name="Questions[${questionIdx}].Answers[${answerIndex}].Text" class="form-control" placeholder="Answer Text" />
+                <input type="text" name="Questions[${questionIdx}].Answers[${answerIndex}].IncorrectMessage" class="form-control" placeholder="Message for answer" />
+                <!-- Add the 'data-val-required' attribute to make the field not required -->
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeAnswer(this)">Remove Answer</button>
+            </div>`;
+        answersContainer.append(answerHtml);
+    };
+
+    const removeQuestion = questionIdx => {
+        $(`#question-group-${questionIdx}`).remove();
+        questionIndex--;
+        // Update indexes of remaining questions
+        $('.question-group').each((index, element) => {
+            $(element).attr('id', `question-group-${index}`).find('.answers-container').attr('id', `answers-container-${index}`);
+            $(element).find('input').each((_, input) => {
+                const name = $(input).attr('name');
+                $(input).attr('name', name.replace(/\[.*?\]/, `[${index}]`));
+            });
+        });
+    };
+
+    const removeAnswer = answerDiv => {
+        $(answerDiv).closest('.form-check').remove();
+        // Update indexes of remaining answers
+        $('.answers-container').each((_, container) => {
+            const questionIdx = $(container).attr('id').split('-').pop();
+            $(container).find('.form-check').each((index, answer) => {
+                $(answer).find('input').each((_, input) => {
+                    const name = $(input).attr('name');
+                    $(input).attr('name', name.replace(/\[.*?\]\.Answers\[.*?\]/, `[${questionIdx}].Answers[${index}]`));
+                });
+            });
+        });
+    };
+</script>
