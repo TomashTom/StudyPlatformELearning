@@ -30,3 +30,6 @@ Github and .bak file instruction
 13.	In line:
 "DataContextConnection":"Server=DESKTOPKMMOJUS;Database=StudyPlatform;
 Change into your Server name. in my case it is (DESKTOPKMMOJUS).
+
+
+PS. Whole users password - Admin123@
