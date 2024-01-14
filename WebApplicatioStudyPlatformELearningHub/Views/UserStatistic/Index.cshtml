@@ -61,7 +61,6 @@
             </li>
         }
 
-        <!-- Next Page Link -->
         <li class="page-item @(ViewBag.CurrentPage >= ViewBag.TotalPages ? "disabled" : "")">
             <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1 })" aria-label="Next">
                 <span aria-hidden="true">Next &raquo;</span>

@@ -36,9 +36,6 @@ public class UploadController : Controller
     public async Task<IActionResult> Index()
     {
         ViewBag.Categories = await _context.Categories.ToListAsync();
-
-
-        // Get the current user's full name
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var user = await _userManager.FindByIdAsync(userId);
         var creatorFullName = user?.UserName;
@@ -155,7 +152,6 @@ public class UploadController : Controller
         return View(viewModel);
     }
 
-    //
     [Authorize]
     public IActionResult AllVideoListDisplay(int page = 1)
     {
@@ -180,11 +176,6 @@ public class UploadController : Controller
 
         return View(userVideos);
     }
-
-
-
-
-    ////
 
     [HttpPost]
     public async Task<IActionResult> DeleteVideo(int id)
@@ -225,7 +216,7 @@ public class UploadController : Controller
 
         if (existingVideo == null)
         {
-            // If the video file is not found, return NotFound
+            
             return NotFound();
         }
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -429,7 +420,7 @@ public class UploadController : Controller
         {
             try
             {
-                // Fetch the existing answer from the database
+                
                 var existingAnswer = await _context.Answers.FindAsync(id);
 
                 if (existingAnswer == null)
@@ -438,18 +429,18 @@ public class UploadController : Controller
                 }
 
 
-                // Ensure that QuestionId is correctly set
+              
                 answer.QuestionId = existingAnswer.QuestionId;
 
-                // Update only the properties you want to change
+               
                 existingAnswer.Text = answer.Text;
                 existingAnswer.IsCorrect = answer.IsCorrect;
                 existingAnswer.IncorrectMessage = answer.IncorrectMessage;
 
-                // Save the changes
+               
                 await _context.SaveChangesAsync();
 
-                // Redirect to the Edit Question page after updating the answer
+                
                 return RedirectToAction(nameof(EditQuestion), new { id = existingAnswer.QuestionId });
             }
             catch (DbUpdateConcurrencyException)
@@ -469,10 +460,7 @@ public class UploadController : Controller
         {
             foreach (var error in entry.Errors)
             {
-                // Log the error message or display it as needed
                 var errorMessage = error.ErrorMessage;
-                // You can log or display 'errorMessage' here
-                // For example, you can log it to a file or display it in your view
                 _logger.LogError(errorMessage);
                 ViewBag.ErrorMessage = errorMessage;
             }
@@ -604,7 +592,7 @@ public class UploadController : Controller
 
         if (video == null)
         {
-            // The provided videoId doesn't exist in the VideoFiles table
+            
             ModelState.AddModelError("VideoId", "Invalid video selection.");
         }
 
@@ -616,7 +604,7 @@ public class UploadController : Controller
                 var newQuestion = new Question
                 {
                     Text = question.Text,
-                    VideoId = videoId, // Set the VideoId for the question based on the selected video
+                    VideoId = videoId, 
                     Answers = new List<Answer>() // Create a list to hold answers
                 };
                 foreach (var answer in question.Answers)
@@ -645,8 +633,7 @@ public class UploadController : Controller
     }
     private int FetchCurrentVideoIdFromDatabase()
     {
-        // Define your logic for determining the current video.
-        // For example, you could choose the video with the highest ID as the current video.
+     
         var currentVideo = _context.VideoFiles.OrderByDescending(v => v.VideoId).FirstOrDefault();
 
         if (currentVideo != null)

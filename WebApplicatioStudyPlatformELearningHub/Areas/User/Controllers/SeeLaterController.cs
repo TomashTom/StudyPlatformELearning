@@ -83,7 +83,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
 
             if (seeLaterVideo != null)
             {
-                // Remove the video from the "See Later" list
+               
                 _context.SeeLaterVideos.Remove(seeLaterVideo);
                 await _context.SaveChangesAsync();
             }
@@ -110,7 +110,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
 
             TempData["DeletedMessage"] = "Playlist and associated videos deleted successfully.";
 
-            // Redirect to the user's profile or any other appropriate action
+            
             return RedirectToAction("Index", "UserProfiles");
         }
 

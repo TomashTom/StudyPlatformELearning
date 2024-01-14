@@ -40,12 +40,9 @@ namespace StudyPlatformELearningHub.Controllers
                                 .Where(er => er.Role == teacherRoleName)
                                 .AsNoTracking(); 
 
-            // This now returns a paginated list, even if it's just one page
             var paginatedList = await PaginatedList<EntityRole>.CreateAsync(query, pageIndex, pageSize);
             return View("Index", paginatedList); 
         }
-
-
 
 
         [HttpPost]
@@ -142,7 +139,6 @@ namespace StudyPlatformELearningHub.Controllers
             }
             else
             {
-                // Log this situation if necessary
                 _logger.LogWarning("UserBlockStatus for user {UserId} not found.", entityRole.UserId);
             }
 

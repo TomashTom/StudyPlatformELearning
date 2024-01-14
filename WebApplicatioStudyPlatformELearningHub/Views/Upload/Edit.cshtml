@@ -3,7 +3,6 @@
 
 @{
     ViewData["Title"] = "Edit Video";
-    // var questionList = Model.Questions?.ToList() ?? new List<Question>();
     var questionList = Model.Questions.ToList();
 }
 
@@ -16,12 +15,11 @@
     <title>@ViewData["Title"]</title>
     <style>
         .button-container {
-    display: flex; /* Display the buttons in a row */
-    justify-content: space-between; /* Add space between the buttons */
-    align-items: center; /* Center the buttons vertically */
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
 }
 
-/* Custom button styles */
 .custom-button {
     padding: 10px 20px;
     border-radius: 5px;
@@ -29,7 +27,6 @@
     text-transform: uppercase;
 }
 
-/* Primary button */
 .btn-primary.custom-button {
     background-color: #007bff;
     color: #fff;
@@ -40,7 +37,6 @@
     background-color: #0056b3;
 }
 
-/* Secondary button */
 .btn-secondary.custom-button {
     background-color: #6c757d;
     color: #fff;
@@ -57,7 +53,6 @@
     text-transform: uppercase;
 }
 
-/* Primary button */
 .btn-primary.custom-button {
     background-color: #007bff;
     color: #fff;
@@ -68,7 +63,7 @@
     background-color: #0056b3;
 }
 
-/* Secondary button */
+
 .btn-secondary.custom-button {
     background-color: #6c757d;
     color: #fff;
@@ -79,8 +74,8 @@
     background-color: #545b62;
 }
          .delete-button {
-            background-color: #ff5a5a; /* Red background color */
-            color: white; /* White text color */
+            background-color: #ff5a5a; 
+            color: white; 
             border: none;
             padding: 5px 10px;
             cursor: pointer;
@@ -88,30 +83,23 @@
         }
 
         .delete-button:hover {
-            background-color: #ff0000; /* Darker red on hover */
+            background-color: #ff0000; 
         }
-        /* Set a max-width for the video and image to make them smaller */
         .video-container video,
         .card-img-top {
-            max-width: 320px; /* Adjust the width as needed */
-            height: auto; /* Maintain the aspect ratio */
-            display: block; /* To enable margin 'auto' to work */
-            margin: 0; /* Center the video/image within the container */
-            object-fit: contain; /* Ensures the content is fully visible */
+            max-width: 320px; 
+            height: auto; 
+            display: block; 
+            margin: 0; 
+            object-fit: contain; 
         }
 
-        /* Ensure the form controls align with the smaller video and image */
         .form-group .form-control,
         .form-group label {
           
-            display: block; /* Stack the label and input */
+            display: block; 
         }
 
-     
-     
-
-
-        /* Global Styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -127,7 +115,6 @@
             margin-top: 20px;
         }
 
-        /* Form Styles */
         .form-label {
             font-weight: bold;
         }
@@ -141,7 +128,6 @@
             font-size: 12px;
         }
 
-        /* Button Styles */
         .btn {
             padding: 10px 20px;
             border: none;
@@ -168,7 +154,6 @@
                 background-color: #545b62;
             }
 
-        /* Card Styles */
         .card {
             border: none;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
@@ -185,7 +170,6 @@
             padding: 15px;
         }
 
-        /* Header Styles */
         h2 {
             font-size: 24px;
             margin-bottom: 20px;
@@ -201,7 +185,6 @@
             margin-top: 15px;
         }
 
-        /* Input Styles */
         .input-group-text {
             background-color: #007bff;
             color: #fff;
@@ -335,7 +318,6 @@
                             <input type="text" class="form-control" value="@question.Text" readonly />
                             <button class="delete-button" onclick="deleteQuestion(@question.Id)">Delete</button>
                         </div>
-                        <!-- Button to edit the question -->
                         <a asp-controller="Upload" asp-action="EditQuestion" asp-route-id="@question.Id" class="btn btn-primary">Edit Question</a>
                     
                     </div>
@@ -358,7 +340,6 @@
                                         }
                                     </label>
                                 </div>
-                                <!-- Button to edit the answer -->
                                 <a asp-controller="Upload" asp-action="EditAnswer" asp-route-id="@answer.Id" class="btn btn-primary mt-2">Edit Answer</a>
                               
                             </div> 
@@ -385,7 +366,7 @@
             var saveButton = document.querySelector('.save-changes');
             if (saveButton) {
                 saveButton.addEventListener('click', function (event) {
-                    event.preventDefault();  // Prevent the default form submission
+                    event.preventDefault();  
                     var form = this.closest("form");
 
                     // Show SweetAlert confirmation
@@ -400,7 +381,7 @@
                         cancelButtonText: 'Cancel'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            form.submit();  // Submit the form programmatically
+                            form.submit();  
                         }
                     });
                 });
@@ -414,10 +395,8 @@
                 data: { id: id },
                 success: function (result) {
                     if (result.success) {
-                        // Refresh the current page
                         location.reload();
                     } else {
-                        // Handle the error, e.g., show an error message
                         alert("Error: " + result.error);
                     }
                 },
@@ -437,7 +416,6 @@
                         // Refresh the current page
                         location.reload();
                     } else {
-                        // Handle the error, e.g., show an error message
                         alert("Error: " + result.error);
                     }
                 },

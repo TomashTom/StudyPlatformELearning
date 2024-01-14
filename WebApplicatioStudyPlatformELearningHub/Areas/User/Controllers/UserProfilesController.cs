@@ -50,12 +50,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                        Note = sv.Note,
                     }).ToList()
                 }).ToListAsync();
-            //int pageSize = 2; // Display 2 playlists per page
-            //int totalPlaylists = playlists.Count();
-            //int totalPages = (int)Math.Ceiling((double)totalPlaylists / pageSize);
-
-            //// Set the current page
-            //int currentPage = page ?? 1;
+        
 
             var viewModel = new UserProfileViewModel
             {
@@ -67,8 +62,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
 
 
             };
-            //ViewData["CurrentPage"] = currentPage;
-            //ViewData["TotalPages"] = totalPages;
+           
 
             return View( viewModel);
             
@@ -115,7 +109,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            // Check and update password if NewPassword is provided
+          
             if (!string.IsNullOrWhiteSpace(viewModel.NewPassword))
             {
                 if (!await _userManager.CheckPasswordAsync(user, viewModel.CurrentPassword))
@@ -143,7 +137,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
         {
             if (string.IsNullOrEmpty(firstName))
             {
-                // Handle the case where first name is not provided.
+               
                 return View("Index", viewModel);
             }
 
@@ -164,7 +158,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
         {
             if (string.IsNullOrEmpty(lastName))
             {
-                // Handle the case where last name is not provided.
+                
                 return View("Index", viewModel);
             }
 
@@ -195,20 +189,20 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                     ModelState.AddModelError("currentPassword", "Current password cannot be empty.");
                 }
 
-                return View("Index"); // Or the appropriate view with model
+                return View("Index"); 
             }
 
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
             {
                 ModelState.AddModelError("", "User not found.");
-                return View("Index"); // Or the appropriate view with model
+                return View("Index"); 
             }
 
             if (!await _userManager.CheckPasswordAsync(user, currentPassword))
             {
                 ModelState.AddModelError("currentPassword", "The current password is incorrect.");
-                return View("Index", new UserProfileViewModel { Email = user.Email }); // Or the appropriate view with model
+                return View("Index", new UserProfileViewModel { Email = user.Email }); 
             }
 
             user.Email = email;
@@ -220,7 +214,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                 {
                     ModelState.AddModelError("", error.Description);
                 }
-                return View("Index", new UserProfileViewModel { Email = user.Email }); // Or the appropriate view with model
+                return View("Index", new UserProfileViewModel { Email = user.Email }); 
             }
 
             // Optionally send an email confirmation link
@@ -255,11 +249,11 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                     return RedirectToAction(nameof(ForgotPasswordConfirmation));
                 }
 
-                // Generate a random 6-digit numeric code
+                
                 Random random = new Random();
                 int code = random.Next(100000, 999999);
 
-                // Convert the code to a string
+              
                 string codeAsString = code.ToString("D6");
                 var callbackUrl = Url.Action(nameof(ResetPassword), "UserProfiles", new { userId = user.Id, code = codeAsString }, protocol: HttpContext.Request.Scheme);
 
@@ -269,7 +263,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
 
 
 
-                // Use your EmailService to send the email
+               
                 var emailSent = await _emailService.SendEmailAsync(model.Email, "Reset Password", emailContent);
 
                 if (!emailSent)
@@ -318,7 +312,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
             var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
             if (result.Succeeded)
             {
-                // Password reset was successful, redirect to the index page
+               
                 return RedirectToAction(nameof(Index));
             }
 
@@ -337,7 +331,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
             return View();
         }
 
-        ///
+       
 
         private bool EntityRoleExists(int id)
         {

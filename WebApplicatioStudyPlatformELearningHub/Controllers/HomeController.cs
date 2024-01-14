@@ -41,7 +41,7 @@ namespace StudyPlatformELearningHub.Controllers
         private List<VideoFile> GetRandomFeaturedVideos(int count)
         {
             var featuredVideos = _context.VideoFiles
-                .OrderBy(o => Guid.NewGuid()) // Shuffle the videos randomly
+                .OrderBy(o => Guid.NewGuid()) 
                 .Take(count)
                 .ToList();
 
