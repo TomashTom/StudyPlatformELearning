@@ -1,4 +1,4 @@
-﻿@* @page "/User/UserProfiles/Index" *@
+﻿
  @model StudyPlatformELearningHub.Models.UserProfileViewModel
 
 @{
@@ -19,7 +19,7 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
-    <!-- Toastr CSS -->
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
 
@@ -27,7 +27,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 
-    <!-- Custom CSS -->
+
     <style>
         body {
             font-family: 'Roboto', sans-serif;
@@ -43,20 +43,20 @@
             }
 
         .profile-section {
-            display: none; /* Hide all sections by default */
+            display: none; 
             opacity: 0;
             transition: opacity 0.5s ease;
         }
 
             .profile-section.active {
-                display: block; /* Show the active section */
+                display: block; 
                 opacity: 1;
             }
 
         :root {
             --primary-color: #007bff;
             --secondary-color: #6c757d;
-            /* Define more colors as needed */
+
         }
 
         .nav-link.active {
@@ -73,10 +73,10 @@
         </header>
 
     <div class="container mt-5">
-        <!-- Navigation Menu -->
+
         <div class="row">
             <div class="col-md-3">
-                <!-- Card for Navigation -->
+
                 <div class="card">
                     <div class="card-header text-center">
                         <h2>User Profile</h2>
@@ -97,7 +97,7 @@
                 </div>
             </div>
 
-            <!-- Profile Content -->
+
             <div class="col-md-9">
                 <div class="tab-content">
                          <section id="profile-info" class="tab-pane fade profile-section">
@@ -106,7 +106,7 @@
                                 <h3>Profile Information</h3>
                             </div>
                             <div class="card-body">
-                                <!-- Display user information here -->
+
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
@@ -153,7 +153,6 @@
                                     </div>
                                 </form>
 
-                                <!-- Form for updating Email -->
                                 <form asp-action="UpdateEmail" method="post">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" asp-for="Id" />
@@ -175,7 +174,6 @@
                                     </div>
                                 </form>
 
-                                <!-- Form for updating Password -->
                                 <form asp-action="UpdatePassword" method="post">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" asp-for="Id" />
@@ -212,7 +210,6 @@
                                     int currentPage = ViewData["CurrentPage"] as int? ?? 1;
                                     int pageSize = 2; // Display 2 playlists per page
 
-                                    // Calculate the total number of pages
                                     int totalPlaylists = Model.Playlists.Count();
                                     int totalPages = (int)Math.Ceiling((double)totalPlaylists / pageSize);
 
@@ -270,16 +267,7 @@
                                             </div>
                                         </div>
                                     }
-                                   @*  <nav aria-label="Playlist Pagination">
-                                        <ul class="pagination justify-content-center">
-                                            @for (var pageIndex = 1; pageIndex <= totalPages; pageIndex++)
-                                            {
-                                                <li class="page-item @(pageIndex == currentPage ? "active" : "")">
-                                                    <a class="page-link" href="?page=@pageIndex">@pageIndex</a>
-                                                </li>
-                                            }
-                                        </ul>
-                                    </nav> *@
+                                 
 
 
                                 }
@@ -306,60 +294,39 @@
     <!-- Toastr JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
-    <!-- Custom Script -->
-@*     <script>
-        $(document).ready(function () {
-            // Activate the profile-section based on the navigation click
-            $('.nav-link').on('click', function (e) {
-                e.preventDefault();
-                var currentAttrValue = $(this).attr('href');
-
-                // Show/Hide Tabs
-                 $('.profile-section' + currentAttrValue).show().siblings().hide();
-
-               
-               
-            });
-
-
-            // Optionally show a toast notification for demonstration
-            toastr.success('Welcome to your profile!');
-        });
-    </script>
-    *@
+   
     <script>
         $(document).ready(function () {
-            // Function to activate a tab based on the URL hash
+
             function activateTabFromHash() {
                 var hash = window.location.hash;
                 if (hash) {
-                    // If a hash is present, activate the corresponding tab
+
                     $('.nav-link[href="' + hash + '"]').tab('show');
                     $(hash).addClass('active').show().siblings('.profile-section').hide();
                     $('a[href="' + hash + '"]').closest('li.nav-item').addClass('active').siblings().removeClass('active');
                 } else {
-                    // If no hash, activate the first tab
+
                     $('#profile-info').addClass('active').show();
                     $('a[href="#profile-info"]').closest('li.nav-item').addClass('active');
                 }
             }
 
-            // On nav-link click, update the hash in the URL
+
             $('.nav-link').on('click', function (e) {
                 e.preventDefault();
                 var currentAttrValue = $(this).attr('href');
-                window.location.hash = currentAttrValue; // Set the hash to the clicked tab's href
-                activateTabFromHash(); // Call the function to activate the tab
+                window.location.hash = currentAttrValue; 
+                activateTabFromHash(); 
             });
 
-            // Call activateTabFromHash on page load to show the correct tab
+
             activateTabFromHash();
 
-            // If any form inside a tab is submitted, ensure the hash is included in the action URL
             $('.profile-section form').on('submit', function () {
                 var action = $(this).attr('action');
                 var hash = window.location.hash;
-                $(this).attr('action', action + hash); // Append the hash to the form's action
+                $(this).attr('action', action + hash); 
             });
         });
     </script>

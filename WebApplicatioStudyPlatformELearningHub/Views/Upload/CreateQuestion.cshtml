@@ -7,12 +7,10 @@
 <div class="container">
     <h2>Create a New Question</h2>
     <form asp-controller="Upload" asp-action="CreateQuestion" method="post" id="question-form">
-        <!-- Add a hidden field for videoId -->
         <input type="hidden" name="VideoId" value="@ViewBag.VideoId" />
 
 
         <div id="questions-container">
-            <!-- Questions and answers will be added here dynamically -->
         </div>
         <button type="button" class="btn btn-primary" onclick="addQuestion()">Add Question</button>
         <button type="submit" class="btn btn-success">Create Question</button>
@@ -60,7 +58,6 @@
     const removeQuestion = questionIdx => {
         $(`#question-group-${questionIdx}`).remove();
         questionIndex--;
-        // Update indexes of remaining questions
         $('.question-group').each((index, element) => {
             $(element).attr('id', `question-group-${index}`).find('.answers-container').attr('id', `answers-container-${index}`);
             $(element).find('input').each((_, input) => {
@@ -72,7 +69,6 @@
 
     const removeAnswer = answerDiv => {
         $(answerDiv).closest('.form-check').remove();
-        // Update indexes of remaining answers
         $('.answers-container').each((_, container) => {
             const questionIdx = $(container).attr('id').split('-').pop();
             $(container).find('.form-check').each((index, answer) => {

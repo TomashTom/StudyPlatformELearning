@@ -27,9 +27,9 @@ public class CourseController : Controller
     public IActionResult Create()
     {
         // Get the name of the logged-in user
-        string creatorFullName = User.Identity.Name; // Replace with your user property as needed
+        string creatorFullName = User.Identity.Name; 
 
-        // Create a new Course model with the CreatorFullName property set
+       
         var course = new Course
         {
             CreatorFullName = creatorFullName
@@ -48,10 +48,8 @@ public class CourseController : Controller
     {
         if (ModelState.IsValid)
         {
-            // Get the logged-in user's full name from the User property
-            string creatorFullName = User.Identity.Name; // Replace with your user property as needed
-
-            // Set the CreatorFullName property of the course
+           
+            string creatorFullName = User.Identity.Name; 
             course.CreatorFullName = creatorFullName;
 
             _context.Add(course);
@@ -118,7 +116,7 @@ public class CourseController : Controller
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var course = await _context.Courses
-            .Include(c => c.Videos) // Include the related videos
+            .Include(c => c.Videos) 
             .FirstOrDefaultAsync(c => c.CourseId == id);
 
         if (course == null)
@@ -126,7 +124,7 @@ public class CourseController : Controller
             return NotFound();
         }
 
-        _context.Courses.Remove(course); // This will also remove associated videos
+        _context.Courses.Remove(course); 
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }

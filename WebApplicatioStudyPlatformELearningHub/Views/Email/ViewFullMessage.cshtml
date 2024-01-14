@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "View Full Message";
-    Layout = "_Layout"; // Optionally specify a layout page if needed
+    Layout = "_Layout";
 }
 
 <div class="container mt-4">
@@ -14,7 +14,7 @@
                 </div>
                 <div class="card-body">
                     <div class="message">
-                        @Html.Raw(Model) <!-- Use Html.Raw to display HTML content if needed -->
+                        @Html.Raw(Model) 
                     </div>
                     <a asp-action="EmailList" class="btn btn-secondary mt-3">Back to Email List</a>
                 </div>

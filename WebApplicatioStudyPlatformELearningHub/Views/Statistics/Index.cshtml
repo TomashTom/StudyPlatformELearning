@@ -36,17 +36,17 @@
         </div>
     </div>
 </div>
-<!-- Place this at the bottom of your view -->
+
 <nav aria-label="Video pagination">
     <ul class="pagination justify-content-center">
-        <!-- Previous Page Link -->
+
         <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
             <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1 })" aria-label="Previous">
                 <span aria-hidden="true">&laquo; Previous</span>
             </a>
         </li>
 
-        <!-- Numbered Page Links -->
+
         @for (int i = 1; i <= ViewBag.TotalPages; i++)
         {
             <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
@@ -54,7 +54,7 @@
             </li>
         }
 
-        <!-- Next Page Link -->
+
         <li class="page-item @(ViewBag.CurrentPage >= ViewBag.TotalPages ? "disabled" : "")">
             <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1 })" aria-label="Next">
                 <span aria-hidden="true">Next &raquo;</span>
@@ -74,7 +74,7 @@
         var videoRankCounts = @Html.Raw(Json.Serialize(Model.GroupBy(v => v.CategoryName).Select(g => g.Average(v => v.AverageRating))));
         var colors = generateRandomColors(categories.length);
 
-        // Create the Chart.js chart with your real data
+
         var ctx = document.getElementById('statisticsChart').getContext('2d');
         var chart = new Chart(ctx, {
             type: 'bar',

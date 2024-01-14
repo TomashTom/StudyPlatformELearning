@@ -58,7 +58,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                             lowerBound = currentDate.AddDays(-60);
                             upperBound = currentDate.AddDays(-30);
                             break;
-                            // Add more cases for additional date range options if needed
+                            
                     }
 
                     videosQuery = videosQuery.Where(v => v.UploadDateTime >= lowerBound && v.UploadDateTime < upperBound);
@@ -165,11 +165,11 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                 // Create the return URL for after successful login
                 string returnUrl = Url.Action("Play", "Video", new { area = "User", id = id });
 
-                // Redirect to the login page in the 'Identity' area
+                
                 return RedirectToPage("/Account/Login", new { area = "Identity", ReturnUrl = returnUrl });
             }
 
-            //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+           
 
             var video = await _context.VideoFiles
                      .Include(v => v.Category)
@@ -184,12 +184,12 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
             }
 
 
-            // Check if the user has already viewed this video
+            
             var hasViewed = _context.UserVideoViews.Any(vv => vv.UserId == userId && vv.VideoId == id);
 
             if (!hasViewed)
             {
-                // User hasn't viewed this video before, so record this new view
+                
                 var userVideoView = new UserVideoView
                 {
                     UserId = userId,
@@ -232,7 +232,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                 comment.HeartCount = _context.UserHearts.Count(ul => ul.CommentId == comment.CommentId);
 
             }
-            //
+            
             var coursesWithVideos = _context.Courses
               .Where(p => p.CourseId == video.CourseId)
               .Include(c => c.Videos)
@@ -247,7 +247,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
             });
 
 
-            //
+            
             var viewModel = new VideoPlayViewModel
             {
                 Video = video,
@@ -309,11 +309,10 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                                                .Where(a => a.QuestionId == questionId && a.IsCorrect)
                                                .ToListAsync();
 
-            // Determine if the user's answers are correct
             bool isCorrect = !answerIds.Except(correctAnswers.Select(a => a.Id)).Any() &&
                              !correctAnswers.Select(a => a.Id).Except(answerIds).Any();
 
-            // If the answer is incorrect, fetch the incorrect answer message
+            
             if (!isCorrect)
             {
                 var incorrectAnswer = await _context.Answers
@@ -323,7 +322,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                 TempData["IncorrectAnswerMessage"] = incorrectAnswer?.IncorrectMessage ?? "Incorrect answer. No specific feedback provided.";
             }
 
-            // Store results in TempData and redirect
+           
             TempData["IsCorrect"] = isCorrect;
             TempData["CheckedAnswers"] = answerIds.ToArray();
             TempData["LastCheckedQuestionId"] = questionId;
@@ -360,7 +359,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
 
             if (existingRating != null)
             {
-                //existingRating.Rating = rating;
+                
                 return View("AlreadyRatedView");
             }
             else
@@ -401,8 +400,6 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
             comment.Content = content;
             await _context.SaveChangesAsync();
 
-            // Redirect back to the original page
-            // Assuming that the video ID is available, otherwise you need to pass it in as a parameter
             return RedirectToAction("Play", new { id = comment.VideoId });
         }
 
@@ -418,11 +415,10 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                 return RedirectToAction("Login", "Account", new { area = "Identity" });
             }
 
-            // Explicit check for ParentCommentId to ensure it's not null
+         
             if (!parentCommentId.HasValue)
             {
-                // If ParentCommentId is null, return an error view or handle accordingly
-                // Do NOT create a top-level comment here as it should be a reply
+               
                 return View("Error", new ErrorViewModel { RequestId = "ParentCommentId is required for a reply." });
             }
 
@@ -431,9 +427,9 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
                 UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
                 VideoId = videoId,
                 Content = content,
-                ParentCommentId = parentCommentId, // Ensure this is set for replies
+                ParentCommentId = parentCommentId, 
                 Nickname = nickname,
-                CreatedAt = DateTime.UtcNow // Set the created time for the reply
+                CreatedAt = DateTime.UtcNow 
             };
 
             _context.Comments.Add(reply);
@@ -478,13 +474,13 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
             var userLike = comment.Likes.FirstOrDefault(l => l.UserId == userId);
             if (userLike != null)
             {
-                // User has already liked the comment, so unlike it
+               
                 comment.Likes.Remove(userLike);
                 comment.UserLiked = false; // Update UserLiked property
             }
             else
             {
-                // User hasn't liked the comment yet, so add a like
+                
                 comment.Likes.Add(new UserLike { UserId = userId, CommentId = commentId });
                 comment.UserLiked = true; // Update UserLiked property
             }
@@ -509,15 +505,15 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
             var userHeart = comment.Hearts.FirstOrDefault(h => h.UserId == userId);
             if (userHeart != null)
             {
-                // User has already hearted the comment, so unheart it
+               
                 comment.Hearts.Remove(userHeart);
-                comment.UserHearted = false; // Update UserHearted property
+                comment.UserHearted = false; 
             }
             else
             {
-                // User hasn't hearted the comment yet, so add a heart
+                
                 comment.Hearts.Add(new UserHeart { UserId = userId, CommentId = commentId });
-                comment.UserHearted = true; // Update UserHearted property
+                comment.UserHearted = true; 
             }
 
             await _context.SaveChangesAsync();
@@ -540,9 +536,9 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
             var userLike = comment.Likes.FirstOrDefault(l => l.UserId == userId);
             if (userLike != null)
             {
-                // User has already liked the comment, so remove the like
+               
                 comment.Likes.Remove(userLike);
-                comment.UserLiked = false; // Update UserLiked property
+                comment.UserLiked = false; 
 
                 await _context.SaveChangesAsync();
             }
@@ -567,7 +563,7 @@ namespace StudyPlatformELearningHub.Areas.User.Controllers
             if (userHeart != null)
             {
                 comment.Hearts.Remove(userHeart);
-                comment.UserHearted = false; // Update UserHearted property
+                comment.UserHearted = false; 
 
                 await _context.SaveChangesAsync();
             }

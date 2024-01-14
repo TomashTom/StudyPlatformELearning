@@ -6,7 +6,7 @@
 
 <style>
     .message-cell {
-        max-width: 200px; /* Adjust the max-width to your preference */
+        max-width: 200px; 
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -53,7 +53,6 @@
                         <td class="message-cell">@message.Message</td>
                         <td>@message.SentTime.ToString("g")</td>
                         <td>
-                            <!-- Restore individual message -->
                             <form asp-action="Restore" method="post">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="Id" value="@message.Id" />
